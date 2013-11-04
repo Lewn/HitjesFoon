@@ -406,7 +406,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: makedirs begin gccversion sizebefore build sizeafter end
+all: begin gccversion sizebefore build sizeafter end
 
 # Change the build target to build a HEX file or a library.
 build: elf hex eep lss sym
@@ -626,7 +626,7 @@ clean_list :
 $(shell mkdir $(OBJDIRS))
 
 # Include the dependency files.
-#-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
 
 
 # Listing of phony targets.
