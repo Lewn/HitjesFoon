@@ -1,0 +1,175 @@
+# depslib dependency file v1.0
+1383577096 source:d:\projects\cplusplus\hitjesfoon\pc\main.cpp
+	"AudioPlayer.h"
+	"USBConnection.h"
+	"conio.h"
+
+1383284310 d:\projects\cplusplus\hitjesfoon\pc\hidapi\include\hidapi.h
+	<wchar.h>
+
+1383326815 d:\projects\cplusplus\hitjesfoon\telephoneprotocol.h
+	"uC/include/macros.h"
+
+1383311471 d:\projects\cplusplus\hitjesfoon\uc\include\macros.h
+
+1383575874 d:\projects\cplusplus\hitjesfoon\pc\include\audioplayer.h
+	"vlc/vlc.h"
+	<string.h>
+	"VLC.h"
+	"AudioList.h"
+
+1383518864 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\vlc.h
+	<vlc/libvlc_structures.h>
+	<vlc/libvlc.h>
+	<vlc/libvlc_media.h>
+	<vlc/libvlc_media_player.h>
+	<vlc/libvlc_media_list.h>
+	<vlc/libvlc_media_list_player.h>
+	<vlc/libvlc_media_library.h>
+	<vlc/libvlc_media_discoverer.h>
+	<vlc/libvlc_events.h>
+	<vlc/libvlc_vlm.h>
+	<vlc/deprecated.h>
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_structures.h
+	<stdint.h>
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc.h
+	<stdio.h>
+	<stdarg.h>
+	<vlc/libvlc_structures.h>
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media_player.h
+	<stdbool.h>
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list_player.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media_library.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_media_discoverer.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_events.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\libvlc_vlm.h
+
+1379888298 d:\projects\cplusplus\hitjesfoon\pc\vlc\include\vlc\deprecated.h
+
+1383577231 source:d:\projects\cplusplus\hitjesfoon\pc\src\audioplayer.cpp
+	"AudioPlayer.h"
+
+1383562732 d:\projects\cplusplus\hitjesfoon\pc\include\vlc.h
+	"vlc/vlc.h"
+	<string.h>
+
+1383571490 d:\projects\cplusplus\hitjesfoon\pc\include\audiolist.h
+	"vlc/vlc.h"
+	<string.h>
+	<ctype.h>
+	"VLC.h"
+
+1383576759 source:d:\projects\cplusplus\hitjesfoon\pc\src\audiolist.cpp
+	"AudioList.h"
+
+1383572301 source:d:\projects\cplusplus\hitjesfoon\pc\src\vlc.cpp
+	"VLC.h"
+
+1383576226 d:\projects\cplusplus\hitjesfoon\pc\include\usbconnection.h
+	"hidapi.h"
+	"../../telephoneProtocol.h"
+	<stdio.h>
+	<memory.h>
+
+1383576239 source:d:\projects\cplusplus\hitjesfoon\pc\src\usbconnection.cpp
+	"USBConnection.h"
+
+1383577096 source:d:\projects\github\hitjesfoon\pc\main.cpp
+	"AudioPlayer.h"
+	"USBConnection.h"
+	"conio.h"
+
+1383575874 d:\projects\github\hitjesfoon\pc\include\audioplayer.h
+	"vlc/vlc.h"
+	<string.h>
+	"VLC.h"
+	"AudioList.h"
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\vlc.h
+	<vlc/libvlc_structures.h>
+	<vlc/libvlc.h>
+	<vlc/libvlc_media.h>
+	<vlc/libvlc_media_player.h>
+	<vlc/libvlc_media_list.h>
+	<vlc/libvlc_media_list_player.h>
+	<vlc/libvlc_media_library.h>
+	<vlc/libvlc_media_discoverer.h>
+	<vlc/libvlc_events.h>
+	<vlc/libvlc_vlm.h>
+	<vlc/deprecated.h>
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_structures.h
+	<stdint.h>
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc.h
+	<stdio.h>
+	<stdarg.h>
+	<vlc/libvlc_structures.h>
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_player.h
+	<stdbool.h>
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list_player.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_library.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_discoverer.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_events.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_vlm.h
+
+1383577953 d:\projects\github\hitjesfoon\pc\vlc\include\vlc\deprecated.h
+
+1383562732 d:\projects\github\hitjesfoon\pc\include\vlc.h
+	"vlc/vlc.h"
+	<string.h>
+
+1383571490 d:\projects\github\hitjesfoon\pc\include\audiolist.h
+	"vlc/vlc.h"
+	<string.h>
+	<ctype.h>
+	"VLC.h"
+
+1383576226 d:\projects\github\hitjesfoon\pc\include\usbconnection.h
+	"hidapi.h"
+	"../../telephoneProtocol.h"
+	<stdio.h>
+	<memory.h>
+
+1383577953 d:\projects\github\hitjesfoon\pc\hidapi\include\hidapi.h
+	<wchar.h>
+
+1383577953 d:\projects\github\hitjesfoon\telephoneprotocol.h
+	"uC/include/macros.h"
+
+1383577953 d:\projects\github\hitjesfoon\uc\include\macros.h
+
+1383576759 source:d:\projects\github\hitjesfoon\pc\src\audiolist.cpp
+	"AudioList.h"
+
+1383577592 source:d:\projects\github\hitjesfoon\pc\src\audioplayer.cpp
+	"AudioPlayer.h"
+
+1383576239 source:d:\projects\github\hitjesfoon\pc\src\usbconnection.cpp
+	"USBConnection.h"
+
+1383572301 source:d:\projects\github\hitjesfoon\pc\src\vlc.cpp
+	"VLC.h"
+
