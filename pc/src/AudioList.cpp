@@ -104,6 +104,7 @@ AudioList::AudioList(const char* listFilePath) {
             }
         } while (!feof(listFile) && hitIndex == -1);
     } while (!feof(listFile));
+    fclose(listFile);
 }
 
 AudioList::~AudioList() {

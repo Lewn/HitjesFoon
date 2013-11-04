@@ -45,12 +45,20 @@ void playSong(int songIndex, AudioPlayer* player) {
 
 int main() {
     try {
+        char* hitjesListPath = new char[1024];
+        FILE* configFile = fopen("config.txt", "r");
+        if (!configFile) {
+            throw "Couldn't open config file";
+        }
+        fgets(hitjesListPath, 1024, configFile);
+
         // instantiate usb and vlc, cause we will need them
         USBConnection connection;
         VLC::getInstance();
 
         // create the list with all hitjes from file
-        hitjesList = new AudioList("D:\\Dropbox\\JvB 163\\HitjesFoon\\Hitjes\\1000 Hitjes.txt");
+        hitjesList = new AudioList(hitjesListPath);
+        delete[] hitjesListPath;
 
         // create two players, so we can seamlessly swap between them
         AudioPlayer phoneAudioPlayer(AudioPlayer::PHONE, hitjesList);

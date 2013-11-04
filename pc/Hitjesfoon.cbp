@@ -39,7 +39,7 @@
 		</Compiler>
 		<Linker>
 			<Add library="vlc\lib\libvlc.a" />
-			<Add library="hidapi\lib\libhidapi.a" />
+			<Add library="hidapi\lib\libhidapi.dll.a" />
 			<Add library="setupapi" />
 		</Linker>
 		<Unit filename="include/AudioList.h" />
