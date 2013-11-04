@@ -1,0 +1,13 @@
+
+#include "uC/include/macros.h"
+
+#define DIAL_DATA_MASK 0b00001111
+#define DIAL_DATA_SHIFT 0
+
+#define HORN_DATA_SHIFT 4
+#define HORN_DATA_MASK BIT(HORN_DATA_SHIFT)
+
+#define EARTH_DATA_SHIFT 5
+#define EARTH_DATA_MASK BIT(EARTH_DATA_SHIFT)
+
+#define CHANGE_DATA_SHIFT 7
