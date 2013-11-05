@@ -1,25 +1,5 @@
 #include "AudioList.h"
 
-char* trimLeft(char* toTrim) {
-    while (!isgraph(*toTrim)) {
-        toTrim++;
-    }
-    return toTrim;
-}
-
-char* trimRight(char* toTrim) {
-    char* tmp = toTrim;
-    toTrim += strlen(toTrim);
-    while (!isgraph(*(--toTrim))) {
-        *toTrim = 0;
-    }
-    return tmp;
-}
-
-char* trim(char* toTrim) {
-    return trimLeft(trimRight(toTrim));
-}
-
 int AudioList::checkMediaFile(libvlc_media_t* mediaFile) {
     libvlc_media_parse(mediaFile);
     if (!libvlc_media_is_parsed(mediaFile)) {
@@ -47,8 +27,10 @@ AudioList::AudioList(const char* listFilePath) {
     char* title = new char[200];
     char* artist = new char[200];
     char* path = new char[200];
+    char* titleTrim, *artistTrim, *pathTrim;
     listFile = fopen(listFilePath, "r");
     if (listFile == NULL) {
+        printf("File read error %d", errno);
         throw "File not readable";
     }
 
@@ -85,14 +67,14 @@ AudioList::AudioList(const char* listFilePath) {
             printf("Hitindex %d is defined multiple times\n", hitIndex);
         } else {
             // and use all data to create a new element in list
-            title = trim(title);
-            artist = trim(artist);
-            path = getAbsolutePath(listFilePath, pathLen, trim(path));
-            libvlc_media_t* mediaFile = VLCInstance->newMediaFromPath(path);
+            titleTrim = trim(title);
+            artistTrim = trim(artist);
+            pathTrim = getAbsolutePath(listFilePath, pathLen, trim(path));
+            libvlc_media_t* mediaFile = VLCInstance->newMediaFromPath(pathTrim);
             if (!checkMediaFile(mediaFile)) {
-                printf("Invalid file, '%s'\n", path);
+                printf("Invalid file, '%s'\n", pathTrim);
             } else {
-                printf("Added hitje to the list, %d: '%s' %s' '%s'\n", hitIndex, title, artist, path);
+                printf("Added hitje to the list, %d: '%s' %s' '%s'\n", hitIndex, titleTrim, artistTrim, pathTrim);
                 hitjesList[hitIndex] = mediaFile;
             }
         }
@@ -105,6 +87,11 @@ AudioList::AudioList(const char* listFilePath) {
         } while (!feof(listFile) && hitIndex == -1);
     } while (!feof(listFile));
     fclose(listFile);
+
+    delete[] buffer;
+    delete[] title;
+    delete[] artist;
+    delete[] path;
 }
 
 AudioList::~AudioList() {

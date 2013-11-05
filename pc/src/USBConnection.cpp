@@ -7,7 +7,7 @@ USBConnection::USBConnection() {
     if (!usbDevice) {
         printf("unable to open device, usb input will be disabled\n");
         char* buf = new char[1024];
-        scanf("%s", buf);
+        getchar();
         delete[] buf;
     } else {
         hid_set_nonblocking(usbDevice, 1);

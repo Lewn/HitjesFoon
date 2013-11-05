@@ -1,9 +1,8 @@
 #ifndef VLC_H
 #define VLC_H
 
-#define DEFAULT_OUTPUT_DEVICE "waveout"
-#define PHONE_DEVICE "Headset (Sound Blaster Tactic(3 ($ffff,$ffff)"
-#define SPEAKER_DEVICE "Luidsprekers (High Definition A ($1,$ffff)"
+#define PHONE_DEVICE ""
+#define SPEAKER_DEVICE ""
 
 #include "vlc/vlc.h"
 #include <string.h>
@@ -14,12 +13,16 @@ class VLC {
 public:
     static VLC* getInstance();
     static void deleteInstance();
+    static void setPhoneDevice(const char* phoneDevice);
+    static void setSpeakerDevice(const char* speakerDevice);
 
     VLC();
     virtual ~VLC();
 
     const char* getDefaultPhoneOutput();
     const char* getDefaultSpeakerOutput();
+    const char* getDefaultPhoneDevice();
+    const char* getDefaultSpeakerDevice();
 
     libvlc_media_t* newMediaFromPath(const char* path);
     libvlc_media_list_t* newMediaList();
@@ -31,6 +34,8 @@ private:
     char* phoneOutput;
     char* speakerOutput;
 
+    static char* phoneDevice;
+    static char* speakerDevice;
     static VLC* instance;
 };
 

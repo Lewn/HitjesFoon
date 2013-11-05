@@ -2,6 +2,7 @@
 
 #include "AudioPlayer.h"
 #include "USBConnection.h"
+#include "Tools.h"
 
 //#ifdef _WIN32
 #include "conio.h"
@@ -9,14 +10,9 @@
 
 using namespace std;
 
-char* usbDataBuffer = new char[256];
 int consoleDataIndex = 0;
 char* consoleDataBuffer = new char[256];
 int consoleDataAvailable = 0;
-
-void readUSB() {
-
-}
 
 
 //#ifdef _WIN32
@@ -45,20 +41,35 @@ void playSong(int songIndex, AudioPlayer* player) {
 
 int main() {
     try {
-        char* hitjesListPath = new char[1024];
+        char* readBuf = new char[1024];
+        char* hitjesListFile = new char[1024];
         FILE* configFile = fopen("config.txt", "r");
         if (!configFile) {
             throw "Couldn't open config file";
         }
-        fgets(hitjesListPath, 1024, configFile);
+        // first read the hitjeslist config
+        fgets(hitjesListFile, 1024, configFile);
+
+        // read Phone audio device from input
+        if (fgets(readBuf, 1024, configFile) != NULL && strlen(readBuf)) {
+            VLC::setPhoneDevice(trim(readBuf));
+        }
+        // and the speaker device
+        if (fgets(readBuf, 1024, configFile) != NULL && strlen(readBuf)) {
+            VLC::setSpeakerDevice(trim(readBuf));
+        }
+
+        fclose(configFile);
+        delete[] readBuf;
 
         // instantiate usb and vlc, cause we will need them
         USBConnection connection;
         VLC::getInstance();
 
+
         // create the list with all hitjes from file
-        hitjesList = new AudioList(hitjesListPath);
-        delete[] hitjesListPath;
+        hitjesList = new AudioList(trim(hitjesListFile));
+        delete[] hitjesListFile;
 
         // create two players, so we can seamlessly swap between them
         AudioPlayer phoneAudioPlayer(AudioPlayer::PHONE, hitjesList);
@@ -112,9 +123,10 @@ int main() {
             }
         }
 
-        delete hitjesList;
         VLC::deleteInstance();
     } catch (const char* ex) {
         printf("\n\nERROR: %s\n", ex);
     }
+    delete hitjesList;
+    delete[] consoleDataBuffer;
 }

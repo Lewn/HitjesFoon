@@ -2,10 +2,10 @@
 #define AUDIOLIST_H
 
 #include "vlc/vlc.h"
-#include <string.h>
-#include <ctype.h>
+#include <cerrno>
 
 #include "VLC.h"
+#include "Tools.h"
 
 using namespace std;
 

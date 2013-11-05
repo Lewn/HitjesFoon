@@ -19,7 +19,7 @@ public:
 
     void setAudioDevice(AudioDevice device);
     void playAudio(int audioIndex);
-    void playAudio(int audioIndex, int time);
+    void playAudio(int audioIndex, float position);
     AudioPlayer* swapWith(AudioPlayer* other);
 protected:
     const char* curOutput;
@@ -30,7 +30,7 @@ protected:
     AudioList* audioList;
 
     int getAudioIndex();
-    int getAudioTime();
+    float getAudioPosition();
 private:
     libvlc_media_player_t *audioPlayer;
     int audioIndex;

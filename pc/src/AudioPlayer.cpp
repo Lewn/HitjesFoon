@@ -38,9 +38,9 @@ const char* AudioPlayer::audioOutputString(AudioDevice device) {
 const char* AudioPlayer::audioDeviceString(AudioDevice device) {
     switch (device) {
         case AudioPlayer::PHONE:
-            return PHONE_DEVICE;
+            return VLC::getInstance()->getDefaultPhoneDevice();
         case AudioPlayer::SPEAKER:
-            return SPEAKER_DEVICE;
+            return VLC::getInstance()->getDefaultSpeakerDevice();
     }
     return NULL;
 }
@@ -49,7 +49,9 @@ const char* AudioPlayer::audioDeviceString(AudioDevice device) {
 void AudioPlayer::setAudioDevice(AudioDevice device) {
     const char *deviceName = audioDeviceString(device);
     if (deviceName == NULL) {
-        throw "Invalid device specified";
+        //throw "Invalid device specified";
+        // NULL device means use default output for this one, don't need to set anything
+        return;
     }
     const char* output = audioOutputString(device);
     if (strcmp(output, curOutput)) {
@@ -82,7 +84,7 @@ void AudioPlayer::playAudio(int audioIndex) {
     playAudio(audioIndex, 0);
 }
 
-void AudioPlayer::playAudio(int audioIndex, int time) {
+void AudioPlayer::playAudio(int audioIndex, float position) {
     libvlc_media_player_stop(audioPlayer);
     libvlc_media_t* media = audioList->getAudio(audioIndex);
     if (!media) {
@@ -92,17 +94,17 @@ void AudioPlayer::playAudio(int audioIndex, int time) {
     this->audioIndex = audioIndex;
     libvlc_media_player_set_media(audioPlayer, media);
 	libvlc_media_player_play(audioPlayer);
-    if (time) {
-        libvlc_media_player_set_time(audioPlayer, time);
+    if (position) {
+        libvlc_media_player_set_position(audioPlayer, position);
     }
 }
 
 
 AudioPlayer* AudioPlayer::swapWith(AudioPlayer* other) {
     int audioIndex = other->getAudioIndex();
-    int time = other->getAudioTime();
-    other->playAudio(getAudioIndex(), getAudioTime() - 800);
-    playAudio(audioIndex, time - 800);
+    float position = other->getAudioPosition();
+    other->playAudio(getAudioIndex(), getAudioPosition());
+    playAudio(audioIndex, position);
     return other;
 }
 
@@ -110,9 +112,9 @@ int AudioPlayer::getAudioIndex() {
     return audioIndex;
 }
 
-int AudioPlayer::getAudioTime() {
+float AudioPlayer::getAudioPosition() {
     if (!libvlc_media_player_is_playing(audioPlayer)) {
         return 0;
     }
-    return (int)libvlc_media_player_get_time(audioPlayer);
+    return (float)libvlc_media_player_get_position(audioPlayer);
 }
