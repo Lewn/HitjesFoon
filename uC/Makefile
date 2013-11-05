@@ -41,9 +41,9 @@
 
 
 # MCU name
-MCU = atmega16a
+MCU = attiny45
 
-MCUPROGRAM = m16
+MCUPROGRAM = attiny45
 
 
 # Processor frequency.

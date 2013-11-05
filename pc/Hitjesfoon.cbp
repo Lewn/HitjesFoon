@@ -44,11 +44,13 @@
 		</Linker>
 		<Unit filename="include/AudioList.h" />
 		<Unit filename="include/AudioPlayer.h" />
+		<Unit filename="include/Tools.h" />
 		<Unit filename="include/USBConnection.h" />
 		<Unit filename="include/VLC.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/AudioList.cpp" />
 		<Unit filename="src/AudioPlayer.cpp" />
+		<Unit filename="src/Tools.cpp" />
 		<Unit filename="src/USBConnection.cpp" />
 		<Unit filename="src/VLC.cpp" />
 		<Extensions>

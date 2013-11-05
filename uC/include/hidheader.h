@@ -9,7 +9,7 @@ extern PROGMEM const char usbHidReportDescriptor[];
 /* A keypad :)
  *     . . . . X3 X2 X1 X0 .... 4 bit unsigned which key is pressed (10 = 0)
  */
-typedef struct{
+typedef struct {
     char    number;
 } report_t;
 

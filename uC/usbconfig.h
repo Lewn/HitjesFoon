@@ -25,15 +25,30 @@ section at the end of this file).
 
 /* ---------------------------- Hardware Config ---------------------------- */
 
+#if defined(__AVR_ATtiny45__)
+#define USB_CFG_IOPORTNAME      B
+#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
 #define USB_CFG_IOPORTNAME      D
+#endif
+
+
 /* This is the port where the USB bus is connected. When you configure it to
  * "B", the registers PORTB, PINB and DDRB will be used.
  */
+#if defined(__AVR_ATtiny45__)
+#define USB_CFG_DMINUS_BIT      6
+#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
 #define USB_CFG_DMINUS_BIT      4
+#endif
+
 /* This is the bit number in USB_CFG_IOPORT where the USB D- line is connected.
  * This may be any bit in the port.
  */
+#if defined(__AVR_ATtiny45__)
+#define USB_CFG_DPLUS_BIT       7
+#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
 #define USB_CFG_DPLUS_BIT       2
+#endif
 /* This is the bit number in USB_CFG_IOPORT where the USB D+ line is connected.
  * This may be any bit in the port. Please note that D+ must also be connected
  * to interrupt pin INT0! [You can also use other interrupts, see section
