@@ -50,20 +50,20 @@ VLC* VLC::getInstance() {
 
 void VLC::deleteInstance() {
     if (instance != NULL) {
-        delete instance;
+        SAFE_DELETE(instance);
     }
-    delete[] phoneDevice;
-    delete[] speakerDevice;
+    SAFE_DELETE_ARRAY(phoneDevice);
+    SAFE_DELETE_ARRAY(speakerDevice);
 }
 
 void VLC::setPhoneDevice(const char* phoneDevice) {
-    delete[] VLC::phoneDevice;
+    SAFE_DELETE_ARRAY(VLC::phoneDevice);
     VLC::phoneDevice = new char[strlen(phoneDevice)];
     strcpy(VLC::phoneDevice, phoneDevice);
 }
 
 void VLC::setSpeakerDevice(const char* speakerDevice) {
-    delete[] VLC::speakerDevice;
+    SAFE_DELETE_ARRAY(VLC::speakerDevice);
     VLC::speakerDevice = new char[strlen(speakerDevice)];
     strcpy(VLC::speakerDevice, speakerDevice);
 }
@@ -85,21 +85,22 @@ VLC::VLC() {
         audioDevices = libvlc_audio_output_device_list_get(libvlcInstance, curAudioOutput->psz_name);
         curAudioDevice = audioDevices;
         while(curAudioDevice) {
-            printf("  -Device found:");
+            printf("-Device found:");
             if(phoneDevice && strcmp(curAudioDevice->psz_device, phoneDevice) == 0) {
                 printf(" --- Phone device");
                 int strLen = strlen(curAudioOutput->psz_name);
                 phoneOutput = new char[strLen];
                 strcpy(phoneOutput, curAudioOutput->psz_name);
-            } else if (speakerDevice && strcmp(curAudioDevice->psz_device, speakerDevice) == 0) {
+            }
+            if (speakerDevice && strcmp(curAudioDevice->psz_device, speakerDevice) == 0) {
                 printf(" --- Speaker device");
                 int strLen = strlen(curAudioOutput->psz_name);
                 speakerOutput = new char[strLen];
                 strcpy(speakerOutput, curAudioOutput->psz_name);
             }
             printf("\n");
-            printf("    Device:      %s\n", curAudioDevice->psz_device);
-            printf("    Description: %s\n", curAudioDevice->psz_description);
+            printf("  Device:      %s\n", curAudioDevice->psz_device);
+            printf("  Description: %s\n", curAudioDevice->psz_description);
             curAudioDevice = curAudioDevice->p_next;
         }
         libvlc_audio_output_device_list_release(audioDevices);
@@ -115,6 +116,6 @@ VLC::VLC() {
 
 VLC::~VLC() {
     libvlc_release(libvlcInstance);
-    delete[] phoneOutput;
-    delete[] speakerOutput;
+    SAFE_DELETE_ARRAY(phoneOutput);
+    SAFE_DELETE_ARRAY(speakerOutput);
 }

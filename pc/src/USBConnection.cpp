@@ -6,9 +6,7 @@ USBConnection::USBConnection() {
     usbDevice = hid_open(0x16c0, 0x27d9, L"leon.loopik.nl:USBPhone");
     if (!usbDevice) {
         printf("unable to open device, usb input will be disabled\n");
-        char* buf = new char[1024];
         getchar();
-        delete[] buf;
     } else {
         hid_set_nonblocking(usbDevice, 1);
 
@@ -21,7 +19,7 @@ USBConnection::USBConnection() {
             printf("Unable to write() (2)\n");
         }
 
-        delete[] buf;
+        SAFE_DELETE_ARRAY(buf);
 
         reset();
     }
@@ -35,64 +33,62 @@ USBConnection::~USBConnection() {
 }
 
 void USBConnection::reset() {
-    dialNumber = 0;
-    dialTimes = 0;
+    hornDown = 1;
+    earthDown = 0;
 }
 
 int USBConnection::read() {
-    int returnVal = 0;
     if (usbDevice) {
         unsigned char* buf = new unsigned char[2];
-        memset(buf, 0, sizeof(buf));
+        memset(buf, 0, 2 * sizeof(buf));
         int res = hid_read(usbDevice, buf, sizeof(buf));   // timeout of 1 second, should be about the max dial time
         if (res < 0) {
-            delete[] buf;
+            SAFE_DELETE_ARRAY(buf);
             throw "Read usb exception";
         }
 
         if (buf[0] & DIAL_DATA_MASK) {
             // sent a number
-            int num = (((buf[0] >> DIAL_DATA_SHIFT) & DIAL_DATA_MASK) % 10);
-            printf("\nReceived %d\n", num);
-            dialNumber = dialNumber * 10 + num;
-            if (++dialTimes == 3) {
-                returnVal = 1;
-            }
+            return ((buf[0] >> DIAL_DATA_SHIFT) & DIAL_DATA_MASK) % 10;
         }
         if (buf[0] & HORN_DATA_MASK) {
             // horn picked up
-            if (hornDown) {
-                printf("Horn picked up\n");
-                hornDown = 0;
-                returnVal = 1;
+            if (!hornDown) {
+                hornDown = 1;
+                return INPUT_HORN_DOWN;
             }
         } else {
             // horn down
-            if (!hornDown) {
-                printf("Horn is down\n");
+            if (hornDown) {
                 hornDown = 1;
-                returnVal = 1;
+                return INPUT_HORN_UP;
             }
         }
         if (buf[0] & EARTH_DATA_MASK) {
-            // earth button pressed, reset
-            reset();
+            // earth button down
+            if (earthDown) {
+                earthDown = 0;
+                return INPUT_EARTH_UP;
+            }
+        }else {
+            // earth button up
+            if (!earthDown) {
+                earthDown = 1;
+                return INPUT_EARTH_DOWN;
+            }
         }
-        delete[] buf;
+        SAFE_DELETE_ARRAY(buf);
     }
-    return returnVal;
-}
-
-int USBConnection::getDialNumber() {
-    int tmp = dialNumber;
-    reset();
-    return tmp;
+    return INPUT_NONE;
 }
 
 int USBConnection::isHornDown() {
     return hornDown;
 }
 
+int USBConnection::isEarthDown() {
+    return earthDown;
+}
 
 
 void USBConnection::printUSB() {

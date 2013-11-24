@@ -1,27 +1,18 @@
 #include "AudioPlayer.h"
 
 
-
-// create event manager
-//libvlc_event_manager_t* eventManager = libvcl_media_player_event_manager(audioPlayer);
-// listen for media end event
-//libvlc_event_attach(eventManager, libvlc_event_e::libvlc_MediaDiscovererEnded);
-
-
 AudioPlayer::AudioPlayer(AudioDevice device, AudioList* audioList) {
     this->audioList = audioList;
     VLC* VLCInstance = VLC::getInstance();
     //Load the VLC engine
     audioPlayer = VLCInstance->newMediaPlayer();
 
-    // start device at phone
-    curOutput = "";
+    curOutput = NULL;
     setAudioDevice(device);
     audioIndex = 0;
 }
 
 AudioPlayer::~AudioPlayer() {
-
 }
 
 
@@ -54,7 +45,7 @@ void AudioPlayer::setAudioDevice(AudioDevice device) {
         return;
     }
     const char* output = audioOutputString(device);
-    if (strcmp(output, curOutput)) {
+    if (!curOutput || strcmp(output, curOutput)) {
         // we need to swap output too, besides device
         int playTime = -1;
         if (libvlc_media_player_is_playing(audioPlayer)) {
@@ -74,29 +65,42 @@ void AudioPlayer::setAudioDevice(AudioDevice device) {
             libvlc_media_player_set_time(audioPlayer, playTime);
             libvlc_media_player_play(audioPlayer);
         }
-    }else {
+    } else {
         // we only need to swap device, this is simple
         libvlc_audio_output_device_set(audioPlayer, output, deviceName);
     }
 }
 
-void AudioPlayer::playAudio(int audioIndex) {
-    playAudio(audioIndex, 0);
+bool AudioPlayer::playAudio(int audioIndex) {
+    return playAudio(audioIndex, 0);
 }
 
-void AudioPlayer::playAudio(int audioIndex, float position) {
-    libvlc_media_player_stop(audioPlayer);
-    libvlc_media_t* media = audioList->getAudio(audioIndex);
-    if (!media) {
-        this->audioIndex = 0;
-        return;
-    }
+bool AudioPlayer::playAudio(int audioIndex, float position) {
     this->audioIndex = audioIndex;
+    libvlc_media_t* media = audioList->getAudio(audioIndex);
+    return playAudio(media, position);
+}
+
+bool AudioPlayer::playAudio(libvlc_media_t* media) {
+    return playAudio(media, 0);
+}
+
+bool AudioPlayer::playAudio(libvlc_media_t* media, float position) {
+    stop();
+    if (!media) {
+        return false;
+    }
     libvlc_media_player_set_media(audioPlayer, media);
-	libvlc_media_player_play(audioPlayer);
+    libvlc_media_player_play(audioPlayer);
     if (position) {
         libvlc_media_player_set_position(audioPlayer, position);
     }
+    return true;
+}
+
+void AudioPlayer::stop() {
+    libvlc_media_player_stop(audioPlayer);
+    audioIndex = 0;
 }
 
 
@@ -108,13 +112,44 @@ AudioPlayer* AudioPlayer::swapWith(AudioPlayer* other) {
     return other;
 }
 
+bool AudioPlayer::isPlaying() {
+    return libvlc_media_player_is_playing(audioPlayer);
+}
+
 int AudioPlayer::getAudioIndex() {
     return audioIndex;
 }
 
 float AudioPlayer::getAudioPosition() {
-    if (!libvlc_media_player_is_playing(audioPlayer)) {
+    if (!isPlaying()) {
         return 0;
     }
     return (float)libvlc_media_player_get_position(audioPlayer);
+}
+
+
+void AudioPlayer::attachEventListener(AudioPlayerEventListener* listener) {
+    if (listeners.empty()) {
+        libvlc_event_manager_t* eventManager = libvlc_media_player_event_manager(audioPlayer);
+        libvlc_event_attach(eventManager, libvlc_MediaPlayerEndReached, callback, this);
+    }
+    printf("Attached a listener\n");
+    listeners.push_back(listener);
+}
+
+void AudioPlayer::callback(const libvlc_event_t* evt, void* userData) {
+    switch (evt->type) {
+        case libvlc_MediaPlayerEndReached:
+            printf("\n\nSong ended");
+            ((AudioPlayer*)userData)->notificate(AudioPlayerEventListener::DONE);
+            break;
+        default:
+            printf("\n\nUnkown event triggered\n");
+    }
+}
+void AudioPlayer::notificate(AudioPlayerEventListener::Event eventType) {
+    printf("\nNotificating %d\n", (int)listeners.size());
+    for (AudioPlayerEventListener * listener : listeners) {
+        listener->audioPlayerEvent(eventType, this);
+    }
 }

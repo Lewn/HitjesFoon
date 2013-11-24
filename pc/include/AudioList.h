@@ -1,11 +1,15 @@
 #ifndef AUDIOLIST_H
 #define AUDIOLIST_H
 
+class AudioList;
+
 #include "vlc/vlc.h"
 #include <cerrno>
 
 #include "VLC.h"
 #include "Tools.h"
+#include "InputProcessor.h"
+#include "YoutubeAPI.h"
 
 using namespace std;
 
@@ -18,9 +22,14 @@ public:
 
 protected:
     libvlc_media_t** hitjesList;
+    bool downloadYoutube;
+    int pathLen;
+    char* listFilePath;
 
     int checkMediaFile(libvlc_media_t* mediaFile);
-    char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filename);
+
+    bool parseBuf(char* buffer, int *hitIndex, char *title, char *artist, char *path, string &fileOutput);
+    char* getVideoFile(int hitIndex, char *title, char *artist);
 
 private:
 };

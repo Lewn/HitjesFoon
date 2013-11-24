@@ -5,6 +5,7 @@
 #define SPEAKER_DEVICE ""
 
 #include "vlc/vlc.h"
+#include "Tools.h"
 #include <string.h>
 
 using namespace std;

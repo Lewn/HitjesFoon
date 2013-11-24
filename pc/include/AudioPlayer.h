@@ -1,11 +1,19 @@
 #ifndef AUDIOPLAYER_H
 #define AUDIOPLAYER_H
 
+class AudioPlayer;
+
 #include "vlc/vlc.h"
 #include <string.h>
+#include <list>
+#include <vector>
 
 #include "VLC.h"
 #include "AudioList.h"
+#include "AudioPlayerEventListener.h"
+#include "Tools.h"
+
+using namespace std;
 
 class AudioPlayer {
 public:
@@ -18,19 +26,29 @@ public:
     virtual ~AudioPlayer();
 
     void setAudioDevice(AudioDevice device);
-    void playAudio(int audioIndex);
-    void playAudio(int audioIndex, float position);
+    bool playAudio(int audioIndex);
+    bool playAudio(int audioIndex, float position);
+    bool playAudio(libvlc_media_t* media);
+    bool playAudio(libvlc_media_t* media, float position);
+    void stop();
     AudioPlayer* swapWith(AudioPlayer* other);
+
+    void attachEventListener(AudioPlayerEventListener* listener);
+
+    bool isPlaying();
+    int getAudioIndex();
+    float getAudioPosition();
 protected:
     const char* curOutput;
+    list<AudioPlayerEventListener*> listeners;
 
     static const char* audioOutputString(AudioDevice device);
     const char* audioDeviceString(AudioDevice device);
 
     AudioList* audioList;
 
-    int getAudioIndex();
-    float getAudioPosition();
+    static void callback (const libvlc_event_t* evt, void* userData);
+    void notificate(AudioPlayerEventListener::Event eventType);
 private:
     libvlc_media_player_t *audioPlayer;
     int audioIndex;

@@ -32,27 +32,66 @@
 			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add option="-pthread" />
+			<Add option="-DCURL_STATICLIB" />
 			<Add directory="vlc/include" />
 			<Add directory="hidapi/include" />
 			<Add directory="include" />
+			<Add directory="curl/include" />
+			<Add directory="jsoncpp/include" />
+			<Add directory="ffmpeg/include" />
 		</Compiler>
 		<Linker>
-			<Add library="vlc\lib\libvlc.a" />
+			<Add option="-static" />
+			<Add option='-L&quot;curl\lib&quot;' />
+			<Add option='-L&quot;jsoncpp\lib&quot;' />
+			<Add option='-L&quot;ffmpeg\lib&quot;' />
 			<Add library="hidapi\lib\libhidapi.dll.a" />
+			<Add library="vlc\lib\libvlc.a" />
 			<Add library="setupapi" />
+			<Add library="curl" />
+			<Add library="rtmp" />
+			<Add library="winmm" />
+			<Add library="ssh2" />
+			<Add library="ssl" />
+			<Add library="crypto" />
+			<Add library="gdi32" />
+			<Add library="crypt32" />
+			<Add library="z" />
+			<Add library="idn" />
+			<Add library="wldap32" />
+			<Add library="ws2_32" />
+			<Add library="jsoncpp" />
+			<Add library="avformat" />
+			<Add library="avcodec" />
+			<Add library="swscale" />
+			<Add library="avutil" />
 		</Linker>
 		<Unit filename="include/AudioList.h" />
+		<Unit filename="include/AudioMenu.h" />
+		<Unit filename="include/AudioMenuItem.h" />
 		<Unit filename="include/AudioPlayer.h" />
+		<Unit filename="include/AudioPlayerEventListener.h" />
+		<Unit filename="include/ConfigAudioMenu.h" />
+		<Unit filename="include/HTTPTransfer.h" />
+		<Unit filename="include/InputProcessor.h" />
+		<Unit filename="include/JsonParser.h" />
 		<Unit filename="include/Tools.h" />
 		<Unit filename="include/USBConnection.h" />
 		<Unit filename="include/VLC.h" />
+		<Unit filename="include/YoutubeAPI.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/AudioList.cpp" />
+		<Unit filename="src/AudioMenu.cpp" />
+		<Unit filename="src/AudioMenuItem.cpp" />
 		<Unit filename="src/AudioPlayer.cpp" />
+		<Unit filename="src/ConfigAudioMenu.cpp" />
+		<Unit filename="src/HTTPTransfer.cpp" />
+		<Unit filename="src/InputProcessor.cpp" />
+		<Unit filename="src/JsonParser.cpp" />
 		<Unit filename="src/Tools.cpp" />
 		<Unit filename="src/USBConnection.cpp" />
 		<Unit filename="src/VLC.cpp" />
+		<Unit filename="src/YoutubeAPI.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
