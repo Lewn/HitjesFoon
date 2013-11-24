@@ -62,7 +62,7 @@ ISR(TIMER1_OVF_vect, ISR_NOBLOCK) {
     // increment the overflow count
     if (++overflowCount == 0) {
         // don't let the overflow count overflow itself
-        overflowCount = -1;
+        overflowCount--;
     }
 }
 #endif
@@ -97,7 +97,7 @@ void setupDial(void) {
     // And compare for exact values
     SETBITS(TIMSK, BIT(TOIE1) | BIT(OCIE1A));
     // use the rest of MAX_CLOCK made 8 bits smaller
-    OCR1A = (MAX_CLOCK >> 8) & 0xff;
+    OCR1A = MAX_CLOCK & 0xff;
 #elif defined(_MEGA_)
     // Setup timer compare interupt
     SETBIT(TIMSK, OCIE1A);
