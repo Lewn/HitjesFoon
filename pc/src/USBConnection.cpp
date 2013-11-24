@@ -17,6 +17,7 @@ USBConnection::USBConnection() {
         int res = hid_write(usbDevice, buf, 17);
         if (res < 0) {
             printf("Unable to write() (2)\n");
+            //usbDevice = NULL;
         }
 
         SAFE_DELETE_ARRAY(buf);
@@ -41,7 +42,7 @@ int USBConnection::read() {
     if (usbDevice) {
         unsigned char* buf = new unsigned char[2];
         memset(buf, 0, 2 * sizeof(buf));
-        int res = hid_read(usbDevice, buf, sizeof(buf));   // timeout of 1 second, should be about the max dial time
+        int res = hid_read(usbDevice, buf, sizeof(buf));
         if (res < 0) {
             SAFE_DELETE_ARRAY(buf);
             throw "Read usb exception";
@@ -60,7 +61,7 @@ int USBConnection::read() {
         } else {
             // horn down
             if (hornDown) {
-                hornDown = 1;
+                hornDown = 0;
                 return INPUT_HORN_UP;
             }
         }
