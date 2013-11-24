@@ -137,9 +137,10 @@ bool AudioList::parseBuf(char* buffer, int *hitIndex, char *title, char *artist,
             fileOutput += '\t';
             fileOutput += trim(path);
             fileOutput += '\n';
+        } else {
+            fileOutput += buffer;
         }
-    }
-    if (res != 4) {
+    } else {
         fileOutput += buffer;
         return false;
     }
