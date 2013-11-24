@@ -10,10 +10,10 @@ USB_PUBLIC uchar usbFunctionSetup(uchar data[8]) {
     if((rq->bmRequestType & USBRQ_TYPE_MASK) == USBRQ_TYPE_CLASS) {
         if(rq->bRequest == USBRQ_HID_GET_REPORT) {
             // wValue: ReportType (highbyte), ReportID (lowbyte)
-            usbMsgPtr = (void *)&reportBuffer; // we only have this one
+            usbMsgPtr = (usbMsgPtr_t)&reportBuffer; // we only have this one
             return sizeof(reportBuffer);
         } else if(rq->bRequest == USBRQ_HID_GET_IDLE) {
-            usbMsgPtr = &idleRate;
+            usbMsgPtr = (usbMsgPtr_t)&idleRate;
             return 1;
         } else if(rq->bRequest == USBRQ_HID_SET_IDLE) {
             idleRate = rq->wValue.bytes[1];
