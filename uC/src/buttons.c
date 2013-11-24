@@ -1,8 +1,4 @@
-
 #include "buttons.h"
-#include "macros.h"
-
-#include "display.h"
 
 void setupButtons(void) {
     // enable port input

@@ -1,7 +1,7 @@
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
 
-#if defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
+#include "common.h"
 
 #define DISPLAY_PORT_LETTER B
 
@@ -20,7 +20,5 @@ void setupDisplay(void);
 #define dispDot(x)
 #define dispNum(x)
 #define setupDisplay(x)
-
-#endif
 
 #endif

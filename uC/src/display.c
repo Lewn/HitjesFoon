@@ -1,7 +1,5 @@
+#if defined(_MEGA_)
 #include "display.h"
-
-#if defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
-#include "macros.h"
 
 void dispDot(uint8_t dot) {
     if (!dot) {

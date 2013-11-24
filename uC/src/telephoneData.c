@@ -1,5 +1,4 @@
 #include "telephoneData.h"
-#include "macros.h"
 
 #define dataChanged() SETBIT(tData, CHANGE_DATA_SHIFT)
 

@@ -1,3 +1,4 @@
+#if defined(_MEGA_)
 #include "7segdecode.h"
 
 PROGMEM const uint8_t sevensegdigits[] = {
@@ -19,3 +20,4 @@ PROGMEM const uint8_t sevensegdigits[] = {
     0b10001110,      /* F */
     0b10110110           /* = */
 };
+#endif

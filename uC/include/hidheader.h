@@ -1,6 +1,8 @@
 #ifndef __HIDHEADER_H__
 #define __HIDHEADER_H__
 
+#include "common.h"
+
 #include <avr/pgmspace.h>
 #include "usbdrv/usbdrv.h"
 

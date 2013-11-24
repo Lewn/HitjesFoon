@@ -1,15 +1,17 @@
 #ifndef __BUTTONS_H__
 #define __BUTTONS_H__
 
+#include "common.h"
+
 #include <avr/io.h>
 
-#if defined(__AVR_ATtiny45__)
+#if defined(_TINY_)
 
 #define BUTTONS_PORT_LETTER B
 #define HORN_PIN_NR PB3
 #define EARTH_PIN_NR PB4
 
-#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
+#elif defined(_MEGA_)
 
 #define BUTTONS_PORT_LETTER D
 #define HORN_PIN_NR PD5

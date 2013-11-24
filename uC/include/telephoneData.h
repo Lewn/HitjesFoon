@@ -1,6 +1,8 @@
 #ifndef __TELEPHONE_DATA_H__
 #define __TELEPHONE_DATA_H__
 
+#include "common.h"
+
 #include "../telephoneProtocol.h"
 
 #include <stdint.h>

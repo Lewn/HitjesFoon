@@ -1,15 +1,18 @@
 #include "timer.h"
-#include "macros.h"
 
+#if defined(_TINY_)
+uint8_t readTimer(void) {
+#elif defined(_MEGA_)
 uint16_t readTimer(void) {
+#endif
     return TCNT1;
 }
 
 void stopTimer(void) {
     //stop timer
-#if defined(__AVR_ATtiny45__)
+#if defined(_TINY_)
     TCCR1 = 0;
-#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
+#elif defined(_MEGA_)
     TCCR1B = 0;
 #endif
     // set it to 0
@@ -18,9 +21,9 @@ void stopTimer(void) {
 
 void restartTimer(void) {
     stopTimer();
-#if defined(__AVR_ATtiny45__)
+#if defined(_TINY_)
     SETBITS(TCCR1, BIT(CS12) | BIT(CS10)); // start timer at 12 MHZ / 1024
-#elif defined(__AVR_ATmega16A__) || defined(__AVR_ATmega16__)
+#elif defined(_MEGA_)
     SETBITS(TCCR1B, BIT(CS12) | BIT(CS10)); // start timer at 12 MHZ / 1024
 #endif
 }
