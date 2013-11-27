@@ -21,8 +21,11 @@ void stopTimer(void) {
 
 void restartTimer(void) {
     stopTimer();
+    /**
+     * @todo prescaler definieren
+     */
 #if defined(_TINY_)
-    SETBITS(TCCR1, BIT(CS12) | BIT(CS10)); // start timer at 12 MHZ / 1024
+    SETBITS(TCCR1, BIT(CS13) | BIT(CS12) | BIT(CS11)); // start timer at 16.5 MHZ / 8192
 #elif defined(_MEGA_)
     SETBITS(TCCR1B, BIT(CS12) | BIT(CS10)); // start timer at 12 MHZ / 1024
 #endif

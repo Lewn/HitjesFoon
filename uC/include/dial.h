@@ -5,8 +5,23 @@
 
 #include <avr/io.h>
 
-#define MAX_CLOCK 1300
-#define MIN_CLOCK 1000
+#if defined(_TINY_)
+#define MAX_CLOCK (F_CPU / 8  / 8192)    //Hz
+#define MIN_CLOCK (F_CPU / 12 / 8192)    //Hz
+
+#if MAX_CLOCK > 0xFF
+    #error "MAX_CLOCK IS DEFINED TOO HIGH"
+#endif
+
+#elif defined(_MEGA_)
+#define MAX_CLOCK (F_CPU / 8  / 1024)    //Hz
+#define MIN_CLOCK (F_CPU / 12 / 1024)    //Hz
+#endif
+
+
+#if MAX_CLOCK < MIN_CLOCK
+    #error "MAX_CLOCK should be higher than MIN_CLOCK"
+#endif
 
 // MUST BE INT1 FOR INTERRUPTS
 #if defined(_TINY_)
@@ -36,10 +51,7 @@
 #include "usb.h"
 #include "timer.h"
 
-uint8_t tick;
-#if defined(_TINY_)
-uint8_t overflowCount;
-#endif
+volatile uint8_t tick;
 
 void checkDial(void);
 uint8_t dialEnd(void);

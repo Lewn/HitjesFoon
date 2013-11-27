@@ -40,45 +40,44 @@ void USBConnection::reset() {
 
 int USBConnection::read() {
     if (usbDevice) {
-        unsigned char* buf = new unsigned char[2];
+        unsigned char buf[2];
         memset(buf, 0, 2 * sizeof(buf));
         int res = hid_read(usbDevice, buf, sizeof(buf));
         if (res < 0) {
-            SAFE_DELETE_ARRAY(buf);
             throw "Read usb exception";
         }
-
-        if (buf[0] & DIAL_DATA_MASK) {
-            // sent a number
-            return ((buf[0] >> DIAL_DATA_SHIFT) & DIAL_DATA_MASK) % 10;
+        if (res) {
+            if (buf[0] & DIAL_DATA_MASK) {
+                // sent a number
+                return ((buf[0] >> DIAL_DATA_SHIFT) & DIAL_DATA_MASK) % 10;
+            }
+            if (buf[0] & HORN_DATA_MASK) {
+                // horn picked up
+                if (hornDown) {
+                    hornDown = 0;
+                    return INPUT_HORN_UP;
+                }
+            } else {
+                // horn down
+                if (!hornDown) {
+                    hornDown = 1;
+                    return INPUT_HORN_DOWN;
+                }
+            }
+            if (buf[0] & EARTH_DATA_MASK) {
+                // earth button down
+                if (earthDown) {
+                    earthDown = 0;
+                    return INPUT_EARTH_UP;
+                }
+            } else {
+                // earth button up
+                if (!earthDown) {
+                    earthDown = 1;
+                    return INPUT_EARTH_DOWN;
+                }
+            }
         }
-        if (buf[0] & HORN_DATA_MASK) {
-            // horn picked up
-            if (!hornDown) {
-                hornDown = 1;
-                return INPUT_HORN_DOWN;
-            }
-        } else {
-            // horn down
-            if (hornDown) {
-                hornDown = 0;
-                return INPUT_HORN_UP;
-            }
-        }
-        if (buf[0] & EARTH_DATA_MASK) {
-            // earth button down
-            if (earthDown) {
-                earthDown = 0;
-                return INPUT_EARTH_UP;
-            }
-        }else {
-            // earth button up
-            if (!earthDown) {
-                earthDown = 1;
-                return INPUT_EARTH_DOWN;
-            }
-        }
-        SAFE_DELETE_ARRAY(buf);
     }
     return INPUT_NONE;
 }

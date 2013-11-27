@@ -12,7 +12,8 @@
 void hadUsbReset() {
 	calibrate();
 }
-
+#elif defined(_MEGA_)
+#include "display.h"
 #endif
 
 int main(void) {

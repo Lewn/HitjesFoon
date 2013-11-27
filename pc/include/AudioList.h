@@ -1,6 +1,8 @@
 #ifndef AUDIOLIST_H
 #define AUDIOLIST_H
 
+#define DEFAULT_DOWNLOAD 5
+
 class AudioList;
 
 #include "vlc/vlc.h"
@@ -22,7 +24,7 @@ public:
 
 protected:
     libvlc_media_t** hitjesList;
-    bool downloadYoutube;
+    int toDownload;
     int pathLen;
     char* listFilePath;
 

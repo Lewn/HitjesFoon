@@ -1,5 +1,5 @@
-#if defined(_MEGA_)
 #include "display.h"
+#if defined(_MEGA_)
 
 void dispDot(uint8_t dot) {
     if (!dot) {

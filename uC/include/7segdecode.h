@@ -3,8 +3,12 @@
 
 #include "common.h"
 
+#if defined(_MEGA_)
+
 #include <avr/pgmspace.h>
 
 extern PROGMEM const uint8_t sevensegdigits[];
+
+#endif
 
 #endif

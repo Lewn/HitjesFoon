@@ -238,13 +238,12 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
     if (highestUrl) {
         printf("Best url found: \n%s\n", highestUrl);
         fileName = downloadEncodedUrl(highestUrl, titleStart);
-        printf("Test1\n");
         SAFE_DELETE_ARRAY(highestUrl);
+        printf("deleted1\n");
     }
-    printf("Test2\n");
 
     SAFE_DELETE_ARRAY(decoded);
-    printf("Test3\n");
+    printf("deleted2\n");
 
     return fileName;
 }

@@ -76,9 +76,10 @@ bool AudioPlayer::playAudio(int audioIndex) {
 }
 
 bool AudioPlayer::playAudio(int audioIndex, float position) {
-    this->audioIndex = audioIndex;
     libvlc_media_t* media = audioList->getAudio(audioIndex);
-    return playAudio(media, position);
+    bool success = playAudio(media, position);
+    this->audioIndex = audioIndex;
+    return success;
 }
 
 bool AudioPlayer::playAudio(libvlc_media_t* media) {

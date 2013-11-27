@@ -1,5 +1,5 @@
-#if defined(_MEGA_)
 #include "7segdecode.h"
+#if defined(_MEGA_)
 
 PROGMEM const uint8_t sevensegdigits[] = {
     0b11000000,      /* 0 */

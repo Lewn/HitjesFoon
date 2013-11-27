@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#if defined(_MEGA_)
+
 #define DISPLAY_PORT_LETTER B
 
 #define DISPLAY_PORT (GETPORT(DISPLAY_PORT_LETTER))
@@ -20,5 +22,7 @@ void setupDisplay(void);
 #define dispDot(x)
 #define dispNum(x)
 #define setupDisplay(x)
+
+#endif
 
 #endif

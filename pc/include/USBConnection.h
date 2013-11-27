@@ -6,8 +6,8 @@
 #include "../../telephoneProtocol.h"
 #include <stdio.h>
 #include <memory.h>
-#include "InputProcessor.h"
 #include "Tools.h"
+#include "InputProcessor.h"
 
 using namespace std;
 
@@ -18,8 +18,6 @@ public:
 
     void reset();
     int read();
-    int dialNumberReady();
-    int getDialNumber();
 
     int isHornDown();
     int isEarthDown();

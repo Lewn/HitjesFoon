@@ -212,36 +212,39 @@ void InputProcessor::setHornDown(bool down) {
 }
 
 void InputProcessor::setOutput(bool phone) {
-    if (phone) {
-    } else {
-        if (phoneOutput) {
-            int audioIndex;
-            switch (processType) {
-                case PROCESS_LINEAR:
-                    // get song playing at phoneAudioPlayer and list it for speakerAudioPlayer
-                    audioIndex = phoneAudioPlayer->getAudioIndex();
-                    if (audioIndex) {
-                        printf("\nQueued hitje %d for speaker that was playing on phone", audioIndex);
-                        hitjesQueue.push_back(audioIndex);
-                        phoneAudioPlayer->stop();
+    switch(processType) {
+        case PROCESS_SWAP:
+            // swap the output directly between the two at press
+            printf("\nSwapped phone and speaker output");
+            phoneAudioPlayer->swapWith(speakerAudioPlayer);
+            break;
+        default:
+            if (phone) {
+            } else {
+                if (phoneOutput) {
+                    int audioIndex;
+                    switch (processType) {
+                        case PROCESS_LINEAR:
+                            // get song playing at phoneAudioPlayer and list it for speakerAudioPlayer
+                            audioIndex = phoneAudioPlayer->getAudioIndex();
+                            if (audioIndex) {
+                                printf("\nQueued hitje %d for speaker that was playing on phone", audioIndex);
+                                hitjesQueue.push_back(audioIndex);
+                                phoneAudioPlayer->stop();
+                            }
+                            break;
+                        case PROCESS_DIRECT:
+                            // get song playing at phoneAudioPlayer and play it directly at speakerAudioPlayer
+                            audioIndex = phoneAudioPlayer->getAudioIndex();
+                            if (audioIndex) {
+                                printf("\nPlaying hitje %d at speaker that was playing on phone", audioIndex);
+                                speakerAudioPlayer->playAudio(audioIndex);
+                                phoneAudioPlayer->stop();
+                            }
+                            break;
                     }
-                    break;
-                case PROCESS_DIRECT:
-                    // get song playing at phoneAudioPlayer and play it directly at speakerAudioPlayer
-                    audioIndex = phoneAudioPlayer->getAudioIndex();
-                    if (audioIndex) {
-                        printf("\nPlaying hitje %d at speaker that was playing on phone", audioIndex);
-                        speakerAudioPlayer->playAudio(audioIndex);
-                        phoneAudioPlayer->stop();
-                    }
-                    break;
-                case PROCESS_SWAP:
-                    // swap the output directly between the two at press
-                    printf("\nSwapped phone and speaker output");
-                    phoneAudioPlayer->swapWith(speakerAudioPlayer);
-                    break;
+                }
             }
-        }
     }
     if (phone != phoneOutput) {
         requestInput();

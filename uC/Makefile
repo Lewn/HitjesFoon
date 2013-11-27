@@ -41,10 +41,14 @@
 
 
 # MCU name
+#MCU = atmega16a
 MCU = attiny85
 
+ifeq ($(MCU),atmega16a)
+MCUPROGRAM = atmega16
+else
 MCUPROGRAM = $(MCU)
-
+endif
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the 
@@ -64,8 +68,11 @@ MCUPROGRAM = $(MCU)
 #         F_CPU = 16000000
 #         F_CPU = 18432000
 #         F_CPU = 20000000
+ifeq ($(MCU),atmega16)
 F_CPU = 12000000
-
+else
+F_CPU = 16500000
+endif
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
