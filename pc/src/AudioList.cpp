@@ -37,8 +37,8 @@ AudioList::AudioList(const char* listFilePath) {
 
         printf("\nCreating the hitjeslist\n\n");
         // Create a new list with 999 hitjes
-        hitjesList = new libvlc_media_t*[999];
-        memset(hitjesList, 0, 999 * sizeof(hitjesList));
+        //hitjesList = new libvlc_media_t*[999];
+        //memset(hitjesList, 0, 999 * sizeof(hitjesList));
 
         // loop through all lines without hitjes
         do {
@@ -53,7 +53,7 @@ AudioList::AudioList(const char* listFilePath) {
         } while(parseBuf(buffer, &hitIndex, title, artist, path, fileOutput));
         printf("\nSkipped all non hitjes lines\n\n");
 
-        VLC* VLCInstance = VLC::getInstance();
+        //VLC* VLCInstance = VLC::getInstance();
 
         do {
             if (toDownload > 0) {
@@ -65,20 +65,20 @@ AudioList::AudioList(const char* listFilePath) {
 
             if (hitIndex <= 0 || hitIndex >= 999) {
                 printf("Wrong hitindex, skipping %d: '%s' '%s' '%s'\n", hitIndex, title, artist, path);
-            } else if (hitjesList[hitIndex]) {
-                printf("Hitindex %d is defined multiple times\n", hitIndex);
+            //} else if (hitjesList[hitIndex]) {
+            //    printf("Hitindex %d is defined multiple times\n", hitIndex);
             } else {
                 // and use all data to create a new element in list
                 titleTrim = trim(title);
                 artistTrim = trim(artist);
                 pathTrim = getAbsolutePath(listFilePath, pathLen, trim(path));
-                libvlc_media_t* mediaFile = VLCInstance->newMediaFromPath(pathTrim);
-                if (!checkMediaFile(mediaFile)) {
-                    printf("Invalid file, '%s'\n", pathTrim);
-                } else {
+                //libvlc_media_t* mediaFile = VLCInstance->newMediaFromPath(pathTrim);
+                //if (!checkMediaFile(mediaFile)) {
+                //    printf("Invalid file, '%s'\n", pathTrim);
+                //} else {
                     printf("Added hitje to the list, %d: '%s' %s' '%s'\n", hitIndex, titleTrim, artistTrim, pathTrim);
-                    hitjesList[hitIndex] = mediaFile;
-                }
+                    //hitjesList[hitIndex] = mediaFile;
+                //}
             }
             do {
                 fgets(buffer, 999, listFile);

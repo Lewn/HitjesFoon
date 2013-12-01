@@ -275,15 +275,14 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
 char *YoutubeAPI::urlDecode(char *src) {
     int len = strlen(src);
     char* ret = new char[len];
-    char ch;
-    int i, j;
+    unsigned int i, j;
     char num[3];
     num[2] = 0;
     for (j = i = 0; i < len; i++, j++) {
         if (src[i] == '%') {
             num[0] = src[i + 1];
             num[1] = src[i + 2];
-            sscanf(num, "%x", ret + j);
+            sscanf(num, "%x", (unsigned int*)ret + j);
             i = i + 2;
         } else {
             ret[j] = src[i];
