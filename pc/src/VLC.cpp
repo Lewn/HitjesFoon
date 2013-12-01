@@ -44,6 +44,9 @@ VLC* VLC::getInstance() {
     if (instance == NULL) {
         // we only need one vlc instance
         instance = new VLC();
+        if (!instance) {
+            throw "Couldn't instantiate";
+        }
     }
     return instance;
 }

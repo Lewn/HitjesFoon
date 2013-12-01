@@ -248,7 +248,7 @@
 
 1384639916 ioMenu.h"
 
-1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
+1385936309 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
 	"USBConnection.h"
 	"Tools.h"
 	"YoutubeAPI.h"
@@ -263,7 +263,7 @@
 	"AudioPlayerEventListener.h"
 	"Tools.h"
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\vlc.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\vlc.h
 	<vlc/libvlc_structures.h>
 	<vlc/libvlc.h>
 	<vlc/libvlc_media.h>
@@ -276,39 +276,39 @@
 	<vlc/libvlc_vlm.h>
 	<vlc/deprecated.h>
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_structures.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_structures.h
 	<stdint.h>
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc.h
 	<stdio.h>
 	<stdarg.h>
 	<vlc/libvlc_structures.h>
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_player.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_player.h
 	<stdbool.h>
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list_player.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list_player.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_library.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_library.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_discoverer.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_discoverer.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_events.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_events.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_vlm.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\libvlc_vlm.h
 
-1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\deprecated.h
+1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\deprecated.h
 
 1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\vlc.h
 	"vlc/vlc.h"
 	"Tools.h"
 	<string.h>
 
-1385580991 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\audiolist.h
+1385932729 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\audiolist.h
 	"vlc/vlc.h"
 	<cerrno>
 	"VLC.h"
@@ -367,7 +367,7 @@
 	"Tools.h"
 	<windows.h>
 
-1385924081 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiolist.cpp
+1385935372 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiolist.cpp
 	"AudioList.h"
 
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiomenu.cpp
@@ -390,7 +390,7 @@
 1385339796 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\usbconnection.cpp
 	"USBConnection.h"
 
-1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\vlc.cpp
+1385935894 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\vlc.cpp
 	"VLC.h"
 
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiomenuitem.cpp
@@ -543,7 +543,7 @@
 1384696359 /home/lennart/Dropbox/Documenten/projects/github/HitjesFoon/pc/include/YoutubeAPI.h
 	<stdio.h>
 
-1385747097 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\youtubeapi.cpp
+1385932100 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\youtubeapi.cpp
 	"YoutubeAPI.h"
 
 1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\youtubeapi.h

@@ -23,8 +23,9 @@ public:
     libvlc_media_t* getAudio(int audioIndex);
 
 protected:
+    YoutubeAPI api;
     libvlc_media_t** hitjesList;
-    int toDownload;
+    bool downloadYoutube;
     int pathLen;
     char* listFilePath;
 

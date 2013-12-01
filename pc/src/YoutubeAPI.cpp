@@ -39,7 +39,8 @@ char* YoutubeAPI::searchVid(const char *query) {
             }
         }
         return NULL;
-outer:;
+outer:
+        ;
     }
 
     return fileName;
@@ -98,21 +99,26 @@ char *YoutubeAPI::getVideoInfo(const char *videoId) {
 }
 
 char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
-
     char *fmt = strstr(videoInfo, "url_encoded_fmt_stream_map=");
     if (!fmt) {
         throw "fmt not found";
     }
     char *fmtEnd = strchr(fmt, '&');
+    if (!fmtEnd) {
+        fmtEnd = strchr(fmt, '\0');
+    }
 
     char *titleStart = strstr(videoInfo, "title=") + 6;
+    if (!titleStart) {
+        throw "No title start found";
+    }
     char *titleEnd = strchr(titleStart, '&');
     if (!titleEnd) {
         titleEnd = strchr(titleStart, '\0');
+    } else {
+        *(titleEnd) = '\0';
     }
-    *(titleEnd) = '\0';
-
-    char *encoded = new char[fmtEnd - fmt + 1];
+    char encoded[fmtEnd - fmt + 1];
     strncpy(encoded, fmt, fmtEnd - fmt);
     encoded[fmtEnd - fmt] = 0;
 
@@ -122,8 +128,6 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
     FILE *file = fopen("decoded.txt", "wb");
     fputs(decoded, file);
     fclose(file);
-    SAFE_DELETE_ARRAY(encoded);
-    encoded = NULL;
 
     char *urlStart = NULL, *urlEnd = NULL;
     char *sigStart = NULL, *sigEnd = NULL;
@@ -132,10 +136,12 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
     //map<int, char*> urls;
     const int priority[] = {38, 37, 46, 22, 45, 44, 35, 18, 34, 43, 6, 5, 36, 17, 13, 0};
     int highestPriority = 1000;
-    char* highestUrl = NULL;
-    char* farEnd = strchr(decoded, ',');
+    char *highestUrl = NULL;
+    char *farEnd = strchr(decoded, ',');
 
-    for (char* itr = decoded; * (itr - 1); itr++) {
+    //TODO: strlen eruit halen!!
+    int len = strlen(decoded);
+    for (char *itr = decoded; itr <= len + decoded; itr++) {
         switch(*itr) {
             case 'u':
                 // check for url
@@ -199,23 +205,25 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                     if (priority[i] && i <= highestPriority) {
 
                         *urlEnd = 0;
-                        char* decodedUrl = urlDecode(urlStart);
+                        char *decodedUrl = urlDecode(urlStart);
+
+                        SAFE_DELETE_ARRAY(highestUrl);
 
                         int urlLen = strlen(decodedUrl);
-                        char* url = new char[urlLen + 7 + titleEnd - titleStart + 11 + sigEnd - sigStart  + 1];
+                        highestUrl = new char[urlLen + 7 + titleEnd - titleStart + 11 + sigEnd - sigStart  + 1];
 
-                        strncpy(url, decodedUrl, urlLen);
-                        strncpy(url + urlLen, "&title=", 7);
-                        strncpy(url + urlLen + 7, titleStart, titleEnd - titleStart);
-                        strncpy(url + urlLen + 7 + (titleEnd - titleStart), "&signature=", 11);
-                        strncpy(url + urlLen + 7 + (titleEnd - titleStart) + 11, sigStart, sigEnd - sigStart);
-                        url[urlLen + 7 + (titleEnd - titleStart) + 11 + (sigEnd - sigStart)] = 0;
+                        strncpy(highestUrl, decodedUrl, urlLen);
+                        strncpy(highestUrl + urlLen, "&title=", 7);
+                        strncpy(highestUrl + urlLen + 7, titleStart, titleEnd - titleStart);
+                        strncpy(highestUrl + urlLen + 7 + (titleEnd - titleStart), "&signature=", 11);
+                        strncpy(highestUrl + urlLen + 7 + (titleEnd - titleStart) + 11, sigStart, sigEnd - sigStart);
+                        highestUrl[urlLen + 7 + (titleEnd - titleStart) + 11 + (sigEnd - sigStart)] = 0;
+
+                        SAFE_DELETE_ARRAY(decodedUrl);
 
                         highestPriority = i;
-                        SAFE_DELETE_ARRAY(highestUrl);
-                        highestUrl = url;
 
-                        printf("\nNew url inserted, %d: %s\n", itag, url);
+                        printf("\nNew url inserted, %d: %s\n", itag, highestUrl);
                     } else {
                         printf("\nData with lower quality found\n");
                     }
@@ -227,9 +235,11 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                 }
 
                 urlStart = urlEnd = sigStart = sigEnd = itagStart = itagEnd = NULL;
-                farEnd = strchr(itr + 1, ',');
-                if (!farEnd) {
-                    farEnd = strchr(itr + 1, '\0');
+                if (itr != len + decoded) {
+                    farEnd = strchr(itr + 1, ',');
+                    if (!farEnd) {
+                        farEnd = strchr(itr + 1, '\0');
+                    }
                 }
         }
     }
@@ -239,11 +249,9 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
         printf("Best url found: \n%s\n", highestUrl);
         fileName = downloadEncodedUrl(highestUrl, titleStart);
         SAFE_DELETE_ARRAY(highestUrl);
-        printf("deleted1\n");
     }
 
     SAFE_DELETE_ARRAY(decoded);
-    printf("deleted2\n");
 
     return fileName;
 }
@@ -256,9 +264,10 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     fileName[titleLen + 4] = 0;
 
     char *decodedFilename = urlDecode(fileName);
+    printf("filename address '%p'", decodedFilename);
 
     // replace + with spaces in title
-    for (char* itr = decodedFilename; *itr; itr++) {
+    for (char *itr = decodedFilename; *itr; itr++) {
         if (*itr == '+') {
             *itr = ' ';
         } else if (!((*itr >= 'A' && *itr <= 'Z') || (*itr >= 'a' && *itr <= 'z') || (*itr >= '0' && *itr <= '9') || *itr == '(' || *itr == ')' || *itr == '-' || *itr == '_' || *itr == '#' || *itr == '.')) {
@@ -274,7 +283,7 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
 
 char *YoutubeAPI::urlDecode(char *src) {
     int len = strlen(src);
-    char* ret = new char[len];
+    char* ret = new char[len + 1];
     unsigned int i, j;
     char num[3];
     num[2] = 0;
@@ -282,7 +291,9 @@ char *YoutubeAPI::urlDecode(char *src) {
         if (src[i] == '%') {
             num[0] = src[i + 1];
             num[1] = src[i + 2];
-            sscanf(num, "%x", (unsigned int*)ret + j);
+            unsigned int decoded;
+            sscanf(num, "%x", &decoded);
+            *(ret + j) = (char)decoded;
             i = i + 2;
         } else {
             ret[j] = src[i];

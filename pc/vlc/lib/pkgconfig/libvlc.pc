@@ -1,4 +1,4 @@
-prefix=/home/funman/vlc/build/_win32
+prefix=/home/jb/vlc-2.1/win32/_win32
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

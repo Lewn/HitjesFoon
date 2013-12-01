@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 int main() {
 #ifndef _WIN32
     setConioTerminalMode();
