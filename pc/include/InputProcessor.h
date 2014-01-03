@@ -34,15 +34,16 @@ public:
     void process(int input);
     void audioPlayerEvent(Event evt, AudioPlayer* audioPlayer);
 protected:
+    AudioList *hitjesList;
     ProcessType processType;
     int curNumber;
     int numberCount;
     bool phoneOutput;
     bool earthDown;
-    AudioMenu* curAudioMenu;
+    AudioMenu *curAudioMenu;
 
-    AudioPlayer* phoneAudioPlayer;
-    AudioPlayer* speakerAudioPlayer;
+    AudioPlayer *phoneAudioPlayer;
+    AudioPlayer *speakerAudioPlayer;
 
     list<int> hitjesQueue;
 

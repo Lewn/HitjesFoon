@@ -1,7 +1,7 @@
 #include "InputProcessor.h"
 
-InputProcessor::InputProcessor(AudioList* hitjesList) {
-    processType = PROCESS_DIRECT;
+InputProcessor::InputProcessor(AudioList* hitjesList) : hitjesList(hitjesList) {
+    processType = PROCESS_LINEAR;
     phoneAudioPlayer = new AudioPlayer(AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(AudioPlayer::SPEAKER, hitjesList);
     phoneOutput = false;
@@ -18,7 +18,7 @@ InputProcessor::InputProcessor(AudioList* hitjesList) {
 InputProcessor::~InputProcessor() {
     SAFE_DELETE(phoneAudioPlayer);
     SAFE_DELETE(speakerAudioPlayer);
-    //SAFE_DELETE(curAudioMenu);
+    SAFE_DELETE(curAudioMenu);
 }
 
 void InputProcessor::resetInput() {
@@ -124,6 +124,11 @@ void InputProcessor::processAlt(int input) {
 }
 
 void InputProcessor::playAudio(int curNumber) {
+    if (!hitjesList->getAudio(curNumber)) {
+        // don't process non-existing hitjes
+        printf("\nHitje %d does not exist", curNumber);
+        return;
+    }
     switch (processType) {
         case PROCESS_LINEAR:
             printf("\nProcessing linear");

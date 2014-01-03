@@ -11,36 +11,46 @@ YoutubeAPI::~YoutubeAPI() {
 
 char* YoutubeAPI::searchVid(const char *query) {
     // we only need the total amount of results and each results id (kind and channelId/videoId)
-    JsonParser result = makeRequest(SEARCH, "id", "pageInfo/totalResults,items/id", 5, query);
+    JsonParser result = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
+    if (result.getTotalResults() == 0) {
+        throw "Nothing found while searching";
+    }
 
     char *fileName = NULL;
-    for (string videoId : result.getVideoIds()) {
-        char *videoInfo = getVideoInfo(videoId.data());
-        SAFE_DELETE_ARRAY(fileName);
-        fileName = getFileFromVideoInfo(videoInfo);
-        SAFE_DELETE_ARRAY(videoInfo);
-        if (fileName) {
-            break;
-        }
+    vector<string> videoIds = result.getVideoIds();
+    char *videoInfo = getVideoInfo(videoIds[0].data());
+    fileName = getFileFromVideoInfo(videoInfo);
+    SAFE_DELETE_ARRAY(videoInfo);
+    vector<string> titles = result.getVideoTitles();
+    while (!fileName && videoIds.size() > 1) {
+        videoIds.erase(videoIds.begin());
+        titles.erase(titles.begin());
+
         // wait 10 seconds, if user typed y, go to next video id
-        printf("\nNo valid video found, search next? (y)\n");
-        for (int i = 0; i < 10000; i++) {
+        printf("\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
+        for (int titleIndex = 0; titleIndex < titles.size(); titleIndex++) {
+            printf(" %d: %s\n", titleIndex + 1, titles[titleIndex].data());
+        }
+        int i;
+        for (i = 0; i < 1000; i++) {
             if (kbhit()) {
                 char c = getch();
-                if (c == 'y') {
-                    goto outer;
-                } else {
-                    break;
+                int index = c - '0' - 1;
+                if (index >= 0 && index < titles.size()) {
+                    char *videoInfo = getVideoInfo(videoIds[index].data());
+                    fileName = getFileFromVideoInfo(videoInfo);
+                    SAFE_DELETE_ARRAY(videoInfo);
                 }
+                break;
             }
-            Sleep(1);
-            if (i % 1000 == 0) {
-                printf("%d seconds  \r", 10 - i / 1000);
+            Sleep(10);
+            if (i % 100 == 0) {
+                printf("%d seconds  \r", 10 - i / 100);
             }
         }
-        return NULL;
-outer:
-        ;
+        if (i == 1000) {
+            break;
+        }
     }
 
     return fileName;
@@ -130,7 +140,6 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
     fclose(file);
 
     char *urlStart = NULL, *urlEnd = NULL;
-    char *sigStart = NULL, *sigEnd = NULL;
     char *itagStart = NULL, *itagEnd = NULL;
 
     //map<int, char*> urls;
@@ -138,6 +147,9 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
     int highestPriority = 1000;
     char *highestUrl = NULL;
     char *farEnd = strchr(decoded, ',');
+
+    char sig[300];
+    sig[0] = '\0';
 
     //TODO: strlen eruit halen!!
     int len = strlen(decoded);
@@ -161,20 +173,34 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                 break;
             case 's':
                 // check for signature
-                if (!strncmp(itr, "sig=", 4)) {
-                    printf("sig found \n");
-                    if (sigStart || sigEnd) {
-                        throw "two sigs found";
+                {
+
+                    bool decrypt = !strncmp(itr, "s=", 2);
+                    if (decrypt || !strncmp(itr, "sig=", 4)) {
+                        printf("sig found \n");
+                        if (sig[0]) {
+                            throw "two sigs found";
+                        }
+                        char *sigEnd = strchr(itr, '&');
+                        if ((farEnd && (farEnd < sigEnd)) || !sigEnd) {
+                            // if last character of this decoded youtube information is earlier than the end, end it there
+                            sigEnd = farEnd;
+                        }
+                        if (decrypt) {
+                            // encrypted signature, not fully implemented yet
+                            // TODO: implement player url extraction
+                            decryptSignature(itr + 2, sigEnd - (itr + 2), sig);
+                            if (!sig[0]) {
+                                printf("couldn't decrypt sig\n");
+                            }
+                        } else {
+                            strncpy(sig, itr + 4, sigEnd - (itr + 4));
+                            sig[sigEnd - (itr + 4)] = '\0';
+                        }
+                        itr = sigEnd - 1;
                     }
-                    sigEnd = strchr(itr, '&');
-                    if ((farEnd && (farEnd < sigEnd)) || !sigEnd) {
-                        // if last character of this decoded youtube information is earlier than the end, end it there
-                        sigEnd = farEnd;
-                    }
-                    sigStart = itr + 4;
-                    itr = sigEnd - 1;
+                    break;
                 }
-                break;
             case 'i':
                 // check for signature
                 if (!strncmp(itr, "itag=", 5)) {
@@ -195,7 +221,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
             case ',':
                 printf("Found comma\n");
                 // split on comma, save only when url and sig found
-                if (urlStart && urlEnd && sigStart && sigEnd && itagStart && itagEnd) {
+                if (urlStart && urlEnd && sig[0] && itagStart && itagEnd) {
                     // only parse if all information found
                     int itag;
                     sscanf(itagStart, "%d", &itag);
@@ -210,14 +236,14 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                         SAFE_DELETE_ARRAY(highestUrl);
 
                         int urlLen = strlen(decodedUrl);
-                        highestUrl = new char[urlLen + 7 + titleEnd - titleStart + 11 + sigEnd - sigStart  + 1];
+                        highestUrl = new char[urlLen + 7 + titleEnd - titleStart + 11 + strlen(sig) + 1];
 
                         strncpy(highestUrl, decodedUrl, urlLen);
                         strncpy(highestUrl + urlLen, "&title=", 7);
                         strncpy(highestUrl + urlLen + 7, titleStart, titleEnd - titleStart);
                         strncpy(highestUrl + urlLen + 7 + (titleEnd - titleStart), "&signature=", 11);
-                        strncpy(highestUrl + urlLen + 7 + (titleEnd - titleStart) + 11, sigStart, sigEnd - sigStart);
-                        highestUrl[urlLen + 7 + (titleEnd - titleStart) + 11 + (sigEnd - sigStart)] = 0;
+                        strcpy(highestUrl + urlLen + 7 + (titleEnd - titleStart) + 11, sig);
+                        highestUrl[urlLen + 7 + (titleEnd - titleStart) + 11 + strlen(sig)] = 0;
 
                         SAFE_DELETE_ARRAY(decodedUrl);
 
@@ -229,12 +255,10 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                     }
                 } else {
                     printf("\nNot all information found\n");
-                    if (!(urlStart && urlEnd && itagStart && itagEnd)) {
-                        return NULL;
-                    }
                 }
 
-                urlStart = urlEnd = sigStart = sigEnd = itagStart = itagEnd = NULL;
+                urlStart = urlEnd = itagStart = itagEnd = NULL;
+                sig[0] = '\0';
                 if (itr != len + decoded) {
                     farEnd = strchr(itr + 1, ',');
                     if (!farEnd) {
@@ -304,15 +328,79 @@ char *YoutubeAPI::urlDecode(char *src) {
 }
 
 
-/*
-void YoutubeAPI::makeRequest(RequestType requestType, char* part) {
-    //makeRequest(requestType, part, 0, 5);
+void YoutubeAPI::decryptSignature(char *sigstart, int siglen, char *decrypted) {
+    return;
+    printf("decrypted sig length %d\n", siglen);
+    switch (siglen) {
+        case 93:
+            reverse_copy(sigstart + 30, sigstart + 87, decrypted);      // 56 chars
+            decrypted[56] = sigstart[88];                               // 57 chars
+            reverse_copy(sigstart + 6, sigstart + 29, decrypted + 57);  // 87 chars
+            decrypted[87] = '\0';
+            break;
+        case 92:
+            decrypted[0] = sigstart[25];                                // 1 char
+            copy(sigstart + 3, sigstart + 25, decrypted + 1);           // 23 chars
+            decrypted[23] = sigstart[0];                                // 24 chars
+            copy(sigstart + 26, sigstart + 42, decrypted + 24);         // 40 chars
+            decrypted[40] = sigstart[79];                               // 41 chars
+            copy(sigstart + 43, sigstart + 79, decrypted + 41);         // 77 chars
+            decrypted[77] = sigstart[91];                               // 78 chars
+            copy(sigstart + 80, sigstart + 83, decrypted + 78);         // 81 chars
+            decrypted[81] = '\0';
+            break;
+        case 91:
+            reverse_copy(sigstart + 28, sigstart + 85, decrypted);      // 57 chars
+            decrypted[57] = sigstart[86];                               // 58 chars
+            reverse_copy(sigstart + 6, sigstart + 27, decrypted + 58);  // 79 chars
+            decrypted[79] = '\0';
+            break;
+        case 85:
+            copy(sigstart + 3, sigstart + 11, decrypted);               // 8 chars
+            decrypted[8] = sigstart[0];                                 // 9 chars
+            copy(sigstart + 12, sigstart + 55, decrypted + 9);          // 52 chars
+            decrypted[52] = sigstart[84];                               // 53 chars
+            copy(sigstart + 56, sigstart + 84, decrypted + 53);         // 81 chars
+            decrypted[81] = '\0';
+            break;
+        case 84:
+            reverse_copy(sigstart + 71, sigstart + 79, decrypted);      // 8 chars
+            decrypted[8] = sigstart[14];                                // 9 chars
+            reverse_copy(sigstart + 38, sigstart + 70, decrypted + 9);  // 41 chars
+            decrypted[41] = sigstart[70];                               // 42 chars
+            reverse_copy(sigstart + 15, sigstart + 37, decrypted + 42); // 64 chars
+            decrypted[64] = sigstart[80];                               // 65 chars
+            reverse_copy(sigstart + 0, sigstart + 14, decrypted + 65);  // 79 chars
+            decrypted[79] = '\0';
+        case 83:
+            reverse_copy(sigstart + 64, sigstart + 81, decrypted);      // 17 chars
+            decrypted[17] = sigstart[0];                                // 18 chars
+            reverse_copy(sigstart + 1, sigstart + 63, decrypted + 18);  // 80 chars
+            decrypted[80] = sigstart[63];                               // 81 chars
+            decrypted[81] = '\0';
+            break;
+    }
+    printf("after decryption: %s\n", decrypted);
+    //exit(1);
+//elif len(s) == 90:
+//    return s[25] + s[3: 25] + s[2] + s[26: 40] + s[77] + s[41: 77] + s[89] + s[78: 81]
+//       elif len(s) == 89:
+//       return s[84: 78: -1] + s[87] + s[77: 60: -1] + s[0] + s[59: 3: -1]
+//              elif len(s) == 88:
+//                  return s[7: 28] + s[87] + s[29: 45] + s[55] + s[46: 55] + s[2] + s[56: 87] + s[28]
+//                     elif len(s) == 87:
+//                     return s[6: 27] + s[4] + s[28: 39] + s[27] + s[40: 59] + s[2] + s[60: ]
+//                            elif len(s) == 86:
+//                            return s[80: 72: -1] + s[16] + s[71: 39: -1] + s[72] + s[38: 16: -1] + s[82] + s[15:: -1]
+//                                                   elif len(s) == 82:
+//                                                   return s[80: 37: -1] + s[7] + s[36: 7: -1] + s[0] + s[6: 0: -1] + s[37]
+//                                                           elif len(s) == 81:
+//                                                           return s[56] + s[79: 56: -1] + s[41] + s[55: 41: -1] + s[80] + s[40: 34: -1] + s[0] + s[33: 29: -1] + s[34] + s[28: 9: -1] + s[29] + s[8: 0: -1] + s[9]
+//                                                                   elif len(s) == 80:
+//                                                                       return s[1: 19] + s[0] + s[20: 68] + s[19] + s[69: 80]
+//                                                                           elif len(s) == 79:
+//                                                                           return s[54] + s[77: 54: -1] + s[39] + s[53: 39: -1] + s[78] + s[38: 34: -1] + s[0] + s[33: 29: -1] + s[34] + s[28: 9: -1] + s[29] + s[8: 0: -1] + s[9]
+//
+//                                                                                   else:
+//                                                                                           raise ExtractorError(u'Unable to decrypt signature, key length %d not supported; retrying might work' % (len(s)))
 }
-
-void YoutubeAPI::makeRequest(RequestType requestType, char* part, unsigned char maxResults) {
-    //return makeRequest(requestType, part, 0, maxResults);
-}
-
-void YoutubeAPI::makeRequest(RequestType requestType, char* part, char* fields) {
-    //return makeRequest(requestType, part, fields, 5);
-}*/

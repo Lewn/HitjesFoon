@@ -248,7 +248,7 @@
 
 1384639916 ioMenu.h"
 
-1385936309 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
+1386529652 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
 	"USBConnection.h"
 	"Tools.h"
 	"YoutubeAPI.h"
@@ -308,7 +308,7 @@
 	"Tools.h"
 	<string.h>
 
-1385932729 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\audiolist.h
+1386529824 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\audiolist.h
 	"vlc/vlc.h"
 	<cerrno>
 	"VLC.h"
@@ -344,7 +344,7 @@
 
 1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\uc\include\macros.h
 
-1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\inputprocessor.h
+1386190334 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\inputprocessor.h
 	"AudioPlayer.h"
 	"AudioPlayerEventListener.h"
 	"ConfigAudioMenu.h"
@@ -367,7 +367,7 @@
 	"Tools.h"
 	<windows.h>
 
-1385935372 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiolist.cpp
+1386529900 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiolist.cpp
 	"AudioList.h"
 
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiomenu.cpp
@@ -380,7 +380,7 @@
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\configaudiomenu.cpp
 	"ConfigAudioMenu.h"
 
-1385339560 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\inputprocessor.cpp
+1386190407 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\inputprocessor.cpp
 	"InputProcessor.h"
 
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\tools.cpp
@@ -543,12 +543,13 @@
 1384696359 /home/lennart/Dropbox/Documenten/projects/github/HitjesFoon/pc/include/YoutubeAPI.h
 	<stdio.h>
 
-1385932100 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\youtubeapi.cpp
+1387825135 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\youtubeapi.cpp
 	"YoutubeAPI.h"
 
-1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\youtubeapi.h
+1386534532 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\youtubeapi.h
 	<stdio.h>
 	<stdarg.h>
+	<algorithm>
 	"HTTPTransfer.h"
 	"Tools.h"
 	"JsonParser.h"
@@ -662,7 +663,7 @@
 
 1385320822 d:\dropbox\documenten\projects\github\hitjesfoon\pc\curl\include\curl\typecheck-gcc.h
 
-1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\jsonparser.h
+1386191384 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\jsonparser.h
 	"json/json.h"
 	"Tools.h"
 	<stdio.h>
@@ -711,7 +712,7 @@
 	<string>
 	<iostream>
 
-1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\jsonparser.cpp
+1386191401 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\jsonparser.cpp
 	"JsonParser.h"
 
 1384861976 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\videodecoder.cpp

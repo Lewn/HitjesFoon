@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <algorithm>
 
 #include "HTTPTransfer.h"
 #include "Tools.h"
@@ -34,6 +35,7 @@ protected:
     char *getVideoInfo(const char *videoId);
     char *getFileFromVideoInfo(char *videoInfo);
     char *downloadEncodedUrl(const char *url, const char *title);
+    void decryptSignature(char *sigstart, int siglen, char *decrypted);
 private:
 };
 

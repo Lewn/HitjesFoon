@@ -25,3 +25,12 @@ vector<string> JsonParser::getVideoIds() {
     }
     return videoIds;
 }
+
+vector<string> JsonParser::getVideoTitles() {
+    Json::Value items = root["items"];
+    vector<string> videoTitles;
+    for (int index = 0; index < items.size(); ++index) {
+        videoTitles.push_back(items[index]["snippet"]["title"].asString());
+    }
+    return videoTitles;
+}

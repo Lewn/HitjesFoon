@@ -16,6 +16,7 @@ public:
     void parse(const char* jsonString);
     int getTotalResults();
     vector<string> getVideoIds();
+    vector<string> getVideoTitles();
 protected:
     Json::Value root;
 private:
