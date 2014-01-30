@@ -248,7 +248,7 @@
 
 1384639916 ioMenu.h"
 
-1386529652 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
+1391091988 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\main.cpp
 	"USBConnection.h"
 	"Tools.h"
 	"YoutubeAPI.h"
@@ -303,10 +303,11 @@
 
 1384195704 d:\dropbox\documenten\projects\github\hitjesfoon\pc\vlc\include\vlc\deprecated.h
 
-1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\vlc.h
+1389271998 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\vlc.h
 	"vlc/vlc.h"
 	"Tools.h"
 	<string.h>
+	<conio.h>
 
 1386529824 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\audiolist.h
 	"vlc/vlc.h"
@@ -316,8 +317,10 @@
 	"InputProcessor.h"
 	"YoutubeAPI.h"
 
-1385320825 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\tools.h
-	<string.h>
+1389276809 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\tools.h
+	"ScreenCommands.h"
+	<vector>
+	<string>
 	<ctype.h>
 	"conio.h"
 	<unistd.h>
@@ -344,7 +347,7 @@
 
 1383577953 d:\dropbox\documenten\projects\github\hitjesfoon\uc\include\macros.h
 
-1386190334 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\inputprocessor.h
+1389292540 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\inputprocessor.h
 	"AudioPlayer.h"
 	"AudioPlayerEventListener.h"
 	"ConfigAudioMenu.h"
@@ -380,17 +383,17 @@
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\configaudiomenu.cpp
 	"ConfigAudioMenu.h"
 
-1386190407 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\inputprocessor.cpp
+1391092077 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\inputprocessor.cpp
 	"InputProcessor.h"
 
-1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\tools.cpp
+1389276822 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\tools.cpp
 	"Tools.h"
 	"InputProcessor.h"
 
 1385339796 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\usbconnection.cpp
 	"USBConnection.h"
 
-1385935894 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\vlc.cpp
+1389277567 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\vlc.cpp
 	"VLC.h"
 
 1385320825 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\audiomenuitem.cpp
@@ -546,7 +549,7 @@
 1387825135 source:d:\dropbox\documenten\projects\github\hitjesfoon\pc\src\youtubeapi.cpp
 	"YoutubeAPI.h"
 
-1386534532 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\youtubeapi.h
+1389270854 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\youtubeapi.h
 	<stdio.h>
 	<stdarg.h>
 	<algorithm>
@@ -906,4 +909,147 @@
 	"log.h"
 	"pixfmt.h"
 	"samplefmt.h"
+
+1389275555 d:\dropbox\documenten\projects\github\hitjesfoon\pc\include\screencommands.h
+	<windows.h>
+	<stdio.h>
+
+1353358614 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\pocketsphinx.h
+	<stdio.h>
+	<sphinxbase/cmd_ln.h>
+	<sphinxbase/logmath.h>
+	<sphinxbase/fe.h>
+	<sphinxbase/feat.h>
+	<sphinxbase/ngram_model.h>
+	<pocketsphinx_export.h>
+	<cmdln_macro.h>
+	<ps_lattice.h>
+	<ps_mllr.h>
+	<fsg_set.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\cmd_ln.h
+	<stdio.h>
+	<stdarg.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+
+1354738016 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\sphinxbase_export.h
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\prim_type.h
+	<sphinx_config.h>
+
+1353358780 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinx_config.h
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\logmath.h
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/cmd_ln.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\fe.h
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/cmd_ln.h>
+	<sphinxbase/fixpoint.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\fixpoint.h
+	<limits.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\feat.h
+	<stdio.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/fe.h>
+	<sphinxbase/cmn.h>
+	<sphinxbase/agc.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\cmn.h
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/fe.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\agc.h
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/fe.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\ngram_model.h
+	<stdarg.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/cmd_ln.h>
+	<sphinxbase/logmath.h>
+	<sphinxbase/mmio.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\mmio.h
+	<sphinxbase/sphinxbase_export.h>
+
+1354737992 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\pocketsphinx_export.h
+
+1353358614 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\cmdln_macro.h
+	<sphinxbase/cmd_ln.h>
+	<sphinxbase/feat.h>
+	<sphinxbase/fe.h>
+
+1353358614 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\ps_lattice.h
+	<sphinxbase/prim_type.h>
+	<sphinxbase/ngram_model.h>
+	<pocketsphinx_export.h>
+
+1353358614 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\ps_mllr.h
+	<sphinxbase/prim_type.h>
+	<sphinxbase/ngram_model.h>
+	<pocketsphinx_export.h>
+
+1353358614 d:\dropbox\documenten\projects\github\hitjesfoon\pc\pocketsphinx\include\fsg_set.h
+	<sphinxbase/fsg_model.h>
+	<sphinxbase/hash_table.h>
+	<sphinxbase/jsgf.h>
+	<pocketsphinx_export.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\fsg_model.h
+	<stdio.h>
+	<string.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/glist.h>
+	<sphinxbase/logmath.h>
+	<sphinxbase/bitvec.h>
+	<sphinxbase/hash_table.h>
+	<sphinxbase/listelem_alloc.h>
+	<sphinxbase/sphinxbase_export.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\glist.h
+	<stdlib.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\bitvec.h
+	<string.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/ckd_alloc.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\ckd_alloc.h
+	<stdlib.h>
+	<setjmp.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\hash_table.h
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+	<sphinxbase/glist.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\listelem_alloc.h
+	<stdlib.h>
+	<types.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/prim_type.h>
+
+1353357454 d:\dropbox\documenten\projects\github\hitjesfoon\pc\sphinxbase\include\sphinxbase\jsgf.h
+	<stdio.h>
+	<sphinxbase/sphinxbase_export.h>
+	<sphinxbase/hash_table.h>
+	<sphinxbase/fsg_model.h>
+	<sphinxbase/logmath.h>
 

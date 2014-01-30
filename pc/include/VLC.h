@@ -7,6 +7,7 @@
 #include "vlc/vlc.h"
 #include "Tools.h"
 #include <string.h>
+#include <conio.h>
 
 using namespace std;
 

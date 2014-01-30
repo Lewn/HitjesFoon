@@ -4,7 +4,9 @@
 #define SAFE_DELETE(x) delete(x); x = NULL
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL
 
-#include <string.h>
+#include "ScreenCommands.h"
+#include <vector>
+#include <string>
 #include <ctype.h>
 
 using namespace std;
@@ -28,6 +30,11 @@ void setConioTerminalMode();
 int kbhit();
 int getch();
 #endif
+void getCursorXY(int *x, int *y);
+void setCursorXY(int x, int y);
+
+int getKey();
 int readKeyboard();
+int selection(vector<string> options);
 
 #endif // TOOLS_H

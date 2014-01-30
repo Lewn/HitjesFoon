@@ -16,7 +16,8 @@ enum InputVal {
 enum ProcessType {
     PROCESS_LINEAR,
     PROCESS_DIRECT,
-    PROCESS_SWAP
+    PROCESS_SWAP,
+    PROCESS_LINEAR_SHUFFLE
 };
 
 #include "AudioPlayer.h"

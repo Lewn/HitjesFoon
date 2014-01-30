@@ -35,7 +35,20 @@ char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filenam
 
 
 
-#ifndef _WIN32
+#ifdef _WIN32
+void getCursorXY(int &x, int &y) {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+        x = csbi.dwCursorPosition.X;
+        y = csbi.dwCursorPosition.Y;
+    }
+}
+
+void setCursorXY(int x, int y) {
+    COORD p = {x, y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+#else
 void resetTerminalMode() {
     tcsetattr(0, TCSANOW, &origTermios);
 }
@@ -64,7 +77,7 @@ int getch() {
     int r;
     unsigned char c;
 
-    if((r = read(0, &c, sizeof(c))) < 0) {
+    if ((r = read(0, &c, sizeof(c))) < 0) {
         return r;
     } else {
         return c;
@@ -73,6 +86,16 @@ int getch() {
 #endif
 
 #include "InputProcessor.h"
+
+int getKey() {
+    unsigned char c = getch();
+    if (c == 0 || c == 224) {
+        // extended code, add 256 to the next result
+        return 256 + getch();
+    }
+    return c;
+}
+
 int readKeyboard() {
     int hit = kbhit();
 
@@ -98,4 +121,37 @@ int readKeyboard() {
     }
 
     return INPUT_NONE;
+}
+
+
+int selection(vector<string> options) {
+    int curSelection = 0;
+    int x, y;
+    getCursorXY(x, y);
+    do {
+        setCursorXY(x, y);
+        int i = 0;
+        for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
+            if (i++ == curSelection) {
+                setColors(BLACK, WHITE);
+            }else {
+                setColors(WHITE, BLACK);
+            }
+            printf("%s\n", (*it).data());
+        }
+        resetColors();
+
+        int c = getKey();
+        if (c == 13) {
+            break;
+        }
+        if (c == 328) {
+            // up arrow
+            curSelection = max(--curSelection, 0);
+        }else if (c == 336) {
+            // down arrow
+            curSelection = min(++curSelection, (int)options.size() - 1);
+        }
+    }while (true);
+    return curSelection;
 }

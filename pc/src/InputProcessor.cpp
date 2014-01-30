@@ -1,7 +1,7 @@
 #include "InputProcessor.h"
 
 InputProcessor::InputProcessor(AudioList* hitjesList) : hitjesList(hitjesList) {
-    processType = PROCESS_LINEAR;
+    processType = PROCESS_LINEAR_SHUFFLE;
     phoneAudioPlayer = new AudioPlayer(AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(AudioPlayer::SPEAKER, hitjesList);
     phoneOutput = false;
@@ -45,13 +45,16 @@ void InputProcessor::process(int input) {
         } else {
             processAlt(input);
         }
-        // always check on update wether we want to do a queued action
-        if (processType == PROCESS_LINEAR && !hitjesQueue.empty()) {
-            // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
-            if (!speakerAudioPlayer->isPlaying()) {
+        // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
+        if (!speakerAudioPlayer->isPlaying()) {
+            // always check on update wether we want to do a queued action
+            if (!hitjesQueue.empty()) {
                 // done playing, play next in queue
                 playQueued();
                 requestInput();
+            }else if (processType == PROCESS_LINEAR_SHUFFLE) {
+                // shuffle a random number in the player
+
             }
         }
     }
@@ -130,6 +133,7 @@ void InputProcessor::playAudio(int curNumber) {
         return;
     }
     switch (processType) {
+        case PROCESS_LINEAR_SHUFFLE:
         case PROCESS_LINEAR:
             printf("\nProcessing linear");
             if (phoneOutput) {

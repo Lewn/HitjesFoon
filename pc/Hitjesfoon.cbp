@@ -40,6 +40,8 @@
 			<Add directory="curl/include" />
 			<Add directory="jsoncpp/include" />
 			<Add directory="ffmpeg/include" />
+			<Add directory="pocketsphinx/include" />
+			<Add directory="sphinxbase/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
@@ -78,6 +80,7 @@
 		<Unit filename="include/HTTPTransfer.h" />
 		<Unit filename="include/InputProcessor.h" />
 		<Unit filename="include/JsonParser.h" />
+		<Unit filename="include/ScreenCommands.h" />
 		<Unit filename="include/Tools.h" />
 		<Unit filename="include/USBConnection.h" />
 		<Unit filename="include/VLC.h" />

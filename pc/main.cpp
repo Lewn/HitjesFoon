@@ -1,5 +1,7 @@
 
 
+#define MODELDIR "D:\\Dropbox\\Documenten\\projects\\github\\HitjesFoon\\pc\\pocketsphinx\\model\\"
+
 #include "USBConnection.h"
 #include "Tools.h"
 #include "YoutubeAPI.h"
