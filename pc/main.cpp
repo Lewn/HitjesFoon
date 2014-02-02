@@ -81,7 +81,9 @@ int main() {
             }
 
             if (c == INPUT_TEST) {
-                hitjesList->update(-1);
+                do {
+                    hitjesList->update(10);
+                } while (readKeyboard() == INPUT_NONE);
             } else if (c == INPUT_END) {
                 // end at q
                 break;
