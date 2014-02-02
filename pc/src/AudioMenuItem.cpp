@@ -56,7 +56,7 @@ AudioMenuItem::~AudioMenuItem() {
     SAFE_DELETE_ARRAY(followup);
 
     if (media) {
-        libvlc_media_release(media);
+        VLC::release(media);
     } else {
         //SAFE_DELETE_ARRAY(text);
     }

@@ -34,6 +34,22 @@ libvlc_media_list_player_t* VLC::newMediaListPlayer() {
     return libvlc_media_list_player_new(libvlcInstance);
 }
 
+void VLC::release(libvlc_media_t* media) {
+    libvlc_media_release(media);
+}
+
+void VLC::release(libvlc_media_list_t* mediaList) {
+    libvlc_media_list_release(mediaList);
+}
+
+void VLC::release(libvlc_media_player_t* mediaPlayer) {
+    libvlc_media_player_release(mediaPlayer);
+}
+
+void VLC::release(libvlc_media_list_player_t* mediaListPlayer) {
+    libvlc_media_list_player_release(mediaListPlayer);
+}
+
 
 char* VLC::phoneDevice = NULL;
 char* VLC::speakerDevice = NULL;
@@ -61,13 +77,13 @@ void VLC::deleteInstance() {
 
 void VLC::setPhoneDevice(const char* phoneDevice) {
     SAFE_DELETE_ARRAY(VLC::phoneDevice);
-    VLC::phoneDevice = new char[strlen(phoneDevice)];
+    VLC::phoneDevice = new char[strlen(phoneDevice) + 1];
     strcpy(VLC::phoneDevice, phoneDevice);
 }
 
 void VLC::setSpeakerDevice(const char* speakerDevice) {
     SAFE_DELETE_ARRAY(VLC::speakerDevice);
-    VLC::speakerDevice = new char[strlen(speakerDevice)];
+    VLC::speakerDevice = new char[strlen(speakerDevice) + 1];
     strcpy(VLC::speakerDevice, speakerDevice);
 }
 
@@ -95,12 +111,12 @@ VLC::VLC() {
             printf("-Device found:");
             if (phoneDevice && strcmp(curAudioDevice->psz_device, phoneDevice) == 0) {
                 printf(" --- Phone device");
-                phoneOutput = new char[strlen(curAudioOutput->psz_name)];
+                phoneOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(phoneOutput, curAudioOutput->psz_name);
             }
             if (speakerDevice && strcmp(curAudioDevice->psz_device, speakerDevice) == 0) {
                 printf(" --- Speaker device");
-                speakerOutput = new char[strlen(curAudioOutput->psz_name)];
+                speakerOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(speakerOutput, curAudioOutput->psz_name);
             }
             printf("\n");

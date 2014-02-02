@@ -1053,3 +1053,262 @@
 	<sphinxbase/fsg_model.h>
 	<sphinxbase/logmath.h>
 
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\main.cpp
+	"USBConnection.h"
+	"Tools.h"
+	"YoutubeAPI.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\include\usbconnection.h
+	"hidapi.h"
+	"../../telephoneProtocol.h"
+	<stdio.h>
+	<memory.h>
+	"Tools.h"
+	"InputProcessor.h"
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\hidapi\include\hidapi.h
+	<wchar.h>
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\telephoneprotocol.h
+	"uC/include/macros.h"
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\uc\include\macros.h
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\include\tools.h
+	"ScreenCommands.h"
+	<vector>
+	<string>
+	<ctype.h>
+	"conio.h"
+	<unistd.h>
+	<sys/select.h>
+	<termios.h>
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\screencommands.h
+	<windows.h>
+	<stdio.h>
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\inputprocessor.h
+	"AudioPlayer.h"
+	"AudioPlayerEventListener.h"
+	"ConfigAudioMenu.h"
+	"Tools.h"
+	<list>
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\audioplayer.h
+	"vlc/vlc.h"
+	<string.h>
+	<list>
+	<vector>
+	"VLC.h"
+	"AudioList.h"
+	"AudioPlayerEventListener.h"
+	"Tools.h"
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\vlc.h
+	<vlc/libvlc_structures.h>
+	<vlc/libvlc.h>
+	<vlc/libvlc_media.h>
+	<vlc/libvlc_media_player.h>
+	<vlc/libvlc_media_list.h>
+	<vlc/libvlc_media_list_player.h>
+	<vlc/libvlc_media_library.h>
+	<vlc/libvlc_media_discoverer.h>
+	<vlc/libvlc_events.h>
+	<vlc/libvlc_vlm.h>
+	<vlc/deprecated.h>
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_structures.h
+	<stdint.h>
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc.h
+	<stdio.h>
+	<stdarg.h>
+	<vlc/libvlc_structures.h>
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_player.h
+	<stdbool.h>
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_list_player.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_library.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_media_discoverer.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_events.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\libvlc_vlm.h
+
+1391345648 c:\users\leon\documents\github\hitjesfoon\pc\vlc\include\vlc\deprecated.h
+
+1391350811 c:\users\leon\documents\github\hitjesfoon\pc\include\vlc.h
+	"vlc/vlc.h"
+	"Tools.h"
+	<string.h>
+	<conio.h>
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\audiolist.h
+	"vlc/vlc.h"
+	<cerrno>
+	"VLC.h"
+	"Tools.h"
+	"InputProcessor.h"
+	"YoutubeAPI.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\include\youtubeapi.h
+	<stdio.h>
+	<stdarg.h>
+	<algorithm>
+	"HTTPTransfer.h"
+	"Tools.h"
+	"JsonParser.h"
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\httptransfer.h
+	<curl/curl.h>
+	"Tools.h"
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\curl.h
+	"curlver.h"
+	"curlbuild.h"
+	"curlrules.h"
+	<stdio.h>
+	<limits.h>
+	<osreldate.h>
+	<sys/types.h>
+	<time.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<sys/select.h>
+	<sys/socket.h>
+	<sys/time.h>
+	<support/SupportDefs.h>
+	"easy.h"
+	"multi.h"
+	"typecheck-gcc.h"
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\curlver.h
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\curlbuild.h
+	<sys/types.h>
+	<sys/socket.h>
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\curlrules.h
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\easy.h
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\multi.h
+	"curl.h"
+
+1391345639 c:\users\leon\documents\github\hitjesfoon\pc\curl\include\curl\typecheck-gcc.h
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\jsonparser.h
+	"json/json.h"
+	"Tools.h"
+	<stdio.h>
+	<vector>
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\json.h
+	"autolink.h"
+	"value.h"
+	"reader.h"
+	"writer.h"
+	"features.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\autolink.h
+	"config.h"
+	<cpptl/cpptl_autolink.h>
+	"autolink.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\config.h
+	<cpptl/config.h>
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\value.h
+	"forwards.h"
+	<string>
+	<vector>
+	<map>
+	<cpptl/smallmap.h>
+	<cpptl/forwards.h>
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\forwards.h
+	"config.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\reader.h
+	"features.h"
+	"value.h"
+	<deque>
+	<stack>
+	<string>
+	<iostream>
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\features.h
+	"forwards.h"
+
+1391345646 c:\users\leon\documents\github\hitjesfoon\pc\jsoncpp\include\json\writer.h
+	"value.h"
+	<vector>
+	<string>
+	<iostream>
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\audioplayereventlistener.h
+	"AudioPlayer.h"
+	"Tools.h"
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\configaudiomenu.h
+	"AudioMenu.h"
+	"Tools.h"
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\audiomenu.h
+	<dirent.h>
+	"vlc/vlc.h"
+	"AudioMenuItem.h"
+	"Tools.h"
+
+1391345645 c:\users\leon\documents\github\hitjesfoon\pc\include\audiomenuitem.h
+	"vlc/vlc.h"
+	"VLC.h"
+	"Tools.h"
+	<windows.h>
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\audiolist.cpp
+	"AudioList.h"
+
+1391351208 source:c:\users\leon\documents\github\hitjesfoon\pc\src\audiomenu.cpp
+	"AudioMenu.h"
+	"InputProcessor.h"
+
+1391349610 source:c:\users\leon\documents\github\hitjesfoon\pc\src\audiomenuitem.cpp
+	"AudioMenuItem.h"
+
+1391350852 source:c:\users\leon\documents\github\hitjesfoon\pc\src\audioplayer.cpp
+	"AudioPlayer.h"
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\httptransfer.cpp
+	"HTTPTransfer.h"
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\inputprocessor.cpp
+	"InputProcessor.h"
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\jsonparser.cpp
+	"JsonParser.h"
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\tools.cpp
+	"Tools.h"
+	"InputProcessor.h"
+
+1391348249 source:c:\users\leon\documents\github\hitjesfoon\pc\src\usbconnection.cpp
+	"USBConnection.h"
+
+1391349983 source:c:\users\leon\documents\github\hitjesfoon\pc\src\vlc.cpp
+	"VLC.h"
+
+1391345648 source:c:\users\leon\documents\github\hitjesfoon\pc\src\youtubeapi.cpp
+	"YoutubeAPI.h"
+
+1391347252 source:c:\users\leon\documents\github\hitjesfoon\pc\src\configaudiomenu.cpp
+	"ConfigAudioMenu.h"
+

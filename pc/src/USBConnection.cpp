@@ -10,17 +10,19 @@ USBConnection::USBConnection() {
     } else {
         hid_set_nonblocking(usbDevice, 1);
 
+        /* Commented out because not needed and always gave an error
         unsigned char* buf = new unsigned char[2];
         // Request state (cmd 0x81). The first byte is the report number (0x1).
         buf[0] = 0x0;
         buf[1] = 0x81;
-        int res = hid_write(usbDevice, buf, 17);
+        int res = hid_write(usbDevice, buf, 1);
         if (res < 0) {
             printf("Unable to write() (2)\n");
             //usbDevice = NULL;
         }
 
         SAFE_DELETE_ARRAY(buf);
+        */
 
         reset();
     }

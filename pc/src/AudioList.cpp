@@ -34,6 +34,17 @@ AudioList::AudioList(const char* listFilePath, const char *hitjesPath) {
 }
 
 AudioList::~AudioList() {
+
+    SAFE_DELETE_ARRAY(listFilePath);
+    SAFE_DELETE_ARRAY(hitjesPath);
+
+    // clear hitjeslist
+    if (hitjesList) {
+        for (int i = 0; i < sizeof(hitjesList); i++) {
+            VLC::release(hitjesList[i]);
+        }
+        SAFE_DELETE_ARRAY(hitjesList);
+    }
 }
 
 libvlc_media_t* AudioList::getAudio(int audioIndex) {
@@ -105,9 +116,9 @@ bool AudioList::update(unsigned int downloadCount) {
     // clear old hitjeslist
     if (hitjesList) {
         for (int i = 0; i < sizeof(hitjesList); i++) {
-            libvlc_media_release(hitjesList[i]);
+            VLC::release(hitjesList[i]);
         }
-        delete[] hitjesList;
+        SAFE_DELETE_ARRAY(hitjesList);
     }
     hitjesList = newHitjesList;
 }

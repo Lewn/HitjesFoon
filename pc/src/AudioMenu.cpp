@@ -71,7 +71,7 @@ AudioMenuItem* AudioMenu::createItem(const char* path) {
                     }
                 } else if (!strncmp("audio", entry->d_name, 5)) {
                     if (audioName == NULL) {
-                        audioName = new char[strlen(entry->d_name)];
+                        audioName = new char[strlen(entry->d_name) + 1];
                         strcpy(audioName, entry->d_name);
                     } else {
                         throw "Excess audio files found";
@@ -101,16 +101,22 @@ AudioMenuItem* AudioMenu::createItem(const char* path) {
     char* dirName = new char[10];
     for (int i = 1; i <= dirCount; i++) {
         sprintf(dirName, "%d\\", i);
-        followup[i - 1] = createItem(getAbsolutePath(path, pathLen, dirName));
+        char* absPath = getAbsolutePath(path, pathLen, dirName);
+        followup[i - 1] = createItem(absPath);
+        SAFE_DELETE_ARRAY(absPath);
     }
     SAFE_DELETE_ARRAY(dirName);
 
     closedir(dir);
     AudioMenuItem* item;
     if (audioName) {
-        item = new AudioMenuItem(getAbsolutePath(path, pathLen, audioName), followup, dirCount, false);;
+        char* absPath = getAbsolutePath(path, pathLen, audioName);
+        item = new AudioMenuItem(absPath, followup, dirCount, false);
+        SAFE_DELETE_ARRAY(absPath);
     } else {
-        item = new AudioMenuItem(getAbsolutePath(path, pathLen, textName), followup, dirCount, true);
+        char* absPath = getAbsolutePath(path, pathLen, textName);
+        item = new AudioMenuItem(absPath, followup, dirCount, true);
+        SAFE_DELETE_ARRAY(absPath);
     }
     SAFE_DELETE_ARRAY(audioName);
     SAFE_DELETE_ARRAY(textName);

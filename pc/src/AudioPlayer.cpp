@@ -13,6 +13,7 @@ AudioPlayer::AudioPlayer(AudioDevice device, AudioList* audioList) {
 }
 
 AudioPlayer::~AudioPlayer() {
+    VLC::release(audioPlayer);
 }
 
 
