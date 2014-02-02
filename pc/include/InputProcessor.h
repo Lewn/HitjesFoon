@@ -28,7 +28,7 @@ enum ProcessType {
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
-    InputProcessor(AudioList* hitjesList);
+    InputProcessor(AudioList* hitjesList, const char *configMenuPath);
     virtual ~InputProcessor();
 
     void resetInput();
@@ -61,6 +61,7 @@ protected:
     void setOutput(bool phone);
     void toggleOutput();
 private:
+    char* configMenuPath;
 };
 
 #endif // INPUTPROCESSOR_H

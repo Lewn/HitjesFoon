@@ -1,12 +1,15 @@
 #include "InputProcessor.h"
 
-InputProcessor::InputProcessor(AudioList* hitjesList) : hitjesList(hitjesList) {
+InputProcessor::InputProcessor(AudioList* hitjesList, const char *configMenuPath) : hitjesList(hitjesList) {
     processType = PROCESS_LINEAR_SHUFFLE;
     phoneAudioPlayer = new AudioPlayer(AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(AudioPlayer::SPEAKER, hitjesList);
     phoneOutput = false;
     earthDown = false;
     curAudioMenu = NULL;
+
+    this->configMenuPath = new char[strlen(configMenuPath) + 1];
+    strcpy(this->configMenuPath, configMenuPath);
 
     // listen to end event on phoneAudioPlayer, for queued processing
     //speakerAudioPlayer->attachEventListener(this);
@@ -19,6 +22,7 @@ InputProcessor::~InputProcessor() {
     SAFE_DELETE(phoneAudioPlayer);
     SAFE_DELETE(speakerAudioPlayer);
     SAFE_DELETE(curAudioMenu);
+    SAFE_DELETE_ARRAY(configMenuPath);
 }
 
 void InputProcessor::resetInput() {
@@ -90,7 +94,7 @@ void InputProcessor::processNum(int input) {
             case 999:
                 // Play the config menu
                 SAFE_DELETE(curAudioMenu);
-                curAudioMenu = new ConfigAudioMenu();
+                curAudioMenu = new ConfigAudioMenu(configMenuPath);
                 break;
             default:
                 playAudio(curNumber);

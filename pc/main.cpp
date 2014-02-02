@@ -19,11 +19,12 @@ int main() {
         char* trimBuf;
         char* hitjesListFile = new char[1024];
         char* hitjesPath = new char[1024];
+        char* configMenuPath = new char[1024];
         FILE* configFile = fopen("config.txt", "r");
 
         if(!configFile) {
-            delete[] readBuf;
-            delete[] hitjesListFile;
+            SAFE_DELETE_ARRAY(readBuf);
+            SAFE_DELETE_ARRAY(hitjesListFile);
             throw "Couldn't open config file";
         }
 
@@ -32,6 +33,9 @@ int main() {
 
         // read the path to use when saving music
         fgets(hitjesPath, 1024, configFile);
+
+        // read the path where the configMenu is saved
+        fgets(configMenuPath, 1024, configFile);
 
         // read Phone audio device from input
         if(fgets(readBuf, 1024, configFile) != NULL) {
@@ -52,7 +56,7 @@ int main() {
         }
 
         fclose(configFile);
-        delete[] readBuf;
+        SAFE_DELETE_ARRAY(readBuf);
 
         // instantiate usb and vlc, cause we will need them
         USBConnection connection;
@@ -60,11 +64,12 @@ int main() {
 
         // create the list with all hitjes from file and put it in the processor
         AudioList *hitjesList = new AudioList(trim(hitjesListFile), trim(hitjesPath));
-        delete[] hitjesListFile;
-        delete[] hitjesPath;
+        SAFE_DELETE_ARRAY(hitjesListFile);
+        SAFE_DELETE_ARRAY(hitjesPath);
 
         // create an input processor for processing keyboard and usb input
-        InputProcessor processor(hitjesList);
+        InputProcessor processor(hitjesList, trim(configMenuPath));
+        SAFE_DELETE_ARRAY(configMenuPath);
 
         while(true) {
             // read user input for selecting hitje, also read from usb
