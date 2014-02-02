@@ -1,6 +1,6 @@
 #include "YoutubeAPI.h"
 
-
+#define USE_YOUTUBE_DL
 
 YoutubeAPI::YoutubeAPI() {
 }
@@ -18,10 +18,19 @@ char* YoutubeAPI::searchVid(const char *query) {
 
     char *fileName = NULL;
     vector<string> videoIds = result.getVideoIds();
+    vector<string> titles = result.getVideoTitles();
+
+    #if defined (USE_YOUTUBE_DL)
+
+    fileName = downloadYoutubeDL(videoIds[0].data(), titles[0].data());
+
+    #else
+
     char *videoInfo = getVideoInfo(videoIds[0].data());
     fileName = getFileFromVideoInfo(videoInfo);
     SAFE_DELETE_ARRAY(videoInfo);
-    vector<string> titles = result.getVideoTitles();
+
+    #endif
     while (!fileName && videoIds.size() > 1) {
         videoIds.erase(videoIds.begin());
         titles.erase(titles.begin());
@@ -303,6 +312,39 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     transfer.get(url, decodedFilename);
     printf("Downloading done!\n");
     return decodedFilename;
+}
+
+char* YoutubeAPI::downloadYoutubeDL(const char* videoId, const char* title) {
+    int titleLen = strlen(title);
+    char fileName[titleLen + 4 + 1];
+    strncpy(fileName, title, titleLen);
+    strncpy(fileName + titleLen, ".mp4", 4);
+    fileName[titleLen + 4] = 0;
+
+    char *decodedFilename = urlDecode(fileName);
+    printf("filename address '%p'", decodedFilename);
+
+    // replace + with spaces in title
+    for (char *itr = decodedFilename; *itr; itr++) {
+        if (*itr == '+') {
+            *itr = ' ';
+        } else if (!((*itr >= 'A' && *itr <= 'Z') || (*itr >= 'a' && *itr <= 'z') || (*itr >= '0' && *itr <= '9') || *itr == '(' || *itr == ')' || *itr == '-' || *itr == '_' || *itr == '#' || *itr == '.')) {
+            *itr = ' ';
+        }
+    }
+
+    printf("\nStarted downloading '%s' using youtube-dl\n", decodedFilename);
+
+    char* buffer = new char[100];
+    sprintf(buffer, "youtube-dl.exe %s -o \"%s\"", videoId, decodedFilename);
+    if(!system(buffer)) {
+        printf("Downloading done!\n");
+        return decodedFilename;
+    } else {
+        printf("Downloading failed!\n");
+        SAFE_DELETE_ARRAY(decodedFilename);
+        return NULL;
+    }
 }
 
 char *YoutubeAPI::urlDecode(char *src) {

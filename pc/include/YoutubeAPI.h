@@ -36,6 +36,8 @@ protected:
     char *getFileFromVideoInfo(char *videoInfo);
     char *downloadEncodedUrl(const char *url, const char *title);
     void decryptSignature(char *sigstart, int siglen, char *decrypted);
+
+    char* downloadYoutubeDL(const char* videoId, const char* title);
 private:
 };
 
