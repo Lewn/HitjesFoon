@@ -31,6 +31,20 @@ char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filenam
     return absolute;
 }
 
+/**
+ * compare two strings. They match depending on pattern characters.
+ * special compare characters are:
+ * - *, match any character
+ */
+bool strmatch(char* str, char* pattern) {
+    for (; *pattern; pattern++,str++) {
+        if (*pattern != '*' && *pattern != *str) {
+            return false;
+        }
+    }
+    return *pattern == *str;
+}
+
 
 
 

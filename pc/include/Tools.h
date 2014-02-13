@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <ctype.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ char* trimLeft(char* toTrim);
 char* trimRight(char* toTrim);
 char* trim(char* toTrim);
 char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filename);
-
+bool strmatch(char* str, char* pattern);
 
 #ifdef _WIN32
 #include "conio.h"
