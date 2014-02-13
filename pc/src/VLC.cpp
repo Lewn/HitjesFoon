@@ -113,11 +113,15 @@ VLC::VLC() {
                 printf(" --- Phone device");
                 phoneOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(phoneOutput, curAudioOutput->psz_name);
+                phoneDevice = new char[strlen(curAudioDevice->psz_device) + 1];
+                strcpy(phoneDevice, curAudioDevice->psz_device);
             }
             if (speakerDevice && strmatch(curAudioDevice->psz_device, speakerDevice)) {
                 printf(" --- Speaker device");
                 speakerOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(speakerOutput, curAudioOutput->psz_name);
+                speakerDevice = new char[strlen(curAudioDevice->psz_device) + 1];
+                strcpy(speakerDevice, curAudioDevice->psz_device);
             }
             printf("\n");
             printf("  Device:      %s\n", curAudioDevice->psz_device);

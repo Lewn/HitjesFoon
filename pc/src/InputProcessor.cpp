@@ -237,6 +237,7 @@ void InputProcessor::setOutput(bool phone) {
                 if (phoneOutput) {
                     int audioIndex;
                     switch (processType) {
+                        case PROCESS_LINEAR_SHUFFLE:
                         case PROCESS_LINEAR:
                             // get song playing at phoneAudioPlayer and list it for speakerAudioPlayer
                             audioIndex = phoneAudioPlayer->getAudioIndex();
