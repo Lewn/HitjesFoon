@@ -7,6 +7,7 @@ class AudioList;
 
 #include "vlc/vlc.h"
 #include <cerrno>
+#include <dirent.h>
 
 #include "VLC.h"
 #include "Tools.h"
@@ -15,18 +16,30 @@ class AudioList;
 
 using namespace std;
 
+struct Hitje {
+    libvlc_media_t *mediaData;
+    int hitIndex;
+    char *title;
+    char *artist;
+
+    Hitje(libvlc_media_t *mediaData, int hitIndex, char *title, char *artist);
+    ~Hitje();
+};
+
 class AudioList {
 public:
     AudioList(const char *listFilePath, const char *hitjesPath);
     virtual ~AudioList();
 
+    char *createHitjeName(const Hitje *hitje, bool absolute);
+    char *createHitjeName(int hitIndex, char *title, char *artist, bool absolute);
     bool update(unsigned int downloadCount);
     libvlc_media_t* getAudio(int audioIndex);
 
 protected:
     unsigned int downloadCount;
     YoutubeAPI api;
-    libvlc_media_t **hitjesList;
+    Hitje **hitjesList;
     int hitjesPathLen;
     char *listFilePath;
     char *hitjesPath;
@@ -34,8 +47,8 @@ protected:
 
     int checkMediaFile(libvlc_media_t* mediaFile);
 
-    void skipInvalidLines(char* buffer, int *hitIndex, char *title, char *artist, char *path, string &fileOutput);
-    bool parseBuf(char* buffer, int *hitIndex, char *title, char *artist, char *path, string &fileOutput);
+    void skipInvalidLines(char* buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
+    bool parseBuf(char* buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
     char* getVideoFile(int hitIndex, char *title, char *artist);
 
 private:

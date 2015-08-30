@@ -292,6 +292,7 @@ DWORD WINAPI doUpdate(LPVOID self) {
         printlevel(LINFO, "\nDownloading one more hitje");
         processor->requestInput();
     }while (processor->getHitjesList()->update(1));
+    processor->requestInput();
 }
 
 bool InputProcessor::threadRunning() {

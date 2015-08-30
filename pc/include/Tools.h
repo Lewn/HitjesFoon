@@ -12,6 +12,7 @@
 #include <string>
 #include <ctype.h>
 #include <stdio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -43,7 +44,8 @@ enum PRINT_LEVEL {
     LWARNING,
     LINFO,
     LBGINFO,
-    LDEBUG
+    LDEBUG,
+    LDEBUGSLOW
 };
 
 extern PRINT_LEVEL msglevel;
@@ -52,5 +54,6 @@ void printlevel(PRINT_LEVEL level, char *format, ...);
 int getKey();
 int readKeyboard();
 int selection(vector<string> options);
+void filesystemSafe(char *str);
 
 #endif // TOOLS_H

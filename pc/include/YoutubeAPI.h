@@ -26,7 +26,7 @@ public:
     YoutubeAPI();
     ~YoutubeAPI();
 
-    char* searchVid(const char *query);
+    char* searchVid(const char *query, const char *dllocation);
 protected:
     HTTPTransfer transfer;
 
@@ -38,7 +38,7 @@ protected:
     char *downloadEncodedUrl(const char *url, const char *title);
     void decryptSignature(char *sigstart, int siglen, char *decrypted);
 
-    char* downloadYoutubeDL(const char* videoId, const char* title);
+    char* downloadYoutubeDL(const char *dllocation, const char* videoId, const char* title);
 private:
 };
 

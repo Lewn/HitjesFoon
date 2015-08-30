@@ -137,9 +137,15 @@ void printlevel(PRINT_LEVEL level, char *format, ...) {
     if (level == LERROR || level == LWARNING) {
         SetConsoleTextAttribute(hConsole, 7);
     }
+    if (msglevel == LDEBUGSLOW) {
+        Sleep(20);
+    }
 #else
     if (level == LERROR || level == LWARNING) {
         printf("\033[0m");
+    }
+    if (msglevel == LDEBUGSLOW) {
+        sleep(20);
     }
 #endif
 }
@@ -213,4 +219,14 @@ int selection(vector<string> options) {
         }
     } while (true);
     return curSelection;
+}
+
+void filesystemSafe(char *str) {
+    // replace + with spaces in title
+    const char *filechars = "`~!@#$%^&()-_+=[]{};'.,";
+    for (; *str; str++) {
+        if (!((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z') || (*str >= '0' && *str <= '9') || strchr(filechars, *str))) {
+            *str = ' ';
+        }
+    }
 }

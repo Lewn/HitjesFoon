@@ -7,7 +7,7 @@ YoutubeAPI::~YoutubeAPI() {
 }
 
 
-char* YoutubeAPI::searchVid(const char *query) {
+char* YoutubeAPI::searchVid(const char *query, const char *dllocation) {
     // we only need the total amount of results and each results id (kind and channelId/videoId)
     JsonParser result = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
     if (result.getTotalResults() == 0) {
@@ -20,7 +20,7 @@ char* YoutubeAPI::searchVid(const char *query) {
 
 #if defined (USE_YOUTUBE_DL)
 
-    fileName = downloadYoutubeDL(videoIds[0].data(), titles[0].data());
+    fileName = downloadYoutubeDL(dllocation, videoIds[0].data(), titles[0].data());
 
 #else
 
@@ -45,7 +45,7 @@ char* YoutubeAPI::searchVid(const char *query) {
                 int index = c - '0' - 1;
                 if (index >= 0 && index < titles.size()) {
 #if defined (USE_YOUTUBE_DL)
-                    fileName = downloadYoutubeDL(videoIds[0].data(), titles[0].data());
+                    fileName = downloadYoutubeDL(dllocation, videoIds[0].data(), titles[0].data());
 #else
                     char *videoInfo = getVideoInfo(videoIds[0].data());
                     fileName = getFileFromVideoInfo(videoInfo);
@@ -316,7 +316,7 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     return decodedFilename;
 }
 
-char* YoutubeAPI::downloadYoutubeDL(const char* videoId, const char* title) {
+char* YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char* videoId, const char* title) {
     int titleLen = strlen(title);
     char fileName[titleLen + 4 + 1];
     strncpy(fileName, title, titleLen);
@@ -326,38 +326,33 @@ char* YoutubeAPI::downloadYoutubeDL(const char* videoId, const char* title) {
     char *decodedFilename = urlDecode(fileName);
     printlevel(LDEBUG, "filename address '%p'", decodedFilename);
 
-    // replace + with spaces in title
-    for (char *itr = decodedFilename; *itr; itr++) {
-        if (*itr == '+') {
-            *itr = ' ';
-        } else if (!((*itr >= 'A' && *itr <= 'Z') || (*itr >= 'a' && *itr <= 'z') || (*itr >= '0' && *itr <= '9') || *itr == '(' || *itr == ')' || *itr == '-' || *itr == '_' || *itr == '#' || *itr == '.')) {
-            *itr = ' ';
-        }
-    }
+    filesystemSafe(decodedFilename);
+    char *absFilename = getAbsolutePath(dllocation, strlen(dllocation), decodedFilename);
+    SAFE_DELETE_ARRAY(decodedFilename);
 
-    printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", decodedFilename);
+    printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", absFilename);
 
     char* buffer = new char[200];
     if (msglevel < PRINT_LEVEL::LBGINFO) {
-        sprintf(buffer, "youtube-dl.exe --quiet --no-progress %s --extract-audio --audio-format mp3 -o \"%s\"", videoId, decodedFilename);
+        sprintf(buffer, "youtube-dl.exe --quiet --no-progress --extract-audio --audio-format mp3 -o \"%s\" -- %s", absFilename, videoId);
     }else {
-        sprintf(buffer, "youtube-dl.exe %s --extract-audio --audio-format mp3 -o \"%s\"", videoId, decodedFilename);
+        sprintf(buffer, "youtube-dl.exe --extract-audio --audio-format mp3 -o \"%s\" -- %s", absFilename, videoId);
     }
     if(!system(buffer)) {
         printlevel(LBGINFO, "Downloading done!\n");
         // set extension to mp3
-        char *extension = strrchr(decodedFilename, '.');
+        char *extension = strrchr(absFilename, '.');
         if (extension) {
             // add .mp3 extension to filename
             sprintf(extension, ".mp3");
         } else {
-            printlevel(LBGINFO, "Filename: %s\n", decodedFilename);
+            printlevel(LBGINFO, "Filename: %s\n", absFilename);
             throw "Couldn't change extension";
         }
-        return decodedFilename;
+        return absFilename;
     } else {
         printlevel(LWARNING, "Downloading failed!\n");
-        SAFE_DELETE_ARRAY(decodedFilename);
+        SAFE_DELETE_ARRAY(absFilename);
         return NULL;
     }
 }
