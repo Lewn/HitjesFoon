@@ -100,7 +100,6 @@ VLC::VLC() {
     phoneOutput = NULL;
     speakerOutput = NULL;
     vector<string> outputs, devices;
-    devices.push_back(string("(default)"));
     while(curAudioOutput) {
         libvlc_audio_output_device_t *audioDevices, *curAudioDevice;
         audioDevices = libvlc_audio_output_device_list_get(libvlcInstance, curAudioOutput->psz_name);
@@ -108,24 +107,24 @@ VLC::VLC() {
         while(curAudioDevice) {
             outputs.push_back(string(curAudioOutput->psz_name));
             devices.push_back(string(curAudioDevice->psz_device));
-            printf("-Device found:");
+            printlevel(LDEBUG, "-Device found:");
             if (phoneDevice && strmatch(curAudioDevice->psz_device, phoneDevice)) {
-                printf(" --- Phone device");
+                printlevel(LDEBUG, " --- Phone device");
                 phoneOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(phoneOutput, curAudioOutput->psz_name);
                 phoneDevice = new char[strlen(curAudioDevice->psz_device) + 1];
                 strcpy(phoneDevice, curAudioDevice->psz_device);
             }
             if (speakerDevice && strmatch(curAudioDevice->psz_device, speakerDevice)) {
-                printf(" --- Speaker device");
+                printlevel(LDEBUG, " --- Speaker device");
                 speakerOutput = new char[strlen(curAudioOutput->psz_name) + 1];
                 strcpy(speakerOutput, curAudioOutput->psz_name);
                 speakerDevice = new char[strlen(curAudioDevice->psz_device) + 1];
                 strcpy(speakerDevice, curAudioDevice->psz_device);
             }
-            printf("\n");
-            printf("  Device:      %s\n", curAudioDevice->psz_device);
-            printf("  Description: %s\n", curAudioDevice->psz_description);
+            printlevel(LDEBUG, "\n");
+            printlevel(LDEBUG, "  Device:      %s\n", curAudioDevice->psz_device);
+            printlevel(LDEBUG, "  Description: %s\n", curAudioDevice->psz_description);
             curAudioDevice = curAudioDevice->p_next;
         }
         libvlc_audio_output_device_list_release(audioDevices);
@@ -134,26 +133,22 @@ VLC::VLC() {
     }
 
     if (!phoneDevice || (phoneOutput == NULL)) {
-        printf("\nPhone device %s not found, which to use?\n", phoneDevice);
+        printlevel(LWARNING, "\nPhone device '%s' not found, which to use?\n", phoneDevice);
         int i = selection(devices);
-        if (i != 0) {
-            phoneOutput = new char[outputs[i - 1].size()];
-            strcpy(phoneOutput, outputs[i - 1].data());
-            phoneDevice = new char[devices[i].size()];
-            strcpy(phoneDevice, devices[i].data());
-        }
-        printf("\n");
+        phoneOutput = new char[outputs[i].size()];
+        strcpy(phoneOutput, outputs[i].data());
+        phoneDevice = new char[devices[i].size()];
+        strcpy(phoneDevice, devices[i].data());
+        printlevel(LWARNING, "\n");
     }
     if (!speakerDevice || (speakerOutput == NULL)) {
-        printf("\nSpeaker device %s not found, which to use?\n", speakerDevice);
+        printlevel(LWARNING, "\nSpeaker device %s not found, which to use?\n", speakerDevice);
         int i = selection(devices);
-        if (i != 0) {
-            speakerOutput = new char[outputs[i].size()];
-            strcpy(speakerOutput, outputs[i].data());
-            speakerDevice = new char[devices[i].size()];
-            strcpy(speakerDevice, devices[i].data());
-        }
-        printf("\n");
+        speakerOutput = new char[outputs[i].size()];
+        strcpy(speakerOutput, outputs[i].data());
+        speakerDevice = new char[devices[i].size()];
+        strcpy(speakerDevice, devices[i].data());
+        printlevel(LWARNING, "\n");
     }
     libvlc_audio_output_list_release(audioOutputs);
 }

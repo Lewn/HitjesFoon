@@ -9,6 +9,7 @@ enum InputVal {
     INPUT_HORN_DOWN,
     INPUT_HORN_SWAP,
     INPUT_END,
+    INPUT_UPDATE,
     INPUT_TEST,
     INPUT_NONE
 };
@@ -19,6 +20,12 @@ enum ProcessType {
     PROCESS_SWAP,
     PROCESS_LINEAR_SHUFFLE
 };
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <pthread>
+#endif // __WIN32
 
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
@@ -31,8 +38,10 @@ public:
     InputProcessor(AudioList* hitjesList, const char *configMenuPath);
     virtual ~InputProcessor();
 
+    AudioList *getHitjesList();
     void resetInput();
     void process(int input);
+    void requestInput();
     void audioPlayerEvent(Event evt, AudioPlayer* audioPlayer);
 protected:
     AudioList *hitjesList;
@@ -52,7 +61,6 @@ protected:
     void processNum(int input);
     void processAlt(int input);
 
-    void requestInput();
     void playAudio(int curNumber);
     void playQueued();
 
@@ -60,6 +68,10 @@ protected:
     void setHornDown(bool down);
     void setOutput(bool phone);
     void toggleOutput();
+
+    bool threadRunning();
+    void threadUpdate();
+
 private:
     char* configMenuPath;
 };

@@ -1,7 +1,8 @@
 #ifndef YOUTUBEAPI_H
 #define YOUTUBEAPI_H
 
-#define DEVELOPER_KEY "AIzaSyCHwvjNTHiHoPC8tW6_ibs5MYbakDE8kTg"
+#define DEVELOPER_KEY "AIzaSyCHwvjNTHiHoPC8tW6_ibs5MYbakDE8kTg" //Hitjesfoon
+//#define DEVELOPER_KEY "AIzaSyBghZHHsanJEnahktJ5LmWbEYBv0WsgyVc" //Leon
 
 #define _WIN32_WINNT 0x0601
 

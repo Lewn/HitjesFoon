@@ -1,13 +1,14 @@
 
 
-#define MODELDIR "D:\\Dropbox\\Documenten\\projects\\github\\HitjesFoon\\pc\\pocketsphinx\\model\\"
-
 #include "USBConnection.h"
 #include "Tools.h"
 #include "YoutubeAPI.h"
 
 
 using namespace std;
+
+
+extern PRINT_LEVEL msglevel = PRINT_LEVEL::LINFO;
 
 int main() {
 #ifndef _WIN32
@@ -81,9 +82,7 @@ int main() {
             }
 
             if (c == INPUT_TEST) {
-                do {
-                    hitjesList->update(10);
-                } while (readKeyboard() == INPUT_NONE);
+                // test with t
             } else if (c == INPUT_END) {
                 // end at q
                 break;
@@ -92,17 +91,17 @@ int main() {
             processor.process(c);
         }
 
-        delete hitjesList;
+        SAFE_DELETE(hitjesList);
 
     } catch(const char* ex) {
-        printf("\n\nERROR: %s\n", ex);
+        printlevel(LERROR, "%s\n", ex);
     }
 
 #ifndef _WIN32
     resetTerminalMode();
 #endif
 
-    printf("\n\n");
+    printlevel(LINFO, "\n\n");
     VLC::deleteInstance();
 }
 

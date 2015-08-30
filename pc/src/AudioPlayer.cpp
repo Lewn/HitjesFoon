@@ -135,22 +135,22 @@ void AudioPlayer::attachEventListener(AudioPlayerEventListener* listener) {
         libvlc_event_manager_t* eventManager = libvlc_media_player_event_manager(audioPlayer);
         libvlc_event_attach(eventManager, libvlc_MediaPlayerEndReached, callback, this);
     }
-    printf("Attached a listener\n");
+    printlevel(LDEBUG, "Attached a listener\n");
     listeners.push_back(listener);
 }
 
 void AudioPlayer::callback(const libvlc_event_t* evt, void* userData) {
     switch (evt->type) {
         case libvlc_MediaPlayerEndReached:
-            printf("\n\nSong ended");
+            printlevel(LDEBUG, "\n\nSong ended");
             ((AudioPlayer*)userData)->notificate(AudioPlayerEventListener::DONE);
             break;
         default:
-            printf("\n\nUnkown event triggered\n");
+            printlevel(LDEBUG, "\n\nUnkown event triggered\n");
     }
 }
 void AudioPlayer::notificate(AudioPlayerEventListener::Event eventType) {
-    printf("\nNotificating %d\n", (int)listeners.size());
+    printlevel(LDEBUG, "\nNotificating %d\n", (int)listeners.size());
     for (AudioPlayerEventListener * listener : listeners) {
         listener->audioPlayerEvent(eventType, this);
     }

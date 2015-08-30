@@ -1,7 +1,5 @@
 #include "YoutubeAPI.h"
 
-#define USE_YOUTUBE_DL
-
 YoutubeAPI::YoutubeAPI() {
 }
 
@@ -20,25 +18,25 @@ char* YoutubeAPI::searchVid(const char *query) {
     vector<string> videoIds = result.getVideoIds();
     vector<string> titles = result.getVideoTitles();
 
-    #if defined (USE_YOUTUBE_DL)
+#if defined (USE_YOUTUBE_DL)
 
     fileName = downloadYoutubeDL(videoIds[0].data(), titles[0].data());
 
-    #else
+#else
 
     char *videoInfo = getVideoInfo(videoIds[0].data());
     fileName = getFileFromVideoInfo(videoInfo);
     SAFE_DELETE_ARRAY(videoInfo);
 
-    #endif
+#endif
     while (!fileName && videoIds.size() > 1) {
         videoIds.erase(videoIds.begin());
         titles.erase(titles.begin());
 
         // wait 10 seconds, if user typed y, go to next video id
-        printf("\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
+        printlevel(LINFO, "\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
         for (int titleIndex = 0; titleIndex < titles.size(); titleIndex++) {
-            printf(" %d: %s\n", titleIndex + 1, titles[titleIndex].data());
+            printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].data());
         }
         int i;
         for (i = 0; i < 1000; i++) {
@@ -46,15 +44,19 @@ char* YoutubeAPI::searchVid(const char *query) {
                 char c = getch();
                 int index = c - '0' - 1;
                 if (index >= 0 && index < titles.size()) {
-                    char *videoInfo = getVideoInfo(videoIds[index].data());
+#if defined (USE_YOUTUBE_DL)
+                    fileName = downloadYoutubeDL(videoIds[0].data(), titles[0].data());
+#else
+                    char *videoInfo = getVideoInfo(videoIds[0].data());
                     fileName = getFileFromVideoInfo(videoInfo);
                     SAFE_DELETE_ARRAY(videoInfo);
+#endif
                 }
                 break;
             }
             Sleep(10);
             if (i % 100 == 0) {
-                printf("%d seconds  \r", 10 - i / 100);
+                printlevel(LINFO, "%d seconds  \r", 10 - i / 100);
             }
         }
         if (i == 1000) {
@@ -96,9 +98,9 @@ JsonParser YoutubeAPI::makeRequest(RequestType requestType, char* part, char* fi
     SAFE_DELETE_ARRAY(extraArgs);
     extraArgs = NULL;
 
-    printf("\n%s\n", baseUrl);
+    printlevel(LDEBUG, "\n%s\n", baseUrl);
     char* jsonString = transfer.get(baseUrl);
-    printf("%s", jsonString);
+    printlevel(LDEBUG, "%s", jsonString);
     JsonParser parser;
     parser.parse(jsonString);
     SAFE_DELETE_ARRAY(jsonString);
@@ -167,7 +169,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
             case 'u':
                 // check for url
                 if (!strncmp(itr, "url=", 4)) {
-                    printf("url found \n");
+                    printlevel(LDEBUG, "url found \n");
                     if (urlStart || urlEnd) {
                         throw "two urls found";
                     }
@@ -186,7 +188,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
 
                     bool decrypt = !strncmp(itr, "s=", 2);
                     if (decrypt || !strncmp(itr, "sig=", 4)) {
-                        printf("sig found \n");
+                        printlevel(LDEBUG, "sig found \n");
                         if (sig[0]) {
                             throw "two sigs found";
                         }
@@ -200,7 +202,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                             // TODO: implement player url extraction
                             decryptSignature(itr + 2, sigEnd - (itr + 2), sig);
                             if (!sig[0]) {
-                                printf("couldn't decrypt sig\n");
+                                printlevel(LDEBUG, "couldn't decrypt sig\n");
                             }
                         } else {
                             strncpy(sig, itr + 4, sigEnd - (itr + 4));
@@ -213,7 +215,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
             case 'i':
                 // check for signature
                 if (!strncmp(itr, "itag=", 5)) {
-                    printf("itag found\n");
+                    printlevel(LDEBUG, "itag found\n");
                     if (itagStart || itagEnd) {
                         throw "two itag found";
                     }
@@ -228,7 +230,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
                 break;
             case '\0':
             case ',':
-                printf("Found comma\n");
+                printlevel(LDEBUG, "Found comma\n");
                 // split on comma, save only when url and sig found
                 if (urlStart && urlEnd && sig[0] && itagStart && itagEnd) {
                     // only parse if all information found
@@ -258,12 +260,12 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
 
                         highestPriority = i;
 
-                        printf("\nNew url inserted, %d: %s\n", itag, highestUrl);
+                        printlevel(LBGINFO, "\nNew url inserted, %d: %s\n", itag, highestUrl);
                     } else {
-                        printf("\nData with lower quality found\n");
+                        printlevel(LBGINFO, "\nData with lower quality found\n");
                     }
                 } else {
-                    printf("\nNot all information found\n");
+                    printlevel(LWARNING, "\nNot all information found\n");
                 }
 
                 urlStart = urlEnd = itagStart = itagEnd = NULL;
@@ -279,7 +281,7 @@ char *YoutubeAPI::getFileFromVideoInfo(char *videoInfo) {
 
     char *fileName = NULL;
     if (highestUrl) {
-        printf("Best url found: \n%s\n", highestUrl);
+        printlevel(LBGINFO, "Best url found: \n%s\n", highestUrl);
         fileName = downloadEncodedUrl(highestUrl, titleStart);
         SAFE_DELETE_ARRAY(highestUrl);
     }
@@ -297,7 +299,7 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     fileName[titleLen + 4] = 0;
 
     char *decodedFilename = urlDecode(fileName);
-    printf("filename address '%p'", decodedFilename);
+    printlevel(LBGINFO, "filename address '%p'", decodedFilename);
 
     // replace + with spaces in title
     for (char *itr = decodedFilename; *itr; itr++) {
@@ -308,9 +310,9 @@ char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
         }
     }
 
-    printf("\nStarted downloading '%s'\n", decodedFilename);
+    printlevel(LBGINFO, "\nStarted downloading '%s'\n", decodedFilename);
     transfer.get(url, decodedFilename);
-    printf("Downloading done!\n");
+    printlevel(LBGINFO, "Downloading done!\n");
     return decodedFilename;
 }
 
@@ -322,7 +324,7 @@ char* YoutubeAPI::downloadYoutubeDL(const char* videoId, const char* title) {
     fileName[titleLen + 4] = 0;
 
     char *decodedFilename = urlDecode(fileName);
-    printf("filename address '%p'", decodedFilename);
+    printlevel(LDEBUG, "filename address '%p'", decodedFilename);
 
     // replace + with spaces in title
     for (char *itr = decodedFilename; *itr; itr++) {
@@ -333,15 +335,28 @@ char* YoutubeAPI::downloadYoutubeDL(const char* videoId, const char* title) {
         }
     }
 
-    printf("\nStarted downloading '%s' using youtube-dl\n", decodedFilename);
+    printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", decodedFilename);
 
-    char* buffer = new char[100];
-    sprintf(buffer, "youtube-dl.exe %s -o \"%s\"", videoId, decodedFilename);
+    char* buffer = new char[200];
+    if (msglevel < PRINT_LEVEL::LBGINFO) {
+        sprintf(buffer, "youtube-dl.exe --quiet --no-progress %s --extract-audio --audio-format mp3 -o \"%s\"", videoId, decodedFilename);
+    }else {
+        sprintf(buffer, "youtube-dl.exe %s --extract-audio --audio-format mp3 -o \"%s\"", videoId, decodedFilename);
+    }
     if(!system(buffer)) {
-        printf("Downloading done!\n");
+        printlevel(LBGINFO, "Downloading done!\n");
+        // set extension to mp3
+        char *extension = strrchr(decodedFilename, '.');
+        if (extension) {
+            // add .mp3 extension to filename
+            sprintf(extension, ".mp3");
+        } else {
+            printlevel(LBGINFO, "Filename: %s\n", decodedFilename);
+            throw "Couldn't change extension";
+        }
         return decodedFilename;
     } else {
-        printf("Downloading failed!\n");
+        printlevel(LWARNING, "Downloading failed!\n");
         SAFE_DELETE_ARRAY(decodedFilename);
         return NULL;
     }
@@ -372,7 +387,7 @@ char *YoutubeAPI::urlDecode(char *src) {
 
 void YoutubeAPI::decryptSignature(char *sigstart, int siglen, char *decrypted) {
     return;
-    printf("decrypted sig length %d\n", siglen);
+    printlevel(LDEBUG, "decrypted sig length %d\n", siglen);
     switch (siglen) {
         case 93:
             reverse_copy(sigstart + 30, sigstart + 87, decrypted);      // 56 chars
@@ -422,7 +437,7 @@ void YoutubeAPI::decryptSignature(char *sigstart, int siglen, char *decrypted) {
             decrypted[81] = '\0';
             break;
     }
-    printf("after decryption: %s\n", decrypted);
+    printlevel(LDEBUG, "after decryption: %s\n", decrypted);
     //exit(1);
 //elif len(s) == 90:
 //    return s[25] + s[3: 25] + s[2] + s[26: 40] + s[77] + s[41: 77] + s[89] + s[78: 81]

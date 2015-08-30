@@ -37,7 +37,7 @@ char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filenam
  * - *, match any character
  */
 bool strmatch(char* str, char* pattern) {
-    for (; *pattern; pattern++,str++) {
+    for (; *pattern; pattern++, str++) {
         if (*pattern != '*' && *pattern != *str) {
             return false;
         }
@@ -101,6 +101,49 @@ int getch() {
 
 #include "InputProcessor.h"
 
+void printlevel(PRINT_LEVEL level, char *format, ...) {
+#ifdef _WIN32
+    HANDLE hConsole;
+#endif // _WIN32
+    va_list args;
+    if (level > msglevel) {
+        return;
+    }
+#ifdef _WIN32
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (level == LERROR) {
+        // print in red text
+        SetConsoleTextAttribute(hConsole, 12);
+        printf("ERR : ");
+    } else if (level == LWARNING) {
+        // print in yellow text
+        SetConsoleTextAttribute(hConsole, 14);
+        printf("WARN: ");
+    }
+#else
+    if (level == LERROR) {
+        // print in red text
+        printf("\033[31mERR : ");
+    } else if (level == LWARNING) {
+        // print in yellow text
+        printf("\033[33mWARN: ");
+    }
+#endif // _WIN32
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    // set print back to normal
+#ifdef _WIN32
+    if (level == LERROR || level == LWARNING) {
+        SetConsoleTextAttribute(hConsole, 7);
+    }
+#else
+    if (level == LERROR || level == LWARNING) {
+        printf("\033[0m");
+    }
+#endif
+}
+
 int getKey() {
     unsigned char c = getch();
     if (c == 0 || c == 224) {
@@ -113,21 +156,23 @@ int getKey() {
 int readKeyboard() {
     int hit = kbhit();
 
-    if(hit) {
+    if (hit) {
         char c = getch();
 
-        if(c >= '0' && c <= '9') {
+        if (c >= '0' && c <= '9') {
             // got a number, return it
             return c - '0';
-        } else if(c == 8) {
+        } else if (c == 8) {
             // backspace, simulate earth button (reset number)
             return INPUT_EARTH_DOWN;
-        } else if(c == 's') {
+        } else if (c == 's') {
             // s, simulate horn (swap output)
             return INPUT_HORN_SWAP;
-        } else if(c == 'q') {
+        } else if (c == 'q') {
             // q, return quit
             return INPUT_END;
+        } else if (c == 'u') {
+            return INPUT_UPDATE;
         } else if (c == 't') {
             // t, testing purposes
             return INPUT_TEST;
@@ -148,10 +193,10 @@ int selection(vector<string> options) {
         for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
             if (i++ == curSelection) {
                 setColors(BLACK, WHITE);
-            }else {
+            } else {
                 setColors(WHITE, BLACK);
             }
-            printf("%s\n", (*it).data());
+            printlevel(LINFO, "%s\n", (*it).data());
         }
         resetColors();
 
@@ -162,10 +207,10 @@ int selection(vector<string> options) {
         if (c == 328) {
             // up arrow
             curSelection = max(--curSelection, 0);
-        }else if (c == 336) {
+        } else if (c == 336) {
             // down arrow
             curSelection = min(++curSelection, (int)options.size() - 1);
         }
-    }while (true);
+    } while (true);
     return curSelection;
 }

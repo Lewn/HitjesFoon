@@ -12,7 +12,7 @@ AudioList::AudioList(const char* listFilePath, const char *hitjesPath) {
     this->listFilePath = NULL;
     listFile = fopen(listFilePath, "r");
     if (listFile == NULL) {
-        printf("File read error %d", errno);
+        printlevel(LERROR, "File read error %d", errno);
         throw "File not readable";
     }
 
@@ -28,7 +28,7 @@ AudioList::AudioList(const char* listFilePath, const char *hitjesPath) {
     this->hitjesPath = new char[strlen(hitjesPath) + 1];
     strcpy(this->hitjesPath, hitjesPath);
 
-    printf("\nCreating the hitjeslist\n\n");
+    printlevel(LINFO, "Creating the hitjeslist\n");
     hitjesList = 0;
     update(0);
 }
@@ -84,15 +84,15 @@ bool AudioList::update(unsigned int downloadCount) {
         }
 
         if (hitIndex <= 0 || hitIndex >= 999) {
-            printf("Wrong hitindex, skipping %d: '%s' '%s' '%s'\n", hitIndex, title, artist, path);
+            printlevel(LDEBUG, "Wrong hitindex, skipping %d: '%s' '%s' '%s'\n", hitIndex, title, artist, path);
         } else if (newHitjesList[hitIndex]) {
-            printf("Hitindex %d is defined multiple times\n", hitIndex);
+            printlevel(LERROR, "Hitindex %d is defined multiple times\n", hitIndex);
         } else {
             // and use all data to create a new element in list
             absPath = getAbsolutePath(hitjesPath, hitjesPathLen, path);
             libvlc_media_t* mediaFile = VLCInstance->newMediaFromPath(absPath);
             if (!checkMediaFile(mediaFile)) {
-                printf("Invalid file, '%s'\n", absPath);
+                printlevel(LERROR, "Invalid file, '%s'\n", absPath);
             } else {
                 newHitjesList[hitIndex] = mediaFile;
             }
@@ -121,6 +121,8 @@ bool AudioList::update(unsigned int downloadCount) {
         SAFE_DELETE_ARRAY(hitjesList);
     }
     hitjesList = newHitjesList;
+    // return wether there is more to download
+    return this->downloadCount == 0;
 }
 
 void AudioList::skipInvalidLines(char* buffer, int *hitIndex, char *title, char *artist, char *path, string &fileOutput) {
@@ -132,7 +134,7 @@ void AudioList::skipInvalidLines(char* buffer, int *hitIndex, char *title, char 
         }
         fgets(buffer, 999, listFile);
     } while(parseBuf(buffer, hitIndex, title, artist, path, fileOutput));
-    printf("\nSkipped all non hitjes lines\n\n");
+    printlevel(LDEBUG, "Skipped all non hitjes lines\n");
 }
 
 bool AudioList::parseBuf(char* buffer, int *hitIndex, char *title, char *artist, char *path, string &fileOutput) {
@@ -170,17 +172,18 @@ bool AudioList::parseBuf(char* buffer, int *hitIndex, char *title, char *artist,
         }
     }
     if (downloadCount && res == 3) {
-        printf("\n\nTrying to download youtube\n");
+        printlevel(LDEBUG, "\n\nTrying to download youtube\n");
         // no file found, title and artist are given, download from internet
         char *newpath = getVideoFile(*hitIndex, title, artist);
         if (newpath) {
-            printf("Parsing file at path %s\n", newpath);
+            printlevel(LBGINFO, "Parsing file at path %s\n", newpath);
             // downloaded video, save the new path
             sprintf(path, "%s", newpath);
             SAFE_DELETE_ARRAY(newpath);
             res = 4;
             downloadCount--;
-            printf("\nDownloaded and added new hitje %s\n", path);
+            printlevel(LINFO, "\nDownloaded and added new hitje %s\n", path);
+
         }
     }
     string buf = "\n";
@@ -213,17 +216,27 @@ char* AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
         char query[strlen(title) + strlen(artist) + 1];
         sprintf(query, "%s %s", title, artist);
 
-        printf("Searching for %s\n", query);
+        printlevel(LBGINFO, "Searching for %s\n", query);
         char *baseName = api.searchVid(query);
+        printlevel(LBGINFO, "Downloaded:  %s\n", baseName);
 
         if (baseName) {
             int baseNameLen = strlen(baseName);
             char *videoName = new char[baseNameLen + 6 + 1];
             sprintf(videoName, "%03d - %s", hitIndex, baseName);
 
-            printf("Done searching and found %s\n", videoName);
+            printlevel(LBGINFO, "Done searching and found %s\n", videoName);
             // create path for saving audio data
             char *videoPath = getAbsolutePath(hitjesPath, hitjesPathLen, videoName);
+
+#if defined (USE_YOUTUBE_DL)
+            // audio format already correct mp3, just move the file
+            printlevel(LBGINFO, "Moving '%s' to '%s'\n", baseName, videoPath);
+            rename(baseName, videoPath);
+            // and clean
+            SAFE_DELETE_ARRAY(videoPath);
+            SAFE_DELETE_ARRAY(baseName);
+#else
             // set extension to mp3
             char *extension = strrchr(videoPath, '.');
             sprintf(extension, ".mp3");
@@ -231,7 +244,7 @@ char* AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
             // use ffmpeg to get the audio file from video
             char decodeCmd[baseNameLen + strlen(videoPath) + 29 + 1 + 10];
             sprintf(decodeCmd, "ffmpeg -n -i \"%s\" -f mp3 -vn \"%s\"", baseName, videoPath);
-            printf("calling ffmpeg with '%s'\n", decodeCmd);
+            printlevel(LBGINFO, "calling ffmpeg with '%s'\n", decodeCmd);
             system(decodeCmd);
 
             FILE *musicFile = fopen(videoPath, "r");
@@ -246,26 +259,28 @@ char* AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
 
             // video file is not needed anymore, SAFE_DELETE(it
             remove(baseName);
-            printf("Removed old file\n");
+            printlevel(LBGINFO, "Basename: %s\n", baseName);
+            SAFE_DELETE_ARRAY(baseName);
+            printlevel(LBGINFO, "Removed old file\n");
 
-            // set extension to zero
+            // set extension to mp3
             extension = strrchr(videoName, '.');
             if (extension) {
                 // add .mp3 extension to filename
                 sprintf(extension, ".mp3");
             } else {
-                printf("Filename: %s\n", videoName);
+                printlevel(LBGINFO, "Filename: %s\n", videoName);
                 throw "Couldn't change extension";
             }
-            printf("Basename: %s\n", baseName);
-            SAFE_DELETE_ARRAY(baseName);
+#endif // USE_YOUTUBE_DL
+            printlevel(LBGINFO, "\n\nSuccessfully got file '%s'\n", videoName);
             return videoName;
         } else {
-            printf("No suitable video file found\n");
+            printlevel(LWARNING, "No suitable video file found\n");
         }
     } catch (const char* e) {
         // on any error, still continue
-        printf("An error occured while parsing, press any key to continue\n%s\n", e);
+        printlevel(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
         getchar();
     }
     return NULL;
