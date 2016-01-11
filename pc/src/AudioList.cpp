@@ -188,9 +188,10 @@ bool AudioList::update(unsigned int downloadCount) {
     }
 
 
-    listFile = fopen(listFilePath, "w");
-    fputs(fileOutput.data(), listFile);
-    fclose(listFile);
+// TODO: write updates to list (config?) file
+    //listFile = fopen(listFilePath, "w");
+    //fputs(fileOutput.data(), listFile);
+    //fclose(listFile);
     listFile = NULL;
 
 // clear old hitjeslist

@@ -21,11 +21,11 @@ bool AudioMenu::process(int input) {
         AudioMenuItem* nextItem = curItem->getFollowup(input - 1);
         if (nextItem) {
             // get next audio menu item
-            printf("\nGoing into item %d ", input);
+            printlevel(LDEBUG, "\nGoing into item %d ", input);
             curItem = nextItem;
             return true;
-        }else {
-            printf("\nInvalid input %d ", input);
+        } else {
+            printlevel(LDEBUG, "\nInvalid input %d ", input);
         }
     } else if (input == INPUT_EARTH_DOWN || input == INPUT_EARTH_SWAP) {
         // replay on earth button
@@ -54,42 +54,43 @@ AudioMenuItem* AudioMenu::createItem(const char* path) {
         throw "Path should point to an existing directory";
     }
 
-    struct dirent* entry;
-    char* textName = NULL;
-    char* audioName = NULL;
+    struct dirent *entry;
+    struct stat st;
+    char *textName = NULL;
+    char *audioName = NULL;
     int dirCount = 0;
     while ((entry = readdir(dir))) {
-        switch (entry->d_type) {
-            case 0:
-                // text file
-                if (!strncmp("text", entry->d_name, 4)) {
-                    if (textName == NULL) {
-                        textName = new char[strlen(entry->d_name) + 1];
-                        strcpy(textName, entry->d_name);
-                    } else {
-                        throw "Excess text files found";
-                    }
-                } else if (!strncmp("audio", entry->d_name, 5)) {
-                    if (audioName == NULL) {
-                        audioName = new char[strlen(entry->d_name) + 1];
-                        strcpy(audioName, entry->d_name);
-                    } else {
-                        throw "Excess audio files found";
-                    }
+        if (stat(entry->d_name, &st) == -1) {
+            printlevel(LWARNING, "Invalid file '%s' in dir '%s'\n", entry->d_name, dir);
+            continue;
+        }
+        if (S_ISREG(st.st_mode)) {
+            // regular file
+            if (!strncmp("text", entry->d_name, 4)) {
+                if (textName == NULL) {
+                    textName = new char[strlen(entry->d_name) + 1];
+                    strcpy(textName, entry->d_name);
+                } else {
+                    throw "Excess text files found";
                 }
-                break;
-            case 16:
-                // directory
-                int dirNum;
-                if (sscanf(entry->d_name, "%d", &dirNum) == 1) {
-                    if (++dirCount != dirNum) {
-                        throw "Excess directories found";
-                    }
+            } else if (!strncmp("audio", entry->d_name, 5)) {
+                if (audioName == NULL) {
+                    audioName = new char[strlen(entry->d_name) + 1];
+                    strcpy(audioName, entry->d_name);
+                } else {
+                    throw "Excess audio files found";
                 }
-                break;
-            default:
-                printf("\nUnknown entry '%s' with type %d", entry->d_name, entry->d_type);
-                break;
+            }
+        } else if (S_ISDIR(st.st_mode)) {
+            // directory
+            int dirNum;
+            if (sscanf(entry->d_name, "%d", &dirNum) == 1) {
+                if (++dirCount != dirNum) {
+                    throw "Excess directories found";
+                }
+            }
+        } else {
+            printlevel(LWARNING, "\nUnknown entry '%s' with type %d", entry->d_name, st.st_mode);
         }
     }
     if (audioName == NULL && textName == NULL) {

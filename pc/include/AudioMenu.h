@@ -4,6 +4,7 @@
 #define __NO_MINGW_LFS
 
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "vlc/vlc.h"
 #include "AudioMenuItem.h"
