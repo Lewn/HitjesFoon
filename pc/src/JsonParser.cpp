@@ -1,12 +1,17 @@
 #include "JsonParser.h"
 
-JsonParser::JsonParser() {}
+JsonParser::JsonParser() {
+    root = NULL;
+}
 
-JsonParser::~JsonParser() {}
+JsonParser::~JsonParser() {
+    SAFE_DELETE(root);
+}
 
 void JsonParser::parse(const char* jsonString) {
-    Json::Reader reader;
-    bool parsingSuccessful = reader.parse(jsonString, root);
+    root = new Document;
+    root->Parse(jsonString);
+    bool parsingSuccessful = true;
     if (!parsingSuccessful) {
         // report to the user the failure and their locations in the document.
         throw "Failed to parse configuration";
@@ -14,23 +19,23 @@ void JsonParser::parse(const char* jsonString) {
 }
 
 int JsonParser::getTotalResults() {
-    return root["pageInfo"]["totalResults"].asInt();
+    return (*root)["pageInfo"]["totalResults"].GetInt();
 }
 
 vector<string> JsonParser::getVideoIds() {
-    Json::Value items = root["items"];
+    Value &items = (*root)["items"];
     vector<string> videoIds;
-    for (int index = 0; index < items.size(); ++index) {
-        videoIds.push_back(items[index]["id"]["videoId"].asString());
+    for (unsigned int index = 0; index < items.Size(); ++index) {
+        videoIds.push_back(items[index]["id"]["videoId"].GetString());
     }
     return videoIds;
 }
 
 vector<string> JsonParser::getVideoTitles() {
-    Json::Value items = root["items"];
+    Value &items = (*root)["items"];
     vector<string> videoTitles;
-    for (int index = 0; index < items.size(); ++index) {
-        videoTitles.push_back(items[index]["snippet"]["title"].asString());
+    for (unsigned int index = 0; index < items.Size(); ++index) {
+        videoTitles.push_back(items[index]["snippet"]["title"].GetString());
     }
     return videoTitles;
 }

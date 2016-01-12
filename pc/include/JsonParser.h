@@ -1,12 +1,13 @@
 #ifndef JSONPARSER_H
 #define JSONPARSER_H
 
-#include "json/json.h"
+#include "rapidjson/document.h"
 #include "Tools.h"
 #include <stdio.h>
 #include <vector>
 
 using namespace std;
+using namespace rapidjson;
 
 class JsonParser {
 public:
@@ -18,7 +19,7 @@ public:
     vector<string> getVideoIds();
     vector<string> getVideoTitles();
 protected:
-    Json::Value root;
+    Document *root;
 private:
 };
 
