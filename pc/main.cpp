@@ -8,7 +8,8 @@
 using namespace std;
 
 
-extern PRINT_LEVEL msglevel = PRINT_LEVEL::LINFO;
+extern PRINT_LEVEL msglevel;
+PRINT_LEVEL msglevel = PRINT_LEVEL::LINFO;
 
 int main() {
 #ifndef _WIN32
@@ -16,12 +17,12 @@ int main() {
 #endif
 
     try {
-        char* readBuf = new char[1024];
-        char* trimBuf;
-        char* hitjesListFile = new char[1024];
-        char* hitjesPath = new char[1024];
-        char* configMenuPath = new char[1024];
-        FILE* configFile = fopen("config.txt", "r");
+        char *readBuf = new char[1024];
+        char *trimBuf;
+        char *hitjesListFile = new char[1024];
+        char *hitjesPath = new char[1024];
+        char *configMenuPath = new char[1024];
+        FILE *configFile = fopen("config.txt", "r");
 
         if(!configFile) {
             SAFE_DELETE_ARRAY(readBuf);
@@ -93,7 +94,7 @@ int main() {
 
         SAFE_DELETE(hitjesList);
 
-    } catch(const char* ex) {
+    } catch(const char *ex) {
         printlevel(LERROR, "%s\n", ex);
     }
 

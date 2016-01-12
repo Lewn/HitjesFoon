@@ -53,7 +53,7 @@ AudioList::~AudioList() {
 
     // clear hitjeslist
     if (hitjesList) {
-        for (int i = 0; i < sizeof(hitjesList); i++) {
+        for (unsigned int i = 0; i < sizeof(hitjesList); i++) {
             SAFE_DELETE(hitjesList[i]);
         }
         SAFE_DELETE_ARRAY(hitjesList);
@@ -196,7 +196,7 @@ bool AudioList::update(unsigned int downloadCount) {
 
 // clear old hitjeslist
     if (hitjesList) {
-        for (int i = 0; i < sizeof(hitjesList); i++) {
+        for (unsigned int i = 0; i < sizeof(hitjesList); i++) {
             SAFE_DELETE(hitjesList[i]);
         }
         SAFE_DELETE_ARRAY(hitjesList);

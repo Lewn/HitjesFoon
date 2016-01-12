@@ -236,7 +236,7 @@ void InputProcessor::setHornDown(bool down) {
 }
 
 void InputProcessor::setOutput(bool phone) {
-    switch(processType) {
+    switch (processType) {
         case PROCESS_SWAP:
             // swap the output directly between the two at press
             printlevel(LINFO, "\nSwapped phone and speaker output");
@@ -267,6 +267,8 @@ void InputProcessor::setOutput(bool phone) {
                                 phoneAudioPlayer->stop();
                             }
                             break;
+                        case PROCESS_SWAP:
+                            break;
                     }
                 }
             }
@@ -291,8 +293,9 @@ DWORD WINAPI doUpdate(LPVOID self) {
     do {
         printlevel(LINFO, "\nDownloading one more hitje");
         processor->requestInput();
-    }while (processor->getHitjesList()->update(1));
+    } while (processor->getHitjesList()->update(1));
     processor->requestInput();
+    return 0;
 }
 
 bool InputProcessor::threadRunning() {
@@ -310,7 +313,7 @@ void InputProcessor::doUpdate() {
     do {
         printlevel(LINFO, "\nDownloading one more hitje");
         processor->requestInput();
-    }while (processor->getHitjesList()->update(1));
+    } while (processor->getHitjesList()->update(1));
 }
 
 bool InputProcessor::threadRunning() {

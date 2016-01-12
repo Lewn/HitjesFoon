@@ -95,9 +95,9 @@ size_t HTTPTransfer::dataReceived(char* newData, size_t dataSize, size_t dataLen
 
 int HTTPTransfer::progress(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     if (dltotal) {
-        printf("Downloaded %3.0f\%\r", (double)dlnow / dltotal * 100);
+        printf("Downloaded %3.0f%% \r", (double)dlnow / dltotal * 100);
     } else if (ultotal) {
-        printf("Uploaded %3.0f\%\r", (double)ulnow / ultotal * 100);
+        printf("Uploaded %3.0f%% \r", (double)ulnow / ultotal * 100);
     }
     return 0;
 }

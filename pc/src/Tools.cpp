@@ -50,7 +50,7 @@ bool strmatch(char* str, char* pattern) {
 
 
 #ifdef _WIN32
-void getCursorXY(int &x, int &y) {
+void getCursorXY(short &x, short&y) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
         x = csbi.dwCursorPosition.X;
@@ -58,7 +58,7 @@ void getCursorXY(int &x, int &y) {
     }
 }
 
-void setCursorXY(int x, int y) {
+void setCursorXY(short x, short y) {
     COORD p = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
 }
@@ -101,7 +101,7 @@ int getch() {
 
 #include "InputProcessor.h"
 
-void printlevel(PRINT_LEVEL level, char *format, ...) {
+void printlevel(PRINT_LEVEL level, const char *format, ...) {
 #ifdef _WIN32
     HANDLE hConsole;
 #endif // _WIN32
@@ -191,7 +191,7 @@ int readKeyboard() {
 
 int selection(vector<string> options) {
     int curSelection = 0;
-    int x, y;
+    short x, y;
     getCursorXY(x, y);
     do {
         setCursorXY(x, y);
@@ -212,10 +212,12 @@ int selection(vector<string> options) {
         }
         if (c == 328) {
             // up arrow
-            curSelection = max(--curSelection, 0);
+            curSelection--;
+            curSelection = max(curSelection, 0);
         } else if (c == 336) {
             // down arrow
-            curSelection = min(++curSelection, (int)options.size() - 1);
+            curSelection++;
+            curSelection = min(curSelection, (int)options.size() - 1);
         }
     } while (true);
     return curSelection;

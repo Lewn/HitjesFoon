@@ -36,8 +36,8 @@ void setConioTerminalMode();
 int kbhit();
 int getch();
 #endif
-void getCursorXY(int *x, int *y);
-void setCursorXY(int x, int y);
+void getCursorXY(short *x, short *y);
+void setCursorXY(short x, short y);
 
 enum PRINT_LEVEL {
     LERROR,
@@ -50,7 +50,7 @@ enum PRINT_LEVEL {
 
 extern PRINT_LEVEL msglevel;
 
-void printlevel(PRINT_LEVEL level, char *format, ...);
+void printlevel(PRINT_LEVEL level, const char *format, ...);
 int getKey();
 int readKeyboard();
 int selection(vector<string> options);
