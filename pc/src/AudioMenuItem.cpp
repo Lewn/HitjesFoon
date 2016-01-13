@@ -1,6 +1,6 @@
 #include "AudioMenuItem.h"
 
-int checkMediaFile(libvlc_media_t* mediaFile) {
+int checkMediaFile(libvlc_media_t *mediaFile) {
     libvlc_media_parse(mediaFile);
     if (!libvlc_media_is_parsed(mediaFile)) {
         return 0;
@@ -8,15 +8,15 @@ int checkMediaFile(libvlc_media_t* mediaFile) {
     return libvlc_media_get_duration(mediaFile);
 }
 
-AudioMenuItem::AudioMenuItem(const char* path, AudioMenuItem** followup, unsigned char followupLen, bool tts): followup(followup), followupLen(followupLen) {
+AudioMenuItem::AudioMenuItem(string path, AudioMenuItem **followup, unsigned char followupLen, bool tts): followup(followup), followupLen(followupLen) {
     if (tts) {
         media = NULL;
         text = NULL;
-        FILE* pFile;
+        FILE *pFile;
         unsigned int fileSize;
         size_t result;
 
-        pFile = fopen(path, "rb");
+        pFile = fopen(path.c_str(), "rb");
         if (pFile == NULL) {
             throw "Invalid file specified";
         }
@@ -42,7 +42,7 @@ AudioMenuItem::AudioMenuItem(const char* path, AudioMenuItem** followup, unsigne
         fclose(pFile);
     } else {
         text = NULL;
-        media = VLC::getInstance()->newMediaFromPath(path);
+        media = VLC::getInstance()->newMediaFromPath(path.c_str());
         if (!checkMediaFile(media)) {
             throw "Invalid media file";
         }
@@ -66,14 +66,14 @@ bool AudioMenuItem::hasNext() {
     return followupLen;
 }
 
-AudioMenuItem* AudioMenuItem::getFollowup(unsigned char index) {
+AudioMenuItem *AudioMenuItem::getFollowup(unsigned char index) {
     if (index < followupLen) {
         return followup[index];
     }
     return NULL;
 }
 
-libvlc_media_t* AudioMenuItem::getMedia() {
+libvlc_media_t *AudioMenuItem::getMedia() {
     if (!media) {
         printf("\n%s", text);
         system(text);

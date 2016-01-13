@@ -9,6 +9,7 @@ class AudioList;
 #include <cerrno>
 #include <dirent.h>
 
+#include "Config.h"
 #include "VLC.h"
 #include "Tools.h"
 #include "InputProcessor.h"
@@ -28,28 +29,27 @@ struct Hitje {
 
 class AudioList {
 public:
-    AudioList(const char *listFilePath, const char *hitjesPath);
+    AudioList(Config *config);
     virtual ~AudioList();
 
-    char *createHitjeName(const Hitje *hitje, bool absolute);
-    char *createHitjeName(int hitIndex, char *title, char *artist, bool absolute);
+    const char *createHitjeName(const Hitje *hitje, bool absolute);
+    const char *createHitjeName(int hitIndex, char *title, char *artist, bool absolute);
     bool update(unsigned int downloadCount);
-    libvlc_media_t* getAudio(int audioIndex);
+    libvlc_media_t *getAudio(int audioIndex);
 
 protected:
     unsigned int downloadCount;
     YoutubeAPI api;
     Hitje **hitjesList;
-    int hitjesPathLen;
-    char *listFilePath;
-    char *hitjesPath;
+    string listFilePath;
+    string hitjesPath;
     FILE *listFile;
 
-    int checkMediaFile(libvlc_media_t* mediaFile);
+    int checkMediaFile(libvlc_media_t *mediaFile);
 
-    void skipInvalidLines(char* buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
-    bool parseBuf(char* buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
-    char* getVideoFile(int hitIndex, char *title, char *artist);
+    void skipInvalidLines(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
+    bool parseBuf(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
+    const char *getVideoFile(int hitIndex, char *title, char *artist);
 
 private:
 };

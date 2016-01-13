@@ -23,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -31,18 +32,18 @@
 		</Build>
 		<Compiler>
 			<Add option="-std=c++11" />
-			<Add option="-std=c++0x" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add option="-DCURL_STATICLIB" />
 			<Add directory="vlc/include" />
-			<Add directory="hidapi/include" />
+			<Add directory="hidapi" />
 			<Add directory="include" />
 			<Add directory="curl/include" />
-			<Add directory="jsoncpp/include" />
+			<Add directory="rapidjson/include" />
 			<Add directory="ffmpeg/include" />
 			<Add directory="pocketsphinx/include" />
 			<Add directory="sphinxbase/include" />
+			<Add directory="hidapi/hidapi" />
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
@@ -50,8 +51,8 @@
 			<Add option='-L&quot;jsoncpp\lib&quot;' />
 			<Add option='-L&quot;ffmpeg\lib&quot;' />
 			<Add option='-L&quot;vlc\lib&quot;' />
-			<Add option='-L&quot;hidapi\lib&quot;' />
-			<Add library="hidapi.dll" />
+			<Add option='-L&quot;hidapi\windows&quot;' />
+			<Add option="hidapi\windows\hid.o" />
 			<Add library="vlc\lib\libvlc.lib" />
 			<Add library="setupapi" />
 			<Add library="curl" />
@@ -66,13 +67,13 @@
 			<Add library="idn" />
 			<Add library="wldap32" />
 			<Add library="ws2_32" />
-			<Add library="jsoncpp" />
 		</Linker>
 		<Unit filename="include/AudioList.h" />
 		<Unit filename="include/AudioMenu.h" />
 		<Unit filename="include/AudioMenuItem.h" />
 		<Unit filename="include/AudioPlayer.h" />
 		<Unit filename="include/AudioPlayerEventListener.h" />
+		<Unit filename="include/Config.h" />
 		<Unit filename="include/ConfigAudioMenu.h" />
 		<Unit filename="include/HTTPTransfer.h" />
 		<Unit filename="include/InputProcessor.h" />
@@ -87,6 +88,7 @@
 		<Unit filename="src/AudioMenu.cpp" />
 		<Unit filename="src/AudioMenuItem.cpp" />
 		<Unit filename="src/AudioPlayer.cpp" />
+		<Unit filename="src/Config.cpp" />
 		<Unit filename="src/ConfigAudioMenu.cpp" />
 		<Unit filename="src/HTTPTransfer.cpp" />
 		<Unit filename="src/InputProcessor.cpp" />

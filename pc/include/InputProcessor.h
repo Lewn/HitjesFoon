@@ -31,18 +31,19 @@ enum ProcessType {
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
 #include "Tools.h"
+#include "Config.h"
 #include <list>
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
-    InputProcessor(AudioList* hitjesList, const char *configMenuPath);
+    InputProcessor(AudioList *hitjesList, Config *config);
     virtual ~InputProcessor();
 
     AudioList *getHitjesList();
     void resetInput();
     void process(int input);
     void requestInput();
-    void audioPlayerEvent(Event evt, AudioPlayer* audioPlayer);
+    void audioPlayerEvent(Event evt, AudioPlayer *audioPlayer);
 protected:
     AudioList *hitjesList;
     ProcessType processType;
@@ -73,7 +74,7 @@ protected:
     void threadUpdate();
 
 private:
-    char* configMenuPath;
+    string configMenuPath;
 };
 
 #endif // INPUTPROCESSOR_H

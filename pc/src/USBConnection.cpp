@@ -7,7 +7,7 @@ USBConnection::USBConnection() {
     if (!usbDevice) {
         printlevel(LWARNING, "Unable to open device, usb input will be disabled\n");
         printlevel(LWARNING, "Press any key to continue\n");
-        getchar();
+        while (!kbhit());
     } else {
         hid_set_nonblocking(usbDevice, 1);
 

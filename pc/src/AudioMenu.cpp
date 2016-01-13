@@ -18,7 +18,7 @@ bool AudioMenu::process(int input) {
     }
     if (input > 0 && input <= 9) {
         // the only valid menu input
-        AudioMenuItem* nextItem = curItem->getFollowup(input - 1);
+        AudioMenuItem *nextItem = curItem->getFollowup(input - 1);
         if (nextItem) {
             // get next audio menu item
             printlevel(LDEBUG, "\nGoing into item %d ", input);
@@ -34,7 +34,7 @@ bool AudioMenu::process(int input) {
     return false;
 }
 
-libvlc_media_t* AudioMenu::getMedia() {
+libvlc_media_t *AudioMenu::getMedia() {
     return curItem->getMedia();
 }
 
@@ -42,15 +42,15 @@ bool AudioMenu::isEnded() {
     return !curItem || !curItem->hasNext();
 }
 
-void AudioMenu::fromPath(const char* path) {
+void AudioMenu::fromPath(string path) {
     initialItem = createItem(path);
 }
 
-AudioMenuItem* AudioMenu::createItem(const char* path) {
+AudioMenuItem *AudioMenu::createItem(string path) {
     // try to open the specified dir
-    DIR* dir = opendir(path);
+    DIR *dir = opendir(path.c_str());
     if (!dir) {
-        printf("\nInvalid: '%s'\n", path);
+        printf("\nInvalid: '%s'\n", path.c_str());
         throw "Path should point to an existing directory";
     }
 
@@ -97,27 +97,17 @@ AudioMenuItem* AudioMenu::createItem(const char* path) {
         throw "Either an audio or text file should be specified";
     }
 
-    int pathLen = strlen(path);
-    AudioMenuItem** followup = new AudioMenuItem*[dirCount];
-    char* dirName = new char[10];
+    AudioMenuItem **followup = new AudioMenuItem*[dirCount];
     for (int i = 1; i <= dirCount; i++) {
-        sprintf(dirName, "%d\\", i);
-        char* absPath = getAbsolutePath(path, pathLen, dirName);
-        followup[i - 1] = createItem(absPath);
-        SAFE_DELETE_ARRAY(absPath);
+        followup[i - 1] = createItem(path + std::to_string(i));
     }
-    SAFE_DELETE_ARRAY(dirName);
 
     closedir(dir);
-    AudioMenuItem* item;
+    AudioMenuItem *item;
     if (audioName) {
-        char* absPath = getAbsolutePath(path, pathLen, audioName);
-        item = new AudioMenuItem(absPath, followup, dirCount, false);
-        SAFE_DELETE_ARRAY(absPath);
+        item = new AudioMenuItem(path + audioName, followup, dirCount, false);
     } else {
-        char* absPath = getAbsolutePath(path, pathLen, textName);
-        item = new AudioMenuItem(absPath, followup, dirCount, true);
-        SAFE_DELETE_ARRAY(absPath);
+        item = new AudioMenuItem(path + textName, followup, dirCount, true);
     }
     SAFE_DELETE_ARRAY(audioName);
     SAFE_DELETE_ARRAY(textName);

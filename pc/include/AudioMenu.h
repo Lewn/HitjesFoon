@@ -10,20 +10,24 @@
 #include "AudioMenuItem.h"
 #include "Tools.h"
 
+#include <string>
+
+using namespace std;
+
 class AudioMenu {
 public:
     AudioMenu();
     virtual ~AudioMenu();
-    void fromPath(const char* path);
+    void fromPath(string path);
 
     virtual bool process(int);
-    virtual libvlc_media_t* getMedia();
+    virtual libvlc_media_t *getMedia();
     virtual bool isEnded();
 protected:
-    AudioMenuItem* initialItem;
-    AudioMenuItem* curItem;
+    AudioMenuItem *initialItem;
+    AudioMenuItem *curItem;
 
-    AudioMenuItem* createItem(const char* path);
+    AudioMenuItem *createItem(string path);
 private:
 };
 

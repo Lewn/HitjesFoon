@@ -13,16 +13,16 @@
 
 class AudioMenuItem {
 public:
-    AudioMenuItem(const char* path, AudioMenuItem** followup, unsigned char followupLen, bool tts);
+    AudioMenuItem(string path, AudioMenuItem **followup, unsigned char followupLen, bool tts);
     ~AudioMenuItem();
 
     bool hasNext();
-    AudioMenuItem* getFollowup(unsigned char index);
-    libvlc_media_t* getMedia();
+    AudioMenuItem *getFollowup(unsigned char index);
+    libvlc_media_t *getMedia();
 protected:
-    char* text;
-    libvlc_media_t* media;
-    AudioMenuItem** followup;
+    char *text;
+    libvlc_media_t *media;
+    AudioMenuItem **followup;
     unsigned char followupLen;
 private:
 };

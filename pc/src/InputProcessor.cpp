@@ -1,6 +1,6 @@
 #include "InputProcessor.h"
 
-InputProcessor::InputProcessor(AudioList* hitjesList, const char *configMenuPath) : hitjesList(hitjesList) {
+InputProcessor::InputProcessor(AudioList *hitjesList, Config *config) : hitjesList(hitjesList) {
     processType = PROCESS_LINEAR_SHUFFLE;
     phoneAudioPlayer = new AudioPlayer(AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(AudioPlayer::SPEAKER, hitjesList);
@@ -8,8 +8,7 @@ InputProcessor::InputProcessor(AudioList* hitjesList, const char *configMenuPath
     earthDown = false;
     curAudioMenu = NULL;
 
-    this->configMenuPath = new char[strlen(configMenuPath) + 1];
-    strcpy(this->configMenuPath, configMenuPath);
+    configMenuPath = config->getConfigMenuPath();
 
     // listen to end event on phoneAudioPlayer, for queued processing
     //speakerAudioPlayer->attachEventListener(this);
@@ -22,7 +21,6 @@ InputProcessor::~InputProcessor() {
     SAFE_DELETE(phoneAudioPlayer);
     SAFE_DELETE(speakerAudioPlayer);
     SAFE_DELETE(curAudioMenu);
-    SAFE_DELETE_ARRAY(configMenuPath);
 }
 
 AudioList *InputProcessor::getHitjesList() {
@@ -71,7 +69,7 @@ void InputProcessor::process(int input) {
 void InputProcessor::processAudioMenu(int input) {
     // leave input to audio menu if it is open
     if (curAudioMenu->process(input)) {
-        libvlc_media_t* toPlay = curAudioMenu->getMedia();
+        libvlc_media_t *toPlay = curAudioMenu->getMedia();
         if (toPlay) {
             if (phoneOutput) {
                 phoneAudioPlayer->playAudio(toPlay);
@@ -91,7 +89,7 @@ void InputProcessor::processAudioMenu(int input) {
 void InputProcessor::processNum(int input) {
     // got a number input, save it
     printlevel(LINFO, "%c", input + '0');
-    curNumber = curNumber * 10 + input;
+    curNumber = curNumber  *10 + input;
     if (++numberCount == 3) {
         // play audio per three digit number
         switch (curNumber) {
@@ -185,7 +183,7 @@ void InputProcessor::playAudio(int curNumber) {
     }
 }
 
-void InputProcessor::audioPlayerEvent(Event evt, AudioPlayer * audioPlayer) {
+void InputProcessor::audioPlayerEvent(Event evt, AudioPlayer  *audioPlayer) {
     printlevel(LDEBUG, "Event %d == %d", evt, DONE);
     switch (evt) {
         case DONE:

@@ -14,7 +14,7 @@ public:
     JsonParser();
     virtual ~JsonParser();
 
-    void parse(const char* jsonString);
+    void parse(const char *jsonString);
     int getTotalResults();
     vector<string> getVideoIds();
     vector<string> getVideoTitles();

@@ -6,6 +6,7 @@
 
 #define SAFE_DELETE(x) delete(x); x = NULL
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL
+#define SAFE_CLOSE(x) fclose(x); x = NULL;
 
 #include "ScreenCommands.h"
 #include <vector>
@@ -13,14 +14,21 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
-char* trimLeft(char* toTrim);
-char* trimRight(char* toTrim);
-char* trim(char* toTrim);
-char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filename);
-bool strmatch(char* str, char* pattern);
+char *trimLeft(char *toTrim);
+char *trimRight(char *toTrim);
+char *trim(char *toTrim);
+
+std::string &ltrim(std::string &s);
+std::string &rtrim(std::string &s);
+std::string &trim(std::string &s);
+
+
+char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename);
+bool strmatch(const char *str, const char *pattern);
 
 #ifdef _WIN32
 #include "conio.h"

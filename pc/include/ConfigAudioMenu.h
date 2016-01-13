@@ -6,7 +6,7 @@
 
 class ConfigAudioMenu : public AudioMenu {
 public:
-    ConfigAudioMenu(const char* configMenuPath);
+    ConfigAudioMenu(string configMenuPath);
 protected:
 private:
 };

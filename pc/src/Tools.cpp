@@ -1,29 +1,46 @@
 #include "Tools.h"
 
 
-char* trimLeft(char* toTrim) {
+char *trimLeft(char *toTrim) {
     while (*toTrim && !isgraph(*toTrim)) {
         toTrim++;
     }
     return toTrim;
 }
 
-char* trimRight(char* toTrim) {
-    char* tmp = toTrim;
+char *trimRight(char *toTrim) {
+    char *tmp = toTrim;
     toTrim += strlen(toTrim) + 1;
     while (--toTrim >= tmp && !isgraph(*(toTrim)));
     *(toTrim + 1) = 0;
     return tmp;
 }
 
-char* trim(char* toTrim) {
+char *trim(char *toTrim) {
     return trimLeft(trimRight(toTrim));
 }
 
-char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filename) {
+// trim from start
+std::string &ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+// trim from end
+std::string &rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+
+// trim from both ends
+std::string &trim(std::string &s) {
+    return ltrim(rtrim(s));
+}
+
+char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename) {
     // we need the path and the filename in one string
     int totalLen = pathLen + strlen(filename) + 1;
-    char* absolute = new char[totalLen];
+    char *absolute = new char[totalLen];
     // copy path in the new filename
     strncpy(absolute, listFilePath, pathLen);
     // and copy the name itself
@@ -32,11 +49,11 @@ char* getAbsolutePath(const char* listFilePath, int pathLen, const char* filenam
 }
 
 /**
- * compare two strings. They match depending on pattern characters.
- * special compare characters are:
- * - *, match any character
+  *compare two strings. They match depending on pattern characters.
+  *special compare characters are:
+  *- *, match any character
  */
-bool strmatch(char* str, char* pattern) {
+bool strmatch(const char *str, const char *pattern) {
     for (; *pattern; pattern++, str++) {
         if (*pattern != '*' && *pattern != *str) {
             return false;
@@ -52,7 +69,7 @@ bool strmatch(char* str, char* pattern) {
 #ifdef _WIN32
 void getCursorXY(short &x, short&y) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    if(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
         x = csbi.dwCursorPosition.X;
         y = csbi.dwCursorPosition.Y;
     }
@@ -70,11 +87,11 @@ void resetTerminalMode() {
 void setConioTerminalMode() {
     struct termios newTermios;
 
-    /* take two copies - one for now, one for later */
-    tcgetattr(0, &origTermios);
+    / *take two copies - one for now, one for later * /
+        tcgetattr(0, &origTermios);
     memcpy(&newTermios, &origTermios, sizeof(newTermios));
 
-    /* register cleanup handler, and set the new terminal mode */
+    / *register cleanup handler, and set the new terminal mode * /
     cfmakeraw(&newTermios);
     tcsetattr(0, TCSANOW, &newTermios);
 }

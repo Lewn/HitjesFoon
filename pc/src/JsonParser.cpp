@@ -25,8 +25,8 @@ int JsonParser::getTotalResults() {
 vector<string> JsonParser::getVideoIds() {
     Value &items = (*root)["items"];
     vector<string> videoIds;
-    for (unsigned int index = 0; index < items.Size(); ++index) {
-        videoIds.push_back(items[index]["id"]["videoId"].GetString());
+    for (Value::ConstValueIterator itr = items.Begin(); itr != items.End(); ++itr) {
+        videoIds.push_back((*itr)["id"]["videoId"].GetString());
     }
     return videoIds;
 }
@@ -34,8 +34,8 @@ vector<string> JsonParser::getVideoIds() {
 vector<string> JsonParser::getVideoTitles() {
     Value &items = (*root)["items"];
     vector<string> videoTitles;
-    for (unsigned int index = 0; index < items.Size(); ++index) {
-        videoTitles.push_back(items[index]["snippet"]["title"].GetString());
+    for (Value::ConstValueIterator itr = items.Begin(); itr != items.End(); ++itr) {
+        videoTitles.push_back((*itr)["snippet"]["title"].GetString());
     }
     return videoTitles;
 }
