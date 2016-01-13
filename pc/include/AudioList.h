@@ -32,8 +32,8 @@ public:
     AudioList(Config *config);
     virtual ~AudioList();
 
-    const char *createHitjeName(const Hitje *hitje, bool absolute);
-    const char *createHitjeName(int hitIndex, char *title, char *artist, bool absolute);
+    string createHitjeName(const Hitje *hitje, bool absolute);
+    string createHitjeName(int hitIndex, char *title, char *artist, bool absolute);
     bool update(unsigned int downloadCount);
     libvlc_media_t *getAudio(int audioIndex);
 

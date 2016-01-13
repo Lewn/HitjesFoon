@@ -39,9 +39,15 @@ AudioList::AudioList(Config *config) {
                 printlevel(LWARNING, "Invalid hitjespath specified, '%s', %d", hitjesPath.c_str(), errno);
             }
             closedir(dir);
+#ifdef _WIN32   // Stupid windows paths
+            if (hitjesPath.back() != '\\') {
+                hitjesPath += '\\';
+            }
+#else
             if (hitjesPath.back() != '/') {
                 hitjesPath += '/';
             }
+#endif
         }
         if (listFile == NULL) {
             printlevel(LINFO, "\n");
@@ -74,11 +80,11 @@ libvlc_media_t *AudioList::getAudio(int audioIndex) {
     return hitjesList[audioIndex]->mediaData;
 }
 
-const char *AudioList::createHitjeName(const Hitje * hitje, bool absolute) {
+string AudioList::createHitjeName(const Hitje * hitje, bool absolute) {
     return createHitjeName(hitje->hitIndex, hitje->title, hitje->artist, absolute);
 }
 
-const char *AudioList::createHitjeName(int hitIndex, char *title, char *artist, bool absolute) {
+string AudioList::createHitjeName(int hitIndex, char *title, char *artist, bool absolute) {
     const char *titleTrim = trim(title);
     const char *artistTrim = trim(artist);
     if (strlen(artistTrim) == 0) {
@@ -107,7 +113,7 @@ bool AudioList::update(unsigned int downloadCount) {
     char buffer[1000];
     char title[200];
     char artist[200];
-    const char *hitjePath = 0;
+    string hitjePath;
     int hitjes = 0;
 
     buffer[0] = title[0] = artist[0] = '\0';
@@ -136,12 +142,12 @@ bool AudioList::update(unsigned int downloadCount) {
         } else {
             // and use all data to create a new element in list
             hitjePath = createHitjeName(hitIndex, title, artist, true);
-            FILE *hitjeFile = fopen(hitjePath, "r");
+            FILE *hitjeFile = fopen(hitjePath.c_str(), "r");
             if (hitjeFile != NULL) {
-                printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath);
-                libvlc_media_t *mediaFile = VLCInstance->newMediaFromPath(hitjePath);
+                printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath.c_str());
+                libvlc_media_t *mediaFile = VLCInstance->newMediaFromPath(hitjePath.c_str());
                 if (!checkMediaFile(mediaFile)) {
-                    printlevel(LERROR, "Invalid file, '%s'\n", hitjePath);
+                    printlevel(LERROR, "Invalid file, '%s'\n", hitjePath.c_str());
                 } else {
                     newHitjesList[hitIndex] = new Hitje(mediaFile, hitIndex, title, artist);
                     hitjes++;
@@ -149,7 +155,6 @@ bool AudioList::update(unsigned int downloadCount) {
                 }
                 fclose(hitjeFile);
             }
-            SAFE_DELETE_ARRAY(hitjePath);
         }
         printlevel(LDEBUG, "Retrieving next line\n");
         do {
@@ -176,12 +181,10 @@ bool AudioList::update(unsigned int downloadCount) {
                 strncpy(intbuf, ent->d_name, 3);
                 sscanf(intbuf, "%d", &hitIndex);
                 if (newHitjesList[hitIndex]) {
-                    const char *hitjeName = createHitjeName(newHitjesList[hitIndex], false);
-                    if (!strcmp(ent->d_name, hitjeName)) {
-                        SAFE_DELETE_ARRAY(hitjeName);
+                    string hitjeName = createHitjeName(newHitjesList[hitIndex], false);
+                    if (!strcmp(ent->d_name, hitjeName.c_str())) {
                         continue;
                     }
-                    SAFE_DELETE_ARRAY(hitjeName);
                 }
                 string absPath = hitjesPath + ent->d_name;
                 printlevel(LWARNING, "Deleting unused file '%s'\n", ent->d_name);
@@ -245,28 +248,29 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
         fileOutput += buffer;
         return false;
     }
-    const char *hitjePath = createHitjeName(*hitIndex, title, artist, true);
-    FILE *fileTest = fopen(hitjePath, "r");
+    string hitjePath = createHitjeName(*hitIndex, title, artist, true);
+    FILE *fileTest = fopen(hitjePath.c_str(), "r");
     if (downloadCount && fileTest == NULL) {
         // We need to download more and file does not exist yet
         printlevel(LDEBUG, "\n\nTrying to download youtube\n");
         // no file found, title and artist are given, download from internet
         const char *newpath = getVideoFile(*hitIndex, title, artist);
+
         if (newpath) {
             SAFE_DELETE_ARRAY(newpath);
-            fileTest = fopen(hitjePath, "r");
+            fileTest = fopen(hitjePath.c_str(), "r");
             if (fileTest == NULL) {
-                SAFE_DELETE_ARRAY(hitjePath);
+                printlevel(LWARNING, "Could not open '%s'\n", hitjePath.c_str());
                 // We should have just downloaded this exact file, something went wrong
                 throw "File could not be downloaded correctly";
             }
             downloadCount--;
-            printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjePath);
+            printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjePath.c_str());
 
         }
     }
     fclose(fileTest);
-    SAFE_DELETE_ARRAY(hitjePath);
+    hitjePath.clear();
 
     // Some valid data, copy all the data that was valid
     char hitIndexStr[4];
@@ -291,11 +295,12 @@ const char *AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
         printlevel(LBGINFO, "Downloaded:  %s\n", baseName);
 
         if (baseName) {
-            const char *videoName = createHitjeName(hitIndex, title, artist, false);
+            string videoName = createHitjeName(hitIndex, title, artist, false);
 
-            printlevel(LBGINFO, "Done searching and found %s\n", videoName);
+            printlevel(LBGINFO, "Done searching and found %s\n", videoName.c_str());
             // create path for saving audio data
-            const char *videoPath = (hitjesPath + videoName).c_str();
+            string videoPathStr = hitjesPath + videoName;
+            const char *videoPath = videoPathStr.c_str();
 
 #if defined (USE_YOUTUBE_DL)
             // audio format already correct mp3, just move the file
@@ -330,8 +335,8 @@ const char *AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
             SAFE_DELETE_ARRAY(baseName);
             printlevel(LBGINFO, "Removed old file\n");
 #endif // USE_YOUTUBE_DL
-            printlevel(LBGINFO, "\n\nSuccessfully got file '%s'\n", videoName);
-            return videoName;
+            printlevel(LBGINFO, "\n\nSuccessfully got file '%s'\n", videoName.c_str());
+            return videoName.c_str();
         } else {
             printlevel(LWARNING, "No suitable video file found\n");
         }

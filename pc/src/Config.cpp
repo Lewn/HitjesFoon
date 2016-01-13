@@ -63,13 +63,19 @@ bool Config::nextHitjesConfig() {
 
 string Config::getHitjesList() {
     Value::ConstValueIterator hitjesConfig = getHitjesConfigIterator();
-    string list = string((*hitjesConfig)["list"].GetString());
-    return trim(list);
+    string hitjesList = string((*hitjesConfig)["list"].GetString());
+#ifdef _WIN32   // Stupid windows paths
+    replace(hitjesList.begin(), hitjesList.end(), '/', '\\');
+#endif
+    return trim(hitjesList);
 }
 
 string Config::getHitjesPath() {
     Value::ConstValueIterator hitjesConfig = getHitjesConfigIterator();
     string path = string((*hitjesConfig)["path"].GetString());
+#ifdef _WIN32   // Stupid windows paths
+    replace(path.begin(), path.end(), '/', '\\');
+#endif
     return trim(path);
 }
 

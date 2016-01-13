@@ -19,11 +19,7 @@ string VLC::getDefaultSpeakerDevice() {
 }
 
 libvlc_media_t *VLC::newMediaFromPath(const char *path) {
-    string pathstr = string(path);
-#ifdef _WIN32   // Stupid windows paths
-    replace(pathstr.begin(), pathstr.end(), '/', '\\');
-#endif
-    return libvlc_media_new_path(libvlcInstance, pathstr.c_str());
+    return libvlc_media_new_path(libvlcInstance, path);
 }
 
 libvlc_media_list_t *VLC::newMediaList() {
