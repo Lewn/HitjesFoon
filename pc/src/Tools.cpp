@@ -242,7 +242,7 @@ int selection(vector<string> options) {
 
 void filesystemSafe(char *str) {
     // replace + with spaces in title
-    const char *filechars = "`~!@#$%^&()-_+=[]{};'.,";
+    const char *filechars = "`~!@#$^&()-_+=[]{};'., ";
     for (; *str; str++) {
         if (!((*str >= 'A' && *str <= 'Z') || (*str >= 'a' && *str <= 'z') || (*str >= '0' && *str <= '9') || strchr(filechars, *str))) {
             *str = ' ';
@@ -252,10 +252,11 @@ void filesystemSafe(char *str) {
 
 void filesystemSafe(string &str) {
     // replace + with spaces in title
-    const char *filechars = "`~!@#$%^&()-_+=[]{};'.,";
+    const char *filechars = "`~!@#$^&()-_+=[]{};'., ";
     for (std::string::iterator it = str.begin(); it != str.end(); it++) {
         if (!((*it >= 'A' && *it <= 'Z') || (*it >= 'a' && *it <= 'z') || (*it >= '0' && *it <= '9') || strchr(filechars, *it))) {
-            *it = ' ';
+            str.erase(it);
+            it--;
         }
     }
 }
