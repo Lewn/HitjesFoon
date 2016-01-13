@@ -9,7 +9,7 @@ using namespace std;
 
 
 extern PRINT_LEVEL msglevel;
-PRINT_LEVEL msglevel = PRINT_LEVEL::LDEBUG;
+PRINT_LEVEL msglevel = PRINT_LEVEL::LINFO;
 
 int main() {
 #ifndef _WIN32
@@ -37,7 +37,7 @@ int main() {
 
             if (c == INPUT_NONE) {
                 // nothing read from keyboard, check usb
-//                c = connection.read();
+                c = connection.read();
             }
 
             if (c == INPUT_TEST) {
@@ -59,6 +59,5 @@ int main() {
 
     printlevel(LINFO, "\n\n");
     VLC::deleteInstance();
-    getKey();   // block until close
-}
+ }
 

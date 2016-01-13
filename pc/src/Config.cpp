@@ -23,7 +23,7 @@ Config::Config(const char *configPath) {
 
     Value::MemberIterator msglevelMember = config->FindMember("msglevel");
     if (msglevelMember == config->MemberEnd()) {
-        printlevel(LDEBUG, "No msglevel found, using default (%d)", msglevel);
+        printlevel(LDEBUG, "No msglevel found, using default (%d)\n\n", msglevel);
     } else {
         msglevel = (PRINT_LEVEL)msglevelMember->value.GetInt();
     }

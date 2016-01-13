@@ -19,7 +19,11 @@ string VLC::getDefaultSpeakerDevice() {
 }
 
 libvlc_media_t *VLC::newMediaFromPath(const char *path) {
-    return libvlc_media_new_path(libvlcInstance, path);
+    string pathstr = string(path);
+#ifdef _WIN32   // Stupid windows paths
+    replace(pathstr.begin(), pathstr.end(), '/', '\\');
+#endif
+    return libvlc_media_new_path(libvlcInstance, pathstr.c_str());
 }
 
 libvlc_media_list_t *VLC::newMediaList() {
@@ -59,7 +63,7 @@ VLC *VLC::getInstance() {
         // we only need one vlc instance
         instance = new VLC();
         if (!instance) {
-            throw "Couldn't instantiate";
+            throw "Couldn't instantiate VLC";
         }
     }
     return instance;

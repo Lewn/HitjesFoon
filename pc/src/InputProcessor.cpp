@@ -287,12 +287,16 @@ DWORD updateThreadID;
 HANDLE updateThreadHandle;
 
 DWORD WINAPI doUpdate(LPVOID self) {
-    InputProcessor *processor = (InputProcessor *) self;
-    do {
-        printlevel(LINFO, "\nDownloading one more hitje");
+    try {
+        InputProcessor *processor = (InputProcessor *) self;
+        do {
+            printlevel(LINFO, "\nDownloading one more hitje");
+            processor->requestInput();
+        } while (processor->getHitjesList()->update(1));
         processor->requestInput();
-    } while (processor->getHitjesList()->update(1));
-    processor->requestInput();
+    }catch (const char *ex) {
+        printlevel(LERROR, "%s\n", ex);
+    }
     return 0;
 }
 

@@ -230,7 +230,7 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
     artist[0] = title[0] = 0;
     printlevel(LDEBUG, "Parsing buffer:\n");
     printlevel(LDEBUG, buffer);
-    int res = sscanf(buffer, "%d;%[^;];%[^;]", hitIndex, title, artist);
+    int res = sscanf(buffer, "%d;%[^;];%[^;\n]", hitIndex, title, artist);
     printlevel(LDEBUG, "Got %d: '%s' '%s'\n", *hitIndex, title, artist);
 
     if (!hitIndex || !*hitIndex) {
