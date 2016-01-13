@@ -17,23 +17,24 @@ HTTPTransfer::~HTTPTransfer() {
     curl_global_cleanup();
 }
 
-char* HTTPTransfer::get(const char* url) {
-    char* receivedData = NULL;
-    char** receivedDataPtr = &receivedData;
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, receivedDataPtr);
+string HTTPTransfer::get(const char *url) {
+    char *receivedData = NULL;
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &receivedData);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, dataReceived);
     curl_easy_setopt(curl, CURLOPT_URL, url);
     perform();
-    return *receivedDataPtr;
+    string dataStr = receivedData;
+    SAFE_DELETE_ARRAY(receivedData);
+    return dataStr;
 }
 
-void HTTPTransfer::get(const char* url, const char* filename) {
-    FILE* downloadFile = fopen(filename, "wb");
+void HTTPTransfer::get(const char *url, const char *filename) {
+    FILE *downloadFile = fopen(filename, "wb");
     get(url, downloadFile);
-    fclose(downloadFile);
+    SAFE_CLOSE(downloadFile);
 }
 
-void HTTPTransfer::get(const char* url, FILE* file) {
+void HTTPTransfer::get(const char *url, FILE *file) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
     curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -42,7 +43,7 @@ void HTTPTransfer::get(const char* url, FILE* file) {
 
 void HTTPTransfer::perform() {
     CURLcode res = curl_easy_perform(curl);
-    /* Check for errors */
+    // Check for errors
     if (res != CURLE_OK) {
         printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl);
@@ -61,16 +62,15 @@ long HTTPTransfer::getStatusCode() {
     return statusCode;
 }
 
-char *HTTPTransfer::escape(const char *toEscape) {
-    return curl_easy_escape(curl, toEscape, 0);
+string HTTPTransfer::escape(const char *toEscape) {
+    char *escaped = curl_easy_escape(curl, toEscape, 0);
+    string escStr = string(escaped);
+    curl_free(escaped);
+    return escStr;
 }
 
-void HTTPTransfer::free(char *escaped) {
-    return curl_free(escaped);
-}
-
-size_t HTTPTransfer::dataReceived(char* newData, size_t dataSize, size_t dataLen, char** receivedDataPtr) {
-    char* receivedData = *receivedDataPtr;
+size_t HTTPTransfer::dataReceived(char *newData, size_t dataSize, size_t dataLen, char **receivedDataPtr) {
+    char *receivedData = *receivedDataPtr;
     size_t receivedLen;
     if (receivedData) {
         receivedLen = strlen(receivedData);
@@ -78,26 +78,26 @@ size_t HTTPTransfer::dataReceived(char* newData, size_t dataSize, size_t dataLen
         receivedLen = 0;
     }
 
-    char* newBuf = new char[receivedLen + dataSize * dataLen + 1];
+    char *newBuf = new char[receivedLen + dataSize  *dataLen + 1];
     if (newBuf == NULL) {
         return 0;
     }
     if (receivedData) {
         strcpy(newBuf, receivedData);
     }
-    strncpy(newBuf + receivedLen, newData, dataSize * dataLen);
-    newBuf[receivedLen + dataSize * dataLen] = '\0';
+    strncpy(newBuf + receivedLen, newData, dataSize  *dataLen);
+    newBuf[receivedLen + dataSize  *dataLen] = '\0';
     SAFE_DELETE_ARRAY(receivedData);
     receivedData = newBuf;
     (*receivedDataPtr) = receivedData;
-    return dataSize * dataLen;
+    return dataSize *dataLen;
 }
 
 int HTTPTransfer::progress(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     if (dltotal) {
-        printf("Downloaded %3.0f%% \r", (double)dlnow / dltotal * 100);
+        printf("Downloaded %3.0f%% \r", (double)dlnow / dltotal  *100);
     } else if (ultotal) {
-        printf("Uploaded %3.0f%% \r", (double)ulnow / ultotal * 100);
+        printf("Uploaded %3.0f%% \r", (double)ulnow / ultotal  *100);
     }
     return 0;
 }

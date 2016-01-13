@@ -20,11 +20,12 @@ public:
     AudioMenuItem *getFollowup(unsigned char index);
     libvlc_media_t *getMedia();
 protected:
-    char *text;
+    string text;
     libvlc_media_t *media;
     AudioMenuItem **followup;
     unsigned char followupLen;
 private:
+    AudioMenuItem(const AudioMenuItem &that) = delete;
 };
 
 #endif // AUDIOMENUITEM_H

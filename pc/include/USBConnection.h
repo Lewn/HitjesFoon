@@ -28,6 +28,7 @@ protected:
     int dialNumber, dialTimes;
     int hornDown, earthDown;
 private:
+    USBConnection(const USBConnection &that) = delete;
 };
 
 #endif // USBCONNECTION_H

@@ -16,11 +16,14 @@ public:
 
     void parse(const char *jsonString);
     int getTotalResults();
+    const char * getVideoId();
     vector<string> getVideoIds();
+    const char *getVideoTitle();
     vector<string> getVideoTitles();
 protected:
-    Document *root;
+    Document root;
 private:
+    JsonParser(const JsonParser &that) = delete;
 };
 
 #endif // JSONPARSER_H

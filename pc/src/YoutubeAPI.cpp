@@ -7,36 +7,34 @@ YoutubeAPI::~YoutubeAPI() {
 }
 
 
-char* YoutubeAPI::searchVid(const char *query, const char *dllocation) {
+string YoutubeAPI::searchVid(const char *query, const char *dllocation) {
     // we only need the total amount of results and each results id (kind and channelId/videoId)
-    JsonParser result = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
+    string json = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
+    JsonParser result;
+    result.parse(json.c_str());
     if (result.getTotalResults() == 0) {
         throw "Nothing found while searching";
     }
 
-    char *fileName = NULL;
+    string filename;
     vector<string> videoIds = result.getVideoIds();
     vector<string> titles = result.getVideoTitles();
 
-#if defined (USE_YOUTUBE_DL)
-
-    fileName = downloadYoutubeDL(dllocation, videoIds[0].data(), titles[0].data());
-
+#if defined(USE_YOUTUBE_DL)
+    filename = downloadYoutubeDL(dllocation, videoIds[0].c_str(), titles[0].c_str());
 #else
-
-    char *videoInfo = getVideoInfo(videoIds[0].data());
-    fileName = getFileFromVideoInfo(videoInfo);
-    SAFE_DELETE_ARRAY(videoInfo);
-
+    string videoInfo = getVideoInfo(videoIds[0].c_str());
+    filename = getFileFromVideoInfo(videoInfo.c_str());
 #endif
-    while (!fileName && videoIds.size() > 1) {
+
+    while (false && filename.empty() && videoIds.size() > 1) {
         videoIds.erase(videoIds.begin());
         titles.erase(titles.begin());
 
         // wait 10 seconds, if user typed y, go to next video id
         printlevel(LINFO, "\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
         for (unsigned int titleIndex = 0; titleIndex < titles.size(); titleIndex++) {
-            printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].data());
+            printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].c_str());
         }
         int i;
         for (i = 0; i < 1000; i++) {
@@ -44,12 +42,11 @@ char* YoutubeAPI::searchVid(const char *query, const char *dllocation) {
                 char c = getch();
                 unsigned int index = c - '0' - 1;
                 if (index >= 0 && index < titles.size()) {
-#if defined (USE_YOUTUBE_DL)
-                    fileName = downloadYoutubeDL(dllocation, videoIds[0].data(), titles[0].data());
+#if defined(USE_YOUTUBE_DL)
+                    filename = downloadYoutubeDL(dllocation, videoIds[0].c_str(), titles[0].c_str());
 #else
-                    char *videoInfo = getVideoInfo(videoIds[0].data());
-                    fileName = getFileFromVideoInfo(videoInfo);
-                    SAFE_DELETE_ARRAY(videoInfo);
+                    string videoInfo = getVideoInfo(videoIds[0].c_str());
+                    filename = getFileFromVideoInfo(videoInfo.c_str());
 #endif
                 }
                 break;
@@ -63,27 +60,23 @@ char* YoutubeAPI::searchVid(const char *query, const char *dllocation) {
             break;
         }
     }
-
-    return fileName;
+    return filename;
 }
 
-JsonParser YoutubeAPI::makeRequest(RequestType requestType, const char *part, const char *fields, unsigned char maxResults, const char *extra) {
-    const char *typeStr;
-    char *extraArgs = new char[200];
+string YoutubeAPI::makeRequest(RequestType requestType, const char *part, const char *fields, unsigned char maxResults, const char *extra) {
+    string typeStr, extraArgs, baseUrl;
 
     switch (requestType) {
         case SEARCH: {
                 typeStr = "search";
-                char *urlEscaped = transfer.escape(extra);
-                sprintf(extraArgs, "q=%s&type=video&", urlEscaped);
-                transfer.free(urlEscaped);
+                string urlEscaped = transfer.escape(extra);
+                extraArgs = "q=" + urlEscaped + "&type=video";
             }
             break;
         default:
             throw "Unknown request type";
     }
 
-    char baseUrl[1024];
     char fieldsStr[100];
 
     if (fields == 0) {
@@ -94,32 +87,38 @@ JsonParser YoutubeAPI::makeRequest(RequestType requestType, const char *part, co
         sprintf(fieldsStr, "&fields=%s", fields);
     }
 
-    sprintf(baseUrl, "https://www.googleapis.com/youtube/v3/%s?%spart=%s%s&key=%s&maxResults=%d", typeStr, extraArgs, part, fieldsStr, DEVELOPER_KEY, maxResults);
-    SAFE_DELETE_ARRAY(extraArgs);
-    extraArgs = NULL;
+    baseUrl = "https://www.googleapis.com/youtube/v3/";
+    baseUrl += typeStr;
+    baseUrl += '?' + extraArgs;
+    baseUrl += "&part=";
+    baseUrl += part;
+    baseUrl += fieldsStr;
+    baseUrl += "&key=";
+    baseUrl += DEVELOPER_KEY;
+    baseUrl += "&maxResults=";
+    baseUrl += to_string(maxResults);
 
-    printlevel(LDEBUG, "\n%s\n", baseUrl);
-    char *jsonString = transfer.get(baseUrl);
-    printlevel(LDEBUG, "%s", jsonString);
-    JsonParser parser;
-    parser.parse(jsonString);
-    SAFE_DELETE_ARRAY(jsonString);
-    return parser;
+    printlevel(LDEBUG, "\n%s\n", baseUrl.c_str());
+    string jsonString = transfer.get(baseUrl.c_str());
+    printlevel(LDEBUG, "%s", jsonString.c_str());
+    return jsonString;
 }
 
-char *YoutubeAPI::getVideoInfo(const char *videoId) {
-    char baseUrl[1024];
+string YoutubeAPI::getVideoInfo(const char *videoId) {
+    string baseUrl = "http://www.youtube.com/get_video_info?video_id=";
+    baseUrl += videoId;
+    baseUrl += "&asv=3&el=detailpage&hl=en_US";
 
-    sprintf(baseUrl, "http://www.youtube.com/get_video_info?video_id=%s&asv=3&el=detailpage&hl=en_US", videoId);
-    char* videoInfo = transfer.get(baseUrl);
+    string videoInfo = transfer.get(baseUrl.c_str());
 
-    FILE* file = fopen("videoInfo.txt", "wb");
-    fputs(videoInfo, file);
+    FILE *file = fopen("videoInfo.txt", "wb");
+    fputs(videoInfo.c_str(), file);
     fclose(file);
     return videoInfo;
 }
 
-char *YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
+#if !defined(USE_YOUTUBE_DL)
+string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
     char *fmt = strstr(videoInfo, "url_encoded_fmt_stream_map=");
     if (!fmt) {
         throw "fmt not found";
@@ -145,7 +144,7 @@ char *YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
 
     fmt = fmtEnd = NULL;
 
-    char* decoded = urlDecode(encoded);
+    const char *decoded = urlDecode(encoded).c_str();
     FILE *file = fopen("decoded.txt", "wb");
     fputs(decoded, file);
     fclose(file);
@@ -242,7 +241,7 @@ char *YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
                     if (priority[i] && i <= highestPriority) {
 
                         *urlEnd = 0;
-                        char *decodedUrl = urlDecode(urlStart);
+                        char *decodedUrl = urlDecode(urlStart).c_str();
 
                         SAFE_DELETE_ARRAY(highestUrl);
 
@@ -279,7 +278,7 @@ char *YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
         }
     }
 
-    char *fileName = NULL;
+    string fileName;
     if (highestUrl) {
         printlevel(LBGINFO, "Best url found: \n%s\n", highestUrl);
         fileName = downloadEncodedUrl(highestUrl, titleStart);
@@ -290,74 +289,57 @@ char *YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
 
     return fileName;
 }
+#endif
 
-char *YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
+string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     int titleLen = strlen(title);
     char fileName[titleLen + 4 + 1];
     strncpy(fileName, title, titleLen);
     strncpy(fileName + titleLen, ".mp4", 4);
     fileName[titleLen + 4] = 0;
 
-    char *decodedFilename = urlDecode(fileName);
-    printlevel(LBGINFO, "filename address '%p'", decodedFilename);
-
+    string decodedFilename = urlDecode(fileName);
     // replace + with spaces in title
-    for (char *itr = decodedFilename; *itr; itr++) {
-        if (*itr == '+') {
-            *itr = ' ';
-        } else if (!((*itr >= 'A' && *itr <= 'Z') || (*itr >= 'a' && *itr <= 'z') || (*itr >= '0' && *itr <= '9') || *itr == '(' || *itr == ')' || *itr == '-' || *itr == '_' || *itr == '#' || *itr == '.')) {
-            *itr = ' ';
-        }
-    }
+    replace_if(decodedFilename.begin(), decodedFilename.end(), [](const char &c) {
+        return (c == '+') || !((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '(' || c == ')' || c == '-' || c == '_' || c == '#' || c == '.');
+    }, ' ');
 
-    printlevel(LBGINFO, "\nStarted downloading '%s'\n", decodedFilename);
-    transfer.get(url, decodedFilename);
+    printlevel(LBGINFO, "\nStarted downloading '%s'\n", decodedFilename.c_str());
+    transfer.get(url, decodedFilename.c_str());
     printlevel(LBGINFO, "Downloading done!\n");
     return decodedFilename;
 }
 
-char* YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char* videoId, const char* title) {
-    int titleLen = strlen(title);
-    char fileName[titleLen + 4 + 1];
-    strncpy(fileName, title, titleLen);
-    strncpy(fileName + titleLen, ".mp4", 4);
-    fileName[titleLen + 4] = 0;
+string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title) {
+    string filename = title;
+    filename += ".mp4";
 
-    char *decodedFilename = urlDecode(fileName);
-    printlevel(LDEBUG, "filename address '%p'", decodedFilename);
+    filename = urlDecode(filename.c_str());
+    filesystemSafe(filename);
+    filename = dllocation + filename;
 
-    filesystemSafe(decodedFilename);
-    char *absFilename = getAbsolutePath(dllocation, strlen(dllocation), decodedFilename);
-    SAFE_DELETE_ARRAY(decodedFilename);
+    printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
 
-    printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", absFilename);
-
-    char* buffer = new char[200];
+    string buffer = "youtube-dl.exe ";
     if (msglevel < PRINT_LEVEL::LBGINFO) {
-        sprintf(buffer, "youtube-dl.exe --quiet --no-progress --extract-audio --audio-format mp3 -o \"%s\" -- %s", absFilename, videoId);
-    } else {
-        sprintf(buffer, "youtube-dl.exe --extract-audio --audio-format mp3 -o \"%s\" -- %s", absFilename, videoId);
+        buffer += "--quiet --no-progress ";
     }
-    if (!system(buffer)) {
+    buffer += "--extract-audio --audio-format mp3 -o ";
+    buffer += '"' + filename + '"';
+    buffer += " -- ";
+    buffer += videoId;
+
+    if (!system(buffer.c_str())) {
         printlevel(LBGINFO, "Downloading done!\n");
         // set extension to mp3
-        char *extension = strrchr(absFilename, '.');
-        if (extension) {
-            // add .mp3 extension to filename
-            sprintf(extension, ".mp3");
-        } else {
-            printlevel(LBGINFO, "Filename: %s\n", absFilename);
-            throw "Couldn't change extension";
-        }
-        return absFilename;
+        (*(filename.end() - 1)) = '3';
     } else {
-        printlevel(LWARNING, "Downloading failed!\n");
-        SAFE_DELETE_ARRAY(absFilename);
-        return NULL;
+        filename.clear();
     }
+    return filename;
 }
 
-char *YoutubeAPI::urlDecode(char *src) {
+string YoutubeAPI::urlDecode(const char *src) {
     unsigned int len = strlen(src);
     char *ret = new char[len + 1];
     unsigned int i, j;
@@ -376,7 +358,7 @@ char *YoutubeAPI::urlDecode(char *src) {
         }
     }
     ret[j] = 0;
-    return (ret);
+    return string(ret);
 }
 
 

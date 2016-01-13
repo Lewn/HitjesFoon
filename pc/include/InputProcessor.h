@@ -75,6 +75,8 @@ protected:
 
 private:
     string configMenuPath;
+
+    InputProcessor(const InputProcessor &that) = delete;
 };
 
 #endif // INPUTPROCESSOR_H

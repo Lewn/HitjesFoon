@@ -1,41 +1,48 @@
 #include "JsonParser.h"
 
 JsonParser::JsonParser() {
-    root = NULL;
 }
 
 JsonParser::~JsonParser() {
-    SAFE_DELETE(root);
 }
 
-void JsonParser::parse(const char* jsonString) {
-    root = new Document;
-    root->Parse(jsonString);
-    bool parsingSuccessful = true;
-    if (!parsingSuccessful) {
+void JsonParser::parse(const char *jsonString) {
+    root.Parse(jsonString);
+    if (!root.IsObject()) {
         // report to the user the failure and their locations in the document.
+        printlevel(LERROR, "JSON:\n%s\n", jsonString);
         throw "Failed to parse configuration";
     }
 }
 
 int JsonParser::getTotalResults() {
-    return (*root)["pageInfo"]["totalResults"].GetInt();
+    return root["pageInfo"]["totalResults"].GetInt();
 }
 
 vector<string> JsonParser::getVideoIds() {
-    Value &items = (*root)["items"];
+    Value &items = root["items"];
     vector<string> videoIds;
     for (Value::ConstValueIterator itr = items.Begin(); itr != items.End(); ++itr) {
-        videoIds.push_back((*itr)["id"]["videoId"].GetString());
+        const Value &videoId = (*itr)["id"]["videoId"];
+        if (!videoId.IsNull() && videoId.IsString()) {
+            videoIds.push_back(videoId.GetString());
+        } else {
+            throw "Invalid string videoId from json";
+        }
     }
     return videoIds;
 }
 
 vector<string> JsonParser::getVideoTitles() {
-    Value &items = (*root)["items"];
+    Value &items = root["items"];
     vector<string> videoTitles;
     for (Value::ConstValueIterator itr = items.Begin(); itr != items.End(); ++itr) {
-        videoTitles.push_back((*itr)["snippet"]["title"].GetString());
+        const Value &videoTitle = (*itr)["snippet"]["title"];
+        if (!videoTitle.IsNull() && videoTitle.IsString()) {
+            videoTitles.push_back(videoTitle.GetString());
+        } else {
+            throw "Invalid string title  from json";
+        }
     }
     return videoTitles;
 }

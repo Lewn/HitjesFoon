@@ -29,6 +29,7 @@ protected:
 
     AudioMenuItem *createItem(string path);
 private:
+    AudioMenu(const AudioMenu &that) = delete;
 };
 
 #endif // AUDIOMENU_H

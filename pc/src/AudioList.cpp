@@ -1,17 +1,13 @@
 #include "AudioList.h"
 
-Hitje::Hitje(libvlc_media_t *mediaData, int hitIndex, char *title, char *artist) : hitIndex(hitIndex) {
+Hitje::Hitje(libvlc_media_t *mediaData, int hitIndex, string title, string artist) : hitIndex(hitIndex) {
     this->mediaData = mediaData;
-    this->title = new char[strlen(title) + 1];
-    strcpy(this->title, title);
-    this->artist = new char[strlen(artist) + 1];
-    strcpy(this->artist, artist);
+    this->title = title;
+    this->artist = artist;
 }
 
 Hitje::~Hitje() {
     VLC::release(mediaData);
-    SAFE_DELETE_ARRAY(title);
-    SAFE_DELETE_ARRAY(artist);
 }
 
 int AudioList::checkMediaFile(libvlc_media_t *mediaFile) {
@@ -84,24 +80,23 @@ string AudioList::createHitjeName(const Hitje * hitje, bool absolute) {
     return createHitjeName(hitje->hitIndex, hitje->title, hitje->artist, absolute);
 }
 
-string AudioList::createHitjeName(int hitIndex, char *title, char *artist, bool absolute) {
-    const char *titleTrim = trim(title);
-    const char *artistTrim = trim(artist);
-    if (strlen(artistTrim) == 0) {
-        artistTrim = "unknown";
+string AudioList::createHitjeName(int hitIndex, string title, string artist, bool absolute) {
+    trim(title);
+    trim(artist);
+    if (title.empty()) {
+        title = "notitle";
     }
-    if (strlen(titleTrim) == 0) {
-        titleTrim = "notitle";
+    if (artist.empty()) {
+        artist = "unknown";
     }
     // "ddd - artist: title.mp3"
-    int videoNameLen = 6 + strlen(artistTrim) + 3 + strlen(titleTrim) + 4;
-    char *videoName = new char[videoNameLen + 1];
-    sprintf(videoName, "%03d - %s - %s.mp3", hitIndex, artistTrim, titleTrim);
+    ostringstream videoNameStream;
+    videoNameStream << setfill('0') << setw(3) << hitIndex;
+    videoNameStream << " - " << artist << " - " << title << ".mp3";
+    string videoName = videoNameStream.str();
     filesystemSafe(videoName);
     if (absolute) {
-        string absPath = hitjesPath + videoName;
-        SAFE_DELETE_ARRAY(videoName);
-        return absPath.c_str();
+        return hitjesPath + videoName;
     }
     return videoName;
 }
@@ -216,7 +211,7 @@ bool AudioList::update(unsigned int downloadCount) {
     return this->downloadCount == 0;
 }
 
-void AudioList::skipInvalidLines(char *buffer, int *hitIndex, char *title, char *artist, string & fileOutput) {
+void AudioList::skipInvalidLines(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput) {
     // loop through all lines without hitjes
     do {
         if (feof(listFile)) {
@@ -228,7 +223,7 @@ void AudioList::skipInvalidLines(char *buffer, int *hitIndex, char *title, char 
     printlevel(LDEBUG, "Skipped all non hitjes lines\n");
 }
 
-bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist, string & fileOutput) {
+bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput) {
     *hitIndex = 0;
     artist[0] = title[0] = 0;
     printlevel(LDEBUG, "Parsing buffer:\n");
@@ -254,10 +249,9 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
         // We need to download more and file does not exist yet
         printlevel(LDEBUG, "\n\nTrying to download youtube\n");
         // no file found, title and artist are given, download from internet
-        const char *newpath = getVideoFile(*hitIndex, title, artist);
+        string newpath = getVideoFile(*hitIndex, title, artist);
 
-        if (newpath) {
-            SAFE_DELETE_ARRAY(newpath);
+        if (!newpath.empty()) {
             fileTest = fopen(hitjePath.c_str(), "r");
             if (fileTest == NULL) {
                 printlevel(LWARNING, "Could not open '%s'\n", hitjePath.c_str());
@@ -285,58 +279,53 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
     return true;
 }
 
-const char *AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
+string AudioList::getVideoFile(int hitIndex, const char *title, const char *artist) {
     try {
-        char query[strlen(title) + strlen(artist) + 1];
-        sprintf(query, "%s %s", title, artist);
+        string query = title;
+        query += ' ';
+        query += artist;
+        printlevel(LINFO, "Searching for %s\n", query.c_str());
+        string baseName = api.searchVid(query.c_str(), hitjesPath.c_str());
+        printlevel(LINFO, "Downloaded:  %s\n", baseName.c_str());
 
-        printlevel(LBGINFO, "Searching for %s\n", query);
-        char *baseName = api.searchVid(query, hitjesPath.c_str());
-        printlevel(LBGINFO, "Downloaded:  %s\n", baseName);
-
-        if (baseName) {
+        if (!baseName.empty()) {
             string videoName = createHitjeName(hitIndex, title, artist, false);
 
             printlevel(LBGINFO, "Done searching and found %s\n", videoName.c_str());
             // create path for saving audio data
-            string videoPathStr = hitjesPath + videoName;
-            const char *videoPath = videoPathStr.c_str();
+            string videoPath = hitjesPath + videoName;
 
 #if defined (USE_YOUTUBE_DL)
             // audio format already correct mp3, just move the file
-            printlevel(LBGINFO, "Moving '%s' to '%s'\n", baseName, videoPath);
-            if (rename(baseName, videoPath)) {
+            printlevel(LBGINFO, "Moving '%s' to '%s'\n", baseName.c_str(), videoPath.c_str());
+            if (rename(baseName.c_str(), videoPath.c_str())) {
                 printlevel(LERROR, "Could not move file to correct location\n");
                 printlevel(LERROR, "errno: %d\n", errno);
             }
-            // and clean
-            SAFE_DELETE_ARRAY(videoPath);
-            SAFE_DELETE_ARRAY(baseName);
 #else
             // use ffmpeg to get the audio file from video
-            char decodeCmd[videoNameLen + strlen(videoPath) + 200];
-            sprintf(decodeCmd, "ffmpeg -n -i \"%s\" -f mp3 -vn \"%s\"", baseName, videoPath);
-            printlevel(LDEBUG, "calling ffmpeg with '%s'\n", decodeCmd);
-            system(decodeCmd);
+            string decodeCmd = "ffmpeg -n -i ";
+            decodeCmd += '"' + baseName + '"';
+            decodeCmd += " -f mp3 -vn ";
+            decodeCmd += '"' + videoPath + '"';
+            printlevel(LDEBUG, "calling ffmpeg with '%s'\n", decodeCmd.c_str());
+            system(decodeCmd.c_str());
 
-            FILE *musicFile = fopen(videoPath, "r");
+            FILE *musicFile = fopen(videoPath.c_str(), "r");
             bool fileExists = musicFile != NULL;
             fclose(musicFile);
-            SAFE_DELETE_ARRAY(videoPath);
 
             if (!fileExists) {
-                SAFE_DELETE_ARRAY(baseName);
                 throw "File conversion failed";
             }
 
             // video file is not needed anymore, SAFE_DELETE(it
-            remove(baseName);
-            printlevel(LBGINFO, "Basename: %s\n", baseName);
-            SAFE_DELETE_ARRAY(baseName);
+            remove(baseName.c_str());
+            printlevel(LBGINFO, "Basename: %s\n", baseName.c_str());
             printlevel(LBGINFO, "Removed old file\n");
 #endif // USE_YOUTUBE_DL
             printlevel(LBGINFO, "\n\nSuccessfully got file '%s'\n", videoName.c_str());
-            return videoName.c_str();
+            return videoName;
         } else {
             printlevel(LWARNING, "No suitable video file found\n");
         }
@@ -345,5 +334,5 @@ const char *AudioList::getVideoFile(int hitIndex, char *title, char *artist) {
         printlevel(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
         while (!kbhit());
     }
-    return NULL;
+    return "";
 }

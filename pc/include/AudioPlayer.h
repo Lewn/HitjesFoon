@@ -52,6 +52,8 @@ protected:
 private:
     libvlc_media_player_t *audioPlayer;
     int audioIndex;
+
+    AudioPlayer(const AudioPlayer &that) = delete;
 };
 
 #endif // AUDIOPLAYER_H

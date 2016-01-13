@@ -56,8 +56,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
 
     struct dirent *entry;
     struct stat st;
-    char *textName = NULL;
-    char *audioName = NULL;
+    string textName, audioName;
     int dirCount = 0;
     while ((entry = readdir(dir))) {
         if (stat(entry->d_name, &st) == -1) {
@@ -67,16 +66,14 @@ AudioMenuItem *AudioMenu::createItem(string path) {
         if (S_ISREG(st.st_mode)) {
             // regular file
             if (!strncmp("text", entry->d_name, 4)) {
-                if (textName == NULL) {
-                    textName = new char[strlen(entry->d_name) + 1];
-                    strcpy(textName, entry->d_name);
+                if (textName.empty()) {
+                    textName = entry->d_name;
                 } else {
                     throw "Excess text files found";
                 }
             } else if (!strncmp("audio", entry->d_name, 5)) {
-                if (audioName == NULL) {
-                    audioName = new char[strlen(entry->d_name) + 1];
-                    strcpy(audioName, entry->d_name);
+                if (audioName.empty()) {
+                    audioName = entry->d_name;
                 } else {
                     throw "Excess audio files found";
                 }
@@ -93,7 +90,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
             printlevel(LWARNING, "\nUnknown entry '%s' with type %d", entry->d_name, st.st_mode);
         }
     }
-    if (audioName == NULL && textName == NULL) {
+    if (audioName.empty() && textName.empty()) {
         throw "Either an audio or text file should be specified";
     }
 
@@ -104,12 +101,10 @@ AudioMenuItem *AudioMenu::createItem(string path) {
 
     closedir(dir);
     AudioMenuItem *item;
-    if (audioName) {
+    if (!audioName.empty()) {
         item = new AudioMenuItem(path + audioName, followup, dirCount, false);
     } else {
         item = new AudioMenuItem(path + textName, followup, dirCount, true);
     }
-    SAFE_DELETE_ARRAY(audioName);
-    SAFE_DELETE_ARRAY(textName);
     return item;
 }

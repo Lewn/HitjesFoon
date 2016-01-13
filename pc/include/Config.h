@@ -32,6 +32,7 @@ protected:
     Value::ConstValueIterator getHitjesConfigIterator();
     Value::ConstValueIterator getSoundConfigIterator();
 private:
+    Config(const Config &that) = delete;
 };
 
 #endif // CONFIG_H

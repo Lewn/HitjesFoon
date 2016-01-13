@@ -9,6 +9,7 @@ public:
     ConfigAudioMenu(string configMenuPath);
 protected:
 private:
+    ConfigAudioMenu(const ConfigAudioMenu &that) = delete;
 };
 
 #endif // CONFIGAUDIOMENU_H

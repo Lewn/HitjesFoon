@@ -55,6 +55,8 @@ private:
 
     static Config *config;
     static VLC *instance;
+
+    VLC(const VLC &that) = delete;
 };
 
 #endif // VLC_H

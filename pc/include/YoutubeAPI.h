@@ -28,20 +28,23 @@ public:
     YoutubeAPI();
     ~YoutubeAPI();
 
-    char* searchVid(const char *query, const char *dllocation);
+    string searchVid(const char *query, const char *dllocation);
 protected:
     HTTPTransfer transfer;
 
-    char* urlDecode(char* src);
+    string urlDecode(const char *src);
 
-    JsonParser makeRequest(RequestType requestType, const char *part, const char *fields, unsigned char maxResults, const char *extra);
-    char *getVideoInfo(const char *videoId);
-    char *getFileFromVideoInfo(const char *videoInfo);
-    char *downloadEncodedUrl(const char *url, const char *title);
+    string makeRequest(RequestType requestType, const char *part, const char *fields, unsigned char maxResults, const char *extra);
+    string getVideoInfo(const char *videoId);
+#if !defined(USE_YOUTUBE_DL)
+    string getFileFromVideoInfo(const char *videoInfo);
+#endif
+    string downloadEncodedUrl(const char *url, const char *title);
     void decryptSignature(char *sigstart, int siglen, char *decrypted);
 
-    char* downloadYoutubeDL(const char *dllocation, const char* videoId, const char* title);
+    string downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title);
 private:
+    YoutubeAPI(const YoutubeAPI &that) = delete;
 };
 
 #endif // YOUTUBEAPI_H

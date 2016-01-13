@@ -63,5 +63,6 @@ int getKey();
 int readKeyboard();
 int selection(vector<string> options);
 void filesystemSafe(char *str);
+void filesystemSafe(string &str);
 
 #endif // TOOLS_H

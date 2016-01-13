@@ -11,7 +11,6 @@ int checkMediaFile(libvlc_media_t *mediaFile) {
 AudioMenuItem::AudioMenuItem(string path, AudioMenuItem **followup, unsigned char followupLen, bool tts): followup(followup), followupLen(followupLen) {
     if (tts) {
         media = NULL;
-        text = NULL;
         FILE *pFile;
         unsigned int fileSize;
         size_t result;
@@ -27,21 +26,18 @@ AudioMenuItem::AudioMenuItem(string path, AudioMenuItem **followup, unsigned cha
         rewind(pFile);
 
         // allocate memory to contain the whole file:
-        text = new char[fileSize + 5];
-        text[0] = 's';
-        text[1] = 'a';
-        text[2] = 'y';
-        text[3] = ' ';
+        char buf[fileSize];
 
         // copy the file into the buffer:
-        result = fread(text + 4, 1, fileSize, pFile);
+        result = fread(buf, 1, fileSize, pFile);
         if (result != fileSize) {
             throw "Reading error";
         }
-        text[fileSize + 4] = 0;
+        text = "say ";
+        text += buf;
         fclose(pFile);
     } else {
-        text = NULL;
+        text.clear();
         media = VLC::getInstance()->newMediaFromPath(path.c_str());
         if (!checkMediaFile(media)) {
             throw "Invalid media file";
@@ -57,8 +53,6 @@ AudioMenuItem::~AudioMenuItem() {
 
     if (media) {
         VLC::release(media);
-    } else {
-        //SAFE_DELETE_ARRAY(text);
     }
 }
 
@@ -75,8 +69,8 @@ AudioMenuItem *AudioMenuItem::getFollowup(unsigned char index) {
 
 libvlc_media_t *AudioMenuItem::getMedia() {
     if (!media) {
-        printf("\n%s", text);
-        system(text);
+        printf("\n%s", text.c_str());
+        system(text.c_str());
         return NULL;
     }
     return media;
