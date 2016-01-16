@@ -9,6 +9,7 @@
 #include "Config.h"
 
 #include <string.h>
+#include <regex>
 #include <conio.h>
 
 using namespace std;

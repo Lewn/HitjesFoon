@@ -28,7 +28,6 @@ std::string &trim(std::string &s);
 
 
 char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename);
-bool strmatch(const char *str, const char *pattern);
 
 #ifdef _WIN32
 #include "conio.h"

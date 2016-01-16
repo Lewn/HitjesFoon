@@ -113,20 +113,21 @@ void VLC::tryConfig(const vector<deviceoutput> &outputs) {
     phoneDevice = config->getVLCPhoneDevice();
     speakerDevice = config->getVLCSpeakerDevice();
 
+    printlevel(LDEBUG, "\n");
+    regex phoneRex(phoneDevice), speakerRex(speakerDevice);
     for (std::vector<deviceoutput>::const_iterator output = outputs.begin(); output != outputs.end(); ++output) {
-        if (output->device.compare(phoneDevice) == 0) {
+        if (regex_match(output->device, phoneRex)) {
             printlevel(LDEBUG, " --- Phone device\n");
             phoneOutput = output->output;
             phoneDevice = output->device;
         }
-        if (output->device.compare(speakerDevice) == 0) {
+        if (regex_match(output->device, speakerRex)) {
             printlevel(LDEBUG, " --- Speaker device\n");
             speakerOutput = output->output;
             speakerDevice = output->device;
         }
-        printlevel(LDEBUG, "\n");
         printlevel(LDEBUG, "  Device:      %s\n", output->device.c_str());
-        printlevel(LDEBUG, "  Description: %s\n", output->deviceDescription.c_str());
+        printlevel(LDEBUG, "  Description: %s\n\n", output->deviceDescription.c_str());
     }
 }
 

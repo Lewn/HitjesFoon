@@ -52,7 +52,6 @@
 			<Add option='-L&quot;ffmpeg\lib&quot;' />
 			<Add option='-L&quot;vlc\lib&quot;' />
 			<Add option='-L&quot;hidapi\windows&quot;' />
-			<Add option="hidapi\windows\hid.o" />
 			<Add library="vlc\lib\libvlc.lib" />
 			<Add library="setupapi" />
 			<Add library="curl" />
@@ -67,6 +66,7 @@
 			<Add library="idn" />
 			<Add library="wldap32" />
 			<Add library="ws2_32" />
+			<Add library="hidapi.dll" />
 		</Linker>
 		<Unit filename="include/AudioList.h" />
 		<Unit filename="include/AudioMenu.h" />
