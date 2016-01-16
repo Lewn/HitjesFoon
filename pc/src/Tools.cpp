@@ -51,7 +51,7 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 
 
 #ifdef _WIN32
-void getCursorXY(short &x, short&y) {
+void getCursorXY(short &x, short &y) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
         x = csbi.dwCursorPosition.X;
@@ -64,6 +64,7 @@ void setCursorXY(short x, short y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
 }
 #else
+struct termios origTermios;
 void resetTerminalMode() {
     tcsetattr(0, TCSANOW, &origTermios);
 }
@@ -71,11 +72,11 @@ void resetTerminalMode() {
 void setConioTerminalMode() {
     struct termios newTermios;
 
-    / *take two copies - one for now, one for later * /
-        tcgetattr(0, &origTermios);
+    // take two copies - one for now, one for later
+    tcgetattr(0, &origTermios);
     memcpy(&newTermios, &origTermios, sizeof(newTermios));
 
-    / *register cleanup handler, and set the new terminal mode * /
+    // register cleanup handler, and set the new terminal mode
     cfmakeraw(&newTermios);
     tcsetattr(0, TCSANOW, &newTermios);
 }

@@ -51,7 +51,11 @@ string YoutubeAPI::searchVid(const char *query, const char *dllocation) {
                 }
                 break;
             }
+#ifdef _WIN32
             Sleep(10);
+#else
+            sleep(10);
+#endif
             if (i % 100 == 0) {
                 printlevel(LINFO, "%d seconds  \r", 10 - i / 100);
             }

@@ -48,12 +48,9 @@
 		<Linker>
 			<Add option="-static" />
 			<Add option='-L&quot;curl\lib&quot;' />
-			<Add option='-L&quot;jsoncpp\lib&quot;' />
-			<Add option='-L&quot;ffmpeg\lib&quot;' />
 			<Add option='-L&quot;vlc\lib&quot;' />
 			<Add option='-L&quot;hidapi\windows&quot;' />
-			<Add library="vlc\lib\libvlc.lib" />
-			<Add library="setupapi" />
+			<Add option="-llibvlc" />
 			<Add library="curl" />
 			<Add library="rtmp" />
 			<Add library="winmm" />

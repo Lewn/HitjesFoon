@@ -310,12 +310,13 @@ void InputProcessor::threadUpdate() {
 }
 #else
 pthread_t *updateThread = NULL;
-void InputProcessor::doUpdate() {
+void *doUpdate(void *self) {
     InputProcessor *processor = (InputProcessor *) self;
     do {
         printlevel(LINFO, "\nDownloading one more hitje");
         processor->requestInput();
     } while (processor->getHitjesList()->update(1));
+    return NULL;
 }
 
 bool InputProcessor::threadRunning() {
@@ -323,7 +324,7 @@ bool InputProcessor::threadRunning() {
 }
 
 void InputProcessor::threadUpdate() {
-    pthread_create(updateThread, NULL, doUpdate, &updateAmount);
+    pthread_create(updateThread, NULL, doUpdate, this);
 }
 #endif // __WIN32
 

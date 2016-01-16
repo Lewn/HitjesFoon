@@ -24,7 +24,8 @@ enum ProcessType {
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <pthread>
+#include <signal.h>
+#include <pthread.h>
 #endif // __WIN32
 
 #include "AudioPlayer.h"

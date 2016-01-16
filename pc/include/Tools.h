@@ -11,6 +11,7 @@
 #include "ScreenCommands.h"
 #include <vector>
 #include <string>
+#include <cstring>
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -36,14 +37,14 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 #include <unistd.h>
 #include <sys/select.h>
 #include <termios.h>
-struct termios origTermios;
 
 void resetTerminalMode();
 void setConioTerminalMode();
 int kbhit();
 int getch();
 #endif
-void getCursorXY(short *x, short *y);
+
+void getCursorXY(short &x, short &y);
 void setCursorXY(short x, short y);
 
 enum PRINT_LEVEL {
