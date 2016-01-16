@@ -284,9 +284,7 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
         string query = title;
         query += ' ';
         query += artist;
-        printlevel(LINFO, "Searching for %s\n", query.c_str());
         string baseName = api.searchVid(query.c_str(), hitjesPath.c_str());
-        printlevel(LINFO, "Downloaded:  %s\n", baseName.c_str());
 
         if (!baseName.empty()) {
             string videoName = createHitjeName(hitIndex, title, artist, false);

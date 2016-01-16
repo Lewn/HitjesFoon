@@ -311,13 +311,13 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
 }
 
 string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title) {
-    printlevel(LINFO, "Title: '%s'\n", title);
+    printlevel(LDEBUG, "Title: '%s'\n", title);
     string filename = title;
 
     //filename = urlDecode(filename.c_str());
     filesystemSafe(filename);
     filename = dllocation + filename + ".mp4";
-    printlevel(LINFO, "Filename: '%s'\n", filename.c_str());
+    printlevel(LDEBUG, "Filename: '%s'\n", filename.c_str());
 
     printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
 

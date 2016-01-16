@@ -40,16 +40,12 @@
 			<Add directory="include" />
 			<Add directory="curl/include" />
 			<Add directory="rapidjson/include" />
-			<Add directory="ffmpeg/include" />
-			<Add directory="pocketsphinx/include" />
-			<Add directory="sphinxbase/include" />
-			<Add directory="hidapi/hidapi" />
+			<Add directory="pdcurses" />
 		</Compiler>
 		<Linker>
+			<Add option="hidapi\windows\hid.o" />
+			<Add option="pdcurses\win32\pdcurses.a" />
 			<Add option="-static" />
-			<Add option='-L&quot;curl\lib&quot;' />
-			<Add option='-L&quot;vlc\lib&quot;' />
-			<Add option='-L&quot;hidapi\windows&quot;' />
 			<Add option="-llibvlc" />
 			<Add library="curl" />
 			<Add library="rtmp" />
@@ -63,7 +59,11 @@
 			<Add library="idn" />
 			<Add library="wldap32" />
 			<Add library="ws2_32" />
-			<Add library="hidapi.dll" />
+			<Add library="setupapi" />
+			<Add directory="curl/lib" />
+			<Add directory="vlc/lib" />
+			<Add directory="hidapi/windows" />
+			<Add directory="pdcurses/win32" />
 		</Linker>
 		<Unit filename="include/AudioList.h" />
 		<Unit filename="include/AudioMenu.h" />
@@ -75,7 +75,6 @@
 		<Unit filename="include/HTTPTransfer.h" />
 		<Unit filename="include/InputProcessor.h" />
 		<Unit filename="include/JsonParser.h" />
-		<Unit filename="include/ScreenCommands.h" />
 		<Unit filename="include/Tools.h" />
 		<Unit filename="include/USBConnection.h" />
 		<Unit filename="include/VLC.h" />

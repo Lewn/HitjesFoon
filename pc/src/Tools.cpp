@@ -125,9 +125,7 @@ int selection(vector<string> options) {
     printlevel(LINFO, "Start selection\n");
     int curSelection = 0;
     int x, y;
-    getyx(stdscr, y, x);
     do {
-        move(y, x);
         int i = 0;
         for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
             if (i++ == curSelection) {
@@ -152,7 +150,10 @@ int selection(vector<string> options) {
             curSelection++;
             curSelection = min(curSelection, (int)options.size() - 1);
         }
+        getyx(stdscr, y, x);
+        move(y - options.size(), x);
     } while (true);
+    move(y, x);
     return curSelection;
 }
 
