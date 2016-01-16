@@ -13,10 +13,7 @@ extern PRINT_LEVEL msglevel;
 PRINT_LEVEL msglevel = PRINT_LEVEL::LINFO;
 
 int main() {
-#ifndef _WIN32
-    setConioTerminalMode();
-#endif
-
+    initScr();
     try {
         Config config("config.txt");
 
@@ -53,12 +50,8 @@ int main() {
     } catch (const char *ex) {
         printlevel(LERROR, "%s\n", ex);
     }
-
-#ifndef _WIN32
-    resetTerminalMode();
-#endif
-
-    printlevel(LINFO, "\n\n");
     VLC::deleteInstance();
+
+    deinitScr();
  }
 

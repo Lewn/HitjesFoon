@@ -50,7 +50,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
     // try to open the specified dir
     DIR *dir = opendir(path.c_str());
     if (!dir) {
-        printf("\nInvalid: '%s'\n", path.c_str());
+        printlevel(LERROR, "\nInvalid: '%s'\n", path.c_str());
         throw "Path should point to an existing directory";
     }
 

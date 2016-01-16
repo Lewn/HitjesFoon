@@ -49,124 +49,118 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 }
 
 
-
-#ifdef _WIN32
-void getCursorXY(short &x, short &y) {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-        x = csbi.dwCursorPosition.X;
-        y = csbi.dwCursorPosition.Y;
-    }
+void initScr() {
+    initscr();
+    PDC_set_title("HitjesFoon");
+    // directly get typed key (no character buffering until newline)
+    cbreak();
+    // getch() is non-blocking
+    nodelay(stdscr, TRUE);
+    // allow all keyboard keys (long keys)
+    keypad(stdscr, TRUE);
+    // enable auto scroll when last line is written
+    scrollok(stdscr, TRUE);
+    // use color terminal
+    start_color();
+    // define our colors
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
 }
 
-void setCursorXY(short x, short y) {
-    COORD p = {x, y};
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
-}
-#else
-struct termios origTermios;
-void resetTerminalMode() {
-    tcsetattr(0, TCSANOW, &origTermios);
+void deinitScr() {
+    endwin();
 }
 
-void setConioTerminalMode() {
-    struct termios newTermios;
-
-    // take two copies - one for now, one for later
-    tcgetattr(0, &origTermios);
-    memcpy(&newTermios, &origTermios, sizeof(newTermios));
-
-    // register cleanup handler, and set the new terminal mode
-    cfmakeraw(&newTermios);
-    tcsetattr(0, TCSANOW, &newTermios);
+int getchsilent() {
+    int c;
+    noecho();
+    c = getch();
+    echo();
+    return c;
 }
 
-int kbhit() {
-    struct timeval tv = {0L, 0L};
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(0, &fds);
-    return select(1, &fds, NULL, NULL, &tv);
+int getchar() {
+    int c;
+    noecho();
+    do {
+        c = getch();
+    } while (c == ERR);
+    echo();
+    return c;
 }
 
-int getch() {
-    int r;
-    unsigned char c;
-
-    if ((r = read(0, &c, sizeof(c))) < 0) {
-        return r;
-    } else {
-        return c;
-    }
-}
-#endif
-
-#include "InputProcessor.h"
 
 void printlevel(PRINT_LEVEL level, const char *format, ...) {
-#ifdef _WIN32
-    HANDLE hConsole;
-#endif // _WIN32
+    char buf[1000];
+
     va_list args;
     if (level > msglevel) {
         return;
     }
-#ifdef _WIN32
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (level == LERROR) {
-        // print in red text
-        SetConsoleTextAttribute(hConsole, 12);
-        printf("ERR : ");
-    } else if (level == LWARNING) {
-        // print in yellow text
-        SetConsoleTextAttribute(hConsole, 14);
-        printf("WARN: ");
-    }
-#else
-    if (level == LERROR) {
-        // print in red text
-        printf("\033[31mERR : ");
-    } else if (level == LWARNING) {
-        // print in yellow text
-        printf("\033[33mWARN: ");
-    }
-#endif // _WIN32
     va_start(args, format);
-    vfprintf(stderr, format, args);
+    vsnprintf(buf, sizeof(buf), format, args);
     va_end(args);
+
+    if (level == LERROR) {
+        attrset(COLOR_PAIR(1) | A_BOLD);
+        addstr("ERR : ");
+    } else if (level == LWARNING) {
+        attrset(COLOR_PAIR(2) | A_BOLD);
+        addstr("WARN: ");
+    } else {
+        attrset(COLOR_PAIR(0) | A_BOLD);
+    }
+    addstr(buf);
     // set print back to normal
-#ifdef _WIN32
-    if (level == LERROR || level == LWARNING) {
-        SetConsoleTextAttribute(hConsole, 7);
+    attrset(A_NORMAL);
+    // actually draw the screen
+    refresh();
+    if (level == LDEBUGSLOW) {
+        // Wait 20 seconds for debugslow type text
+        napms(20000);
     }
-    if (msglevel == LDEBUGSLOW) {
-        Sleep(20);
-    }
-#else
-    if (level == LERROR || level == LWARNING) {
-        printf("\033[0m");
-    }
-    if (msglevel == LDEBUGSLOW) {
-        sleep(20);
-    }
-#endif
 }
 
-int getKey() {
-    unsigned char c = getch();
-    if (c == 0 || c == 224) {
-        // extended code, add 256 to the next result
-        return 256 + getch();
-    }
-    return c;
+int selection(vector<string> options) {
+    printlevel(LINFO, "Start selection\n");
+    int curSelection = 0;
+    int x, y;
+    getyx(stdscr, y, x);
+    do {
+        move(y, x);
+        int i = 0;
+        for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
+            if (i++ == curSelection) {
+                attrset(COLOR_PAIR(0) | A_REVERSE);
+            } else {
+                attrset(COLOR_PAIR(0) | A_BOLD);
+            }
+            printw("%s\n", (*it).data());
+        }
+        attrset(A_NORMAL | A_BOLD);
+        refresh();
+
+        int c = getchar();
+        if (c == 0x0A) {
+            // Enter key
+            break;
+        }
+        if (c == KEY_UP) {
+            curSelection--;
+            curSelection = max(curSelection, 0);
+        } else if (c == KEY_DOWN) {
+            curSelection++;
+            curSelection = min(curSelection, (int)options.size() - 1);
+        }
+    } while (true);
+    return curSelection;
 }
 
+#include "InputProcessor.h"
 int readKeyboard() {
-    int hit = kbhit();
+    int c = getchsilent();
 
-    if (hit) {
-        char c = getch();
-
+    if (c != ERR) {
         if (c >= '0' && c <= '9') {
             // got a number, return it
             return c - '0';
@@ -188,41 +182,6 @@ int readKeyboard() {
     }
 
     return INPUT_NONE;
-}
-
-
-int selection(vector<string> options) {
-    int curSelection = 0;
-    short x, y;
-    getCursorXY(x, y);
-    do {
-        setCursorXY(x, y);
-        int i = 0;
-        for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
-            if (i++ == curSelection) {
-                setColors(BLACK, WHITE);
-            } else {
-                setColors(WHITE, BLACK);
-            }
-            printlevel(LINFO, "%s\n", (*it).data());
-        }
-        resetColors();
-
-        int c = getKey();
-        if (c == 13) {
-            break;
-        }
-        if (c == 328) {
-            // up arrow
-            curSelection--;
-            curSelection = max(curSelection, 0);
-        } else if (c == 336) {
-            // down arrow
-            curSelection++;
-            curSelection = min(curSelection, (int)options.size() - 1);
-        }
-    } while (true);
-    return curSelection;
 }
 
 void filesystemSafe(char *str) {

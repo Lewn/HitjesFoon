@@ -45,7 +45,7 @@ void HTTPTransfer::perform() {
     CURLcode res = curl_easy_perform(curl);
     // Check for errors
     if (res != CURLE_OK) {
-        printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        printlevel(LERROR, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl);
         throw "curl_easy_perform() failed";
     }
@@ -55,7 +55,7 @@ long HTTPTransfer::getStatusCode() {
     long statusCode;
     CURLcode res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
     if (res != CURLE_OK) {
-        printf("curl_easy_getinfo() failed: %s\n", curl_easy_strerror(res));
+        printlevel(LERROR, "curl_easy_getinfo() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl);
         throw "couldn't retrieve status code";
     }
@@ -95,9 +95,9 @@ size_t HTTPTransfer::dataReceived(char *newData, size_t dataSize, size_t dataLen
 
 int HTTPTransfer::progress(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     if (dltotal) {
-        printf("Downloaded %3.0f%% \r", (double)dlnow / dltotal  *100);
+        printlevel(LBGINFO, "Downloaded %3.0f%% \r", (double)dlnow / dltotal  *100);
     } else if (ultotal) {
-        printf("Uploaded %3.0f%% \r", (double)ulnow / ultotal  *100);
+        printlevel(LBGINFO, "Uploaded %3.0f%% \r", (double)ulnow / ultotal  *100);
     }
     return 0;
 }

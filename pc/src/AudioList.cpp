@@ -332,7 +332,7 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
     } catch (const char *e) {
         // on any error, still continue
         printlevel(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
-        while (!kbhit());
+        getchar();
     }
     return "";
 }

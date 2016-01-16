@@ -69,7 +69,7 @@ AudioMenuItem *AudioMenuItem::getFollowup(unsigned char index) {
 
 libvlc_media_t *AudioMenuItem::getMedia() {
     if (!media) {
-        printf("\n%s", text.c_str());
+        printlevel(LDEBUG, "\n%s", text.c_str());
         system(text.c_str());
         return NULL;
     }

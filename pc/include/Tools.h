@@ -8,7 +8,6 @@
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL
 #define SAFE_CLOSE(x) fclose(x); x = NULL;
 
-#include "ScreenCommands.h"
 #include <vector>
 #include <string>
 #include <cstring>
@@ -16,6 +15,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <algorithm>
+#include <curses.h>
 
 using namespace std;
 
@@ -30,22 +30,11 @@ std::string &trim(std::string &s);
 
 char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename);
 
-#ifdef _WIN32
-#include "conio.h"
-#include <windows.h> // WinApi header
-#else
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/select.h>
-#include <termios.h>
-
-void resetTerminalMode();
-void setConioTerminalMode();
-int kbhit();
-int getch();
 #endif
 
-void getCursorXY(short &x, short &y);
-void setCursorXY(short x, short y);
 
 enum PRINT_LEVEL {
     LERROR,
@@ -58,10 +47,15 @@ enum PRINT_LEVEL {
 
 extern PRINT_LEVEL msglevel;
 
+void initScr();
+void deinitScr();
+int getchsilent();
+int getchar();
 void printlevel(PRINT_LEVEL level, const char *format, ...);
+int selection(vector<string> options);
+
 int getKey();
 int readKeyboard();
-int selection(vector<string> options);
 void filesystemSafe(char *str);
 void filesystemSafe(string &str);
 
