@@ -89,7 +89,7 @@ void InputProcessor::processAudioMenu(int input) {
 void InputProcessor::processNum(int input) {
     // got a number input, save it
     printlevel(LINFO, "%c", input + '0');
-    curNumber = curNumber  *10 + input;
+    curNumber = curNumber  * 10 + input;
     if (++numberCount == 3) {
         // play audio per three digit number
         switch (curNumber) {
@@ -282,49 +282,24 @@ void InputProcessor::toggleOutput() {
 }
 
 
-#ifdef _WIN32
-DWORD updateThreadID;
-HANDLE updateThreadHandle;
-
-DWORD WINAPI doUpdate(LPVOID self) {
+thread *updateThread = NULL;
+void doUpdate(InputProcessor *processor) {
     try {
-        InputProcessor *processor = (InputProcessor *) self;
         do {
             printlevel(LINFO, "\nDownloading one more hitje");
             processor->requestInput();
         } while (processor->getHitjesList()->update(1));
         processor->requestInput();
-    }catch (const char *ex) {
+    } catch (const char *ex) {
         printlevel(LERROR, "%s\n", ex);
     }
-    return 0;
+    updateThread = NULL;
 }
 
 bool InputProcessor::threadRunning() {
-    DWORD status = WaitForSingleObject(updateThreadHandle, 0);
-    return status == WAIT_TIMEOUT;
+    return updateThread != NULL;
 }
 
 void InputProcessor::threadUpdate() {
-    updateThreadHandle = CreateThread(0, 0, &doUpdate, this, 0, &updateThreadID);
+    updateThread = new thread(doUpdate, this);
 }
-#else
-pthread_t *updateThread = NULL;
-void *doUpdate(void *self) {
-    InputProcessor *processor = (InputProcessor *) self;
-    do {
-        printlevel(LINFO, "\nDownloading one more hitje");
-        processor->requestInput();
-    } while (processor->getHitjesList()->update(1));
-    return NULL;
-}
-
-bool InputProcessor::threadRunning() {
-    return pthread_kill(*updateThread, 0);
-}
-
-void InputProcessor::threadUpdate() {
-    pthread_create(updateThread, NULL, doUpdate, this);
-}
-#endif // __WIN32
-

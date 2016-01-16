@@ -21,19 +21,17 @@ enum ProcessType {
     PROCESS_LINEAR_SHUFFLE
 };
 
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <signal.h>
-#include <pthread.h>
-#endif // __WIN32
+
+#include <thread>
+#include <list>
 
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
 #include "Tools.h"
 #include "Config.h"
-#include <list>
+
+using namespace std;
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
