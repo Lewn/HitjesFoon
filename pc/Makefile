@@ -6,12 +6,13 @@ CC = gcc
 CXX = g++
 AR = ar
 LD = g++
+MAKE = make
 
 INC = -Ivlc/include -Ihidapi -Iinclude -Icurl/include -Irapidjson/include -Ihidapi/hidapi
 CFLAGS = -std=c++11 -Wall -fexceptions -DCURL_STATICLIB
 RESINC = 
 LIBDIR = 
-LIB = -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev
+LIB = -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lncurses
 LDFLAGS = -L"curl/lib" -L"vlc/lib" -L"hidapi/linux"
 
 INC_DEBUG = $(INC)
@@ -44,9 +45,11 @@ all: debug release
 
 clean: clean_debug clean_release
 
-before_debug: 
+hidapi/linux/hid.o:
+	cd hidapi/linux && $(MAKE) -f Makefile-manual
+
+before_debug: hidapi/linux/hid.o
 	mkdir -p bin/Debug
-	mkdir -p $(OBJDIR_DEBUG)
 	mkdir -p $(OBJDIR_DEBUG)/src
 
 after_debug: 
@@ -98,13 +101,13 @@ $(OBJDIR_DEBUG)/src/AudioList.o: src/AudioList.cpp
 $(OBJDIR_DEBUG)/main.o: main.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
 
-clean_debug: 
+clean_debug:
 	rm -rf $(OBJ_DEBUG)
 	rm -rf $(OUT_DEBUG)
 	rm -rf bin/Debug
 	rm -rf $(OBJDIR_DEBUG)
 
-before_release: 
+before_release: hidapi/linux/hid.o
 	mkdir -p bin/Release
 	mkdir -p $(OBJDIR_RELEASE)
 	mkdir -p $(OBJDIR_RELEASE)/src
@@ -158,11 +161,11 @@ $(OBJDIR_RELEASE)/src/AudioList.o: src/AudioList.cpp
 $(OBJDIR_RELEASE)/main.o: main.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)/main.o
 
-clean_release: 
+clean_release:
 	rm -rf $(OBJ_RELEASE)
 	rm -rf $(OUT_RELEASE)
 	rm -rf bin/Release
 	rm -rf $(OBJDIR_RELEASE)
 
-.PHONY: before_debug after_debug clean_debug before_release after_release clean_release
+.PHONY: makehid makepdcurses before_debug after_debug clean_debug before_release after_release clean_release
 

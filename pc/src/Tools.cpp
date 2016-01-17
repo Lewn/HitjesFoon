@@ -51,7 +51,6 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 
 void initScr() {
     initscr();
-    PDC_set_title("HitjesFoon");
     // directly get typed key (no character buffering until newline)
     cbreak();
     // getch() is non-blocking

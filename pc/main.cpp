@@ -49,6 +49,7 @@ int main() {
         }
     } catch (const char *ex) {
         printlevel(LERROR, "%s\n", ex);
+        getchar();
     }
     VLC::deleteInstance();
 

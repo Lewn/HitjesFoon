@@ -15,7 +15,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <algorithm>
+
+#ifdef _WIN32
 #include <curses.h>
+#else
+#include <ncurses.h>
+#endif
 
 using namespace std;
 
