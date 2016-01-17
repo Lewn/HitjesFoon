@@ -121,13 +121,19 @@ void printlevel(PRINT_LEVEL level, const char *format, ...) {
 }
 
 int selection(vector<string> options) {
-    printlevel(LINFO, "Start selection\n");
     int curSelection = 0;
-    int x, y;
+    int x, y, minY, maxY, startY = 0;
+    minY = 5;
+    maxY = getmaxy(stdscr) - minY - 1;
     do {
         int i = 0;
-        for (vector<string>::iterator it = options.begin(); it != options.end(); it++) {
-            if (i++ == curSelection) {
+        for (vector<string>::iterator it = options.begin(); it != options.end(); it++, i++) {
+            if (i < startY) {
+                continue;
+            }else if (i >= maxY + startY) {
+                break;
+            }
+            if (i == curSelection) {
                 attrset(COLOR_PAIR(0) | A_REVERSE);
             } else {
                 attrset(COLOR_PAIR(0) | A_BOLD);
@@ -137,7 +143,7 @@ int selection(vector<string> options) {
         attrset(A_NORMAL | A_BOLD);
         refresh();
 
-        int c = getchar();
+        int c = getch();
         if (c == 0x0A) {
             // Enter key
             break;
@@ -145,12 +151,18 @@ int selection(vector<string> options) {
         if (c == KEY_UP) {
             curSelection--;
             curSelection = max(curSelection, 0);
+            if (curSelection - startY < 0) {
+                startY--;
+            }
         } else if (c == KEY_DOWN) {
             curSelection++;
             curSelection = min(curSelection, (int)options.size() - 1);
+            if (curSelection - startY >= maxY) {
+                startY++;
+            }
         }
         getyx(stdscr, y, x);
-        move(y - options.size(), x);
+        move(y - min((int)options.size(), maxY), x);
     } while (true);
     move(y, x);
     return curSelection;
