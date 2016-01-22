@@ -128,6 +128,9 @@ void VLC::tryConfig(const vector<deviceoutput> &outputs) {
         }
         printlevel(LDEBUG, "  Device:      %s\n", output->device.c_str());
         printlevel(LDEBUG, "  Description: %s\n\n", output->deviceDescription.c_str());
+        if (msglevel >= LDEBUG) {
+            getchar();
+        }
     }
 }
 
