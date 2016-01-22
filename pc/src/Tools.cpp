@@ -176,7 +176,7 @@ int readKeyboard() {
         if (c >= '0' && c <= '9') {
             // got a number, return it
             return c - '0';
-        } else if (c == 8) {
+        } else if (c == 8 || c == KEY_BACKSPACE) {
             // backspace, simulate earth button (reset number)
             return INPUT_EARTH_DOWN;
         } else if (c == 's') {
