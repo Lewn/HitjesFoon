@@ -87,7 +87,7 @@ bool AudioPlayer::playAudio(libvlc_media_t *media) {
 
 bool AudioPlayer::playAudio(libvlc_media_t *media, float position) {
     stop();
-    if (!media) {
+    if (media == NULL) {
         return false;
     }
     libvlc_media_player_set_media(audioPlayer, media);

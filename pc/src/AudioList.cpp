@@ -55,7 +55,7 @@ AudioList::AudioList(Config *config) {
     } while (listFile == NULL);
 
     printlevel(LINFO, "Creating the hitjeslist\n");
-    hitjesList.clear();
+    hitjesList.resize(999, NULL);
     update(0);
 }
 
@@ -68,8 +68,8 @@ AudioList::~AudioList() {
 }
 
 libvlc_media_t *AudioList::getAudio(int audioIndex) {
-    if (audioIndex < 0 || audioIndex > 999 || !hitjesList[audioIndex]) {
-        return 0;
+    if (audioIndex < 0 || audioIndex > 999 || hitjesList[audioIndex] == NULL) {
+        return NULL;
     }
     return hitjesList[audioIndex]->mediaData;
 }

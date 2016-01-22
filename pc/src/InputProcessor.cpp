@@ -157,7 +157,9 @@ void InputProcessor::playAudio(int curNumber) {
                 // list song for playing at speakerAudioPlayer
                 if (!speakerAudioPlayer->isPlaying()) {
                     printlevel(LINFO, "\nPlaying hitje %d at speakers", curNumber);
-                    speakerAudioPlayer->playAudio(curNumber);
+                    if (!speakerAudioPlayer->playAudio(curNumber)) {
+                        throw "Could not play audio";
+                    }
                 } else {
                     printlevel(LINFO, "\nQueued hitje %d", curNumber);
                     hitjesQueue.push_back(curNumber);
