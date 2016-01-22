@@ -135,6 +135,9 @@ void InputProcessor::processAlt(int input) {
             } else {
                 printlevel(LWARNING, "Update thread already running\n");
             }
+            break;
+        default:
+            break;
     }
 }
 
@@ -303,5 +306,6 @@ bool InputProcessor::threadRunning() {
 }
 
 void InputProcessor::threadUpdate() {
-    updateThread = new thread(doUpdate, this);
+    doUpdate(this);
+    //updateThread = new thread(doUpdate, this);
 }

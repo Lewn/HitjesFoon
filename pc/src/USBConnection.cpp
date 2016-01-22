@@ -47,6 +47,8 @@ int USBConnection::read() {
         memset(buf, 0, sizeof(buf));
         int res = hid_read(usbDevice, buf, sizeof(buf));
         if (res < 0) {
+            printlevel(LERROR, "USB read exception '%s'\n", hid_error(usbDevice));
+            getchar();
             throw "Read usb exception";
         }
         if (res) {
