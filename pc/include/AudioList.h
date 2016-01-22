@@ -43,7 +43,7 @@ public:
 protected:
     unsigned int downloadCount;
     YoutubeAPI api;
-    Hitje **hitjesList;
+    vector<Hitje *> hitjesList;
     string listFilePath;
     string hitjesPath;
     FILE *listFile;

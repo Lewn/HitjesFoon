@@ -288,7 +288,7 @@ void doUpdate(InputProcessor *processor) {
         do {
             printlevel(LINFO, "\nDownloading one more hitje");
             processor->requestInput();
-        } while (processor->getHitjesList()->update(1));
+        } while (processor->getHitjesList()->update(1) && false);
         processor->requestInput();
     } catch (const char *ex) {
         printlevel(LERROR, "%s\n", ex);

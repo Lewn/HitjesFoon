@@ -55,18 +55,16 @@ AudioList::AudioList(Config *config) {
     } while (listFile == NULL);
 
     printlevel(LINFO, "Creating the hitjeslist\n");
-    hitjesList = 0;
+    hitjesList.clear();
     update(0);
 }
 
 AudioList::~AudioList() {
     // clear hitjeslist
-    if (hitjesList) {
-        for (unsigned int i = 0; i < sizeof(hitjesList); i++) {
-            SAFE_DELETE(hitjesList[i]);
-        }
-        SAFE_DELETE_ARRAY(hitjesList);
+    for (unsigned int i = 0; i < hitjesList.size(); i++) {
+        SAFE_DELETE(hitjesList[i]);
     }
+    hitjesList.clear();
 }
 
 libvlc_media_t *AudioList::getAudio(int audioIndex) {
@@ -114,8 +112,7 @@ bool AudioList::update(unsigned int downloadCount) {
     buffer[0] = title[0] = artist[0] = '\0';
 
     // Create a new list with 999 hitjes
-    Hitje **newHitjesList = new Hitje*[999];
-    memset(newHitjesList, 0, 999  * sizeof(newHitjesList));
+    vector<Hitje *> newHitjesList(999);
 
     if (listFile == NULL) {
         listFile = fopen(listFilePath.c_str(), "r");
@@ -199,13 +196,11 @@ bool AudioList::update(unsigned int downloadCount) {
     listFile = NULL;
 
 // clear old hitjeslist
-    if (hitjesList) {
-        for (unsigned int i = 0; i < sizeof(hitjesList); i++) {
-            SAFE_DELETE(hitjesList[i]);
-        }
-        SAFE_DELETE_ARRAY(hitjesList);
+    for (unsigned int i = 0; i < hitjesList.size(); i++) {
+        SAFE_DELETE(hitjesList[i]);
+        hitjesList[i] = newHitjesList[i];
     }
-    hitjesList = newHitjesList;
+    newHitjesList.clear();
     printlevel(LINFO, "\nFound a total of %d hitjes\n", hitjes);
 // return wether there is more to download
     return this->downloadCount == 0;

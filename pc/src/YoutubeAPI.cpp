@@ -312,7 +312,7 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
 
 string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title) {
     printlevel(LDEBUG, "Title: '%s'\n", title);
-    string filename = title;
+    string filename = "tmp";
 
     //filename = urlDecode(filename.c_str());
     filesystemSafe(filename);
