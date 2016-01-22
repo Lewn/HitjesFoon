@@ -44,7 +44,7 @@ void USBConnection::reset() {
 int USBConnection::read() {
     if (usbDevice) {
         unsigned char buf[2];
-        memset(buf, 0, 2 * sizeof(buf));
+        memset(buf, 0, sizeof(buf) * sizeof(unsigned char));
         int res = hid_read(usbDevice, buf, sizeof(buf));
         if (res < 0) {
             throw "Read usb exception";

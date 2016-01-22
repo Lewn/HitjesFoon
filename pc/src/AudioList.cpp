@@ -264,12 +264,9 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
         }
     }
     fclose(fileTest);
-    hitjePath.clear();
 
     // Some valid data, copy all the data that was valid
-    char hitIndexStr[4];
-    sprintf(hitIndexStr, "%03d", *hitIndex);
-    fileOutput += hitIndexStr;
+    fileOutput += to_string(*hitIndex);
     fileOutput += ';';
     fileOutput += title;
     fileOutput += ';';

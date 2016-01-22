@@ -122,7 +122,7 @@ void printlevel(PRINT_LEVEL level, const char *format, ...) {
 
 int selection(vector<string> options) {
     int curSelection = 0;
-    int x, y, minY, maxY, startY = 0;
+    int x = 0, y = 0, minY, maxY, startY = 0;
     minY = 5;
     maxY = getmaxy(stdscr) - minY - 1;
     do {
