@@ -6,7 +6,7 @@
 
 #define SAFE_DELETE(x) delete(x); x = NULL
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL
-#define SAFE_CLOSE(x) fclose(x); x = NULL;
+#define SAFE_CLOSE(x) if (x != NULL) {fclose(x); x = NULL;}
 
 #include <vector>
 #include <string>

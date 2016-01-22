@@ -35,7 +35,7 @@ AudioMenuItem::AudioMenuItem(string path, AudioMenuItem **followup, unsigned cha
         }
         text = "say ";
         text += buf;
-        fclose(pFile);
+        SAFE_CLOSE(pFile);
     } else {
         text.clear();
         media = VLC::getInstance()->newMediaFromPath(path.c_str());

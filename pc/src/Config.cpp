@@ -15,7 +15,7 @@ Config::Config(const char *configPath) {
     FileReadStream is(configFile, buffer, sizeof(buffer));
     config->ParseStream<0, UTF8<>, FileReadStream>(is);
 
-    fclose(configFile);
+    SAFE_CLOSE(configFile);
 
     if (!config->IsObject()) {
         throw "The config file is not a valid JSON object";

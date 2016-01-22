@@ -148,7 +148,7 @@ bool AudioList::update(unsigned int downloadCount) {
                     hitjes++;
                     printlevel(LDEBUG, "Successfully parsed media file\n");
                 }
-                fclose(hitjeFile);
+                SAFE_CLOSE(hitjeFile);
             }
         }
         printlevel(LDEBUG, "Retrieving next line\n");
@@ -158,7 +158,7 @@ bool AudioList::update(unsigned int downloadCount) {
             }
         } while (!feof(listFile) && hitIndex == -1);
     } while (!feof(listFile));
-    fclose(listFile);
+    SAFE_CLOSE(listFile);
 
     // TODO: delete all files not in list
     // All hitjes must start with a three digit number,
@@ -195,7 +195,7 @@ bool AudioList::update(unsigned int downloadCount) {
 // TODO: write updates to list (config?) file
     //listFile = fopen(listFilePath, "w");
     //fputs(fileOutput.data(), listFile);
-    //fclose(listFile);
+    //SAFE_CLOSE(listFile);
     listFile = NULL;
 
 // clear old hitjeslist
@@ -263,7 +263,7 @@ bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist,
 
         }
     }
-    fclose(fileTest);
+    SAFE_CLOSE(fileTest);
 
     // Some valid data, copy all the data that was valid
     fileOutput += to_string(*hitIndex);
@@ -308,7 +308,7 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
 
             FILE *musicFile = fopen(videoPath.c_str(), "r");
             bool fileExists = musicFile != NULL;
-            fclose(musicFile);
+            SAFE_CLOSE(musicFile);
 
             if (!fileExists) {
                 throw "File conversion failed";

@@ -113,7 +113,7 @@ string YoutubeAPI::getVideoInfo(const char *videoId) {
 
     FILE *file = fopen("videoInfo.txt", "wb");
     fputs(videoInfo.c_str(), file);
-    fclose(file);
+    SAFE_CLOSE(file);
     return videoInfo;
 }
 
@@ -147,7 +147,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
     const char *decoded = urlDecode(encoded).c_str();
     FILE *file = fopen("decoded.txt", "wb");
     fputs(decoded, file);
-    fclose(file);
+    SAFE_CLOSE(file);
 
     char *urlStart = NULL, *urlEnd = NULL;
     char *itagStart = NULL, *itagEnd = NULL;
