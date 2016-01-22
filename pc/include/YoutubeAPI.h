@@ -8,6 +8,9 @@
 #define _WIN32_WINNT 0x0601
 #endif
 
+#include <string>
+#include <fstream>
+#include <streambuf>
 #include <stdio.h>
 #include <stdarg.h>
 #include <algorithm>

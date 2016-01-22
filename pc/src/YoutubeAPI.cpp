@@ -321,7 +321,7 @@ string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId
 
     printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
 
-    string buffer = "youtube-dl.exe ";
+    string buffer = "youtube-dl ";
     if (msglevel < PRINT_LEVEL::LBGINFO) {
         buffer += "--quiet --no-progress ";
     }
@@ -329,8 +329,18 @@ string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId
     buffer += '"' + filename + '"';
     buffer += " -- ";
     buffer += videoId;
+    buffer += " > temp.txt";
 
-    if (!system(buffer.c_str())) {
+    int ret = system(buffer.c_str());
+
+    std::ifstream temp("temp.txt");
+    std::string tempstr((std::istreambuf_iterator<char>(temp)),
+                        std::istreambuf_iterator<char>());
+    temp.close();
+    printlevel(LBGINFO, "Got youtube-dl output:\n%s\n", tempstr.c_str());
+
+    remove("temp.txt");
+    if (ret == 0) {
         printlevel(LBGINFO, "Downloading done!\n");
         // set extension to mp3
         (*(filename.end() - 1)) = '3';
