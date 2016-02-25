@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include "Tools.h"
+#include "GUI.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 
@@ -9,7 +10,7 @@ using namespace rapidjson;
 
 class Config {
 public:
-    Config(const char *configPath);
+    Config(GUI *gui, const char *configPath);
     virtual ~Config();
 
     bool nextHitjesConfig();
@@ -22,6 +23,7 @@ public:
 
     string getConfigMenuPath();
 protected:
+    GUI *gui;
     Document *config = NULL;
 
     const Value *hitjesConfig = NULL;

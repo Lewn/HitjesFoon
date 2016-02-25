@@ -6,7 +6,7 @@
 
 class ConfigAudioMenu : public AudioMenu {
 public:
-    ConfigAudioMenu(string configMenuPath);
+    ConfigAudioMenu(GUI *gui, string configMenuPath);
 protected:
 private:
     ConfigAudioMenu(const ConfigAudioMenu &that) = delete;

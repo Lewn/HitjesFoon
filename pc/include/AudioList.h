@@ -14,6 +14,7 @@ class AudioList;
 #include "Tools.h"
 #include "InputProcessor.h"
 #include "YoutubeAPI.h"
+#include "GUI.h"
 
 #include <sstream>
 #include <iomanip>
@@ -32,7 +33,7 @@ struct Hitje {
 
 class AudioList {
 public:
-    AudioList(Config *config);
+    AudioList(GUI *gui, Config *config);
     virtual ~AudioList();
 
     string createHitjeName(const Hitje *hitje, bool absolute);
@@ -41,8 +42,9 @@ public:
     libvlc_media_t *getAudio(int audioIndex);
 
 protected:
+    GUI *gui;
     unsigned int downloadCount;
-    YoutubeAPI api;
+    YoutubeAPI *api;
     vector<Hitje *> hitjesList;
     string listFilePath;
     string hitjesPath;

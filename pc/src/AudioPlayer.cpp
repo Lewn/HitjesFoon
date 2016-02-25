@@ -1,8 +1,7 @@
 #include "AudioPlayer.h"
 
 
-AudioPlayer::AudioPlayer(AudioDevice device, AudioList *audioList) : audioIndex(0) {
-    this->audioList = audioList;
+AudioPlayer::AudioPlayer(GUI *gui, AudioDevice device, AudioList *audioList) : gui(gui), audioList(audioList), audioIndex(0) {
     VLC *VLCInstance = VLC::getInstance();
     //Load the VLC engine
     audioPlayer = VLCInstance->newMediaPlayer();
@@ -133,22 +132,23 @@ void AudioPlayer::attachEventListener(AudioPlayerEventListener *listener) {
         libvlc_event_manager_t *eventManager = libvlc_media_player_event_manager(audioPlayer);
         libvlc_event_attach(eventManager, libvlc_MediaPlayerEndReached, callback, this);
     }
-    printlevel(LDEBUG, "Attached a listener\n");
+    gui->printlevel(LDEBUG, "Attached a listener\n");
     listeners.push_back(listener);
 }
 
 void AudioPlayer::callback(const libvlc_event_t *evt, void *userData) {
+    AudioPlayer *player = ((AudioPlayer*)userData);
     switch (evt->type) {
         case libvlc_MediaPlayerEndReached:
-            printlevel(LDEBUG, "\n\nSong ended");
-            ((AudioPlayer*)userData)->notificate(AudioPlayerEventListener::DONE);
+            player->gui->printlevel(LDEBUG, "\n\nSong ended");
+            player->notificate(AudioPlayerEventListener::DONE);
             break;
         default:
-            printlevel(LDEBUG, "\n\nUnkown event triggered\n");
+            player->gui->printlevel(LDEBUG, "\n\nUnkown event triggered\n");
     }
 }
 void AudioPlayer::notificate(AudioPlayerEventListener::Event eventType) {
-    printlevel(LDEBUG, "\nNotificating %d\n", (int)listeners.size());
+    gui->printlevel(LDEBUG, "\nNotificating %d\n", (int)listeners.size());
     for (AudioPlayerEventListener  *listener : listeners) {
         listener->audioPlayerEvent(eventType, this);
     }

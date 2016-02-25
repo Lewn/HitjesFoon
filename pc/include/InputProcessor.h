@@ -25,6 +25,7 @@ enum ProcessType {
 #include <thread>
 #include <list>
 
+#include "GUI.h"
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
@@ -35,7 +36,7 @@ using namespace std;
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
-    InputProcessor(AudioList *hitjesList, Config *config);
+    InputProcessor(GUI *gui, AudioList *hitjesList, Config *config);
     virtual ~InputProcessor();
 
     AudioList *getHitjesList();
@@ -44,6 +45,7 @@ public:
     void requestInput();
     void audioPlayerEvent(Event evt, AudioPlayer *audioPlayer);
 protected:
+    GUI *gui;
     AudioList *hitjesList;
     ProcessType processType;
     int curNumber;
@@ -69,6 +71,7 @@ protected:
     void setOutput(bool phone);
     void toggleOutput();
 
+    void doUpdate();
     bool threadRunning();
     void threadUpdate();
 

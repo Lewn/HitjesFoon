@@ -50,6 +50,7 @@ void VLC::release(libvlc_media_list_player_t *mediaListPlayer) {
     libvlc_media_list_player_release(mediaListPlayer);
 }
 
+GUI *VLC::gui = NULL;
 Config *VLC::config = NULL;
 VLC *VLC::instance = NULL;
 
@@ -57,12 +58,19 @@ VLC *VLC::instance = NULL;
 VLC *VLC::getInstance() {
     if (instance == NULL) {
         // we only need one vlc instance
+        if (gui == NULL) {
+            throw "VLC needs a gui!";
+        }
         instance = new VLC();
         if (!instance) {
             throw "Couldn't instantiate VLC";
         }
     }
     return instance;
+}
+
+void VLC::setGUI(GUI *gui) {
+    VLC::gui = gui;
 }
 
 void VLC::setConfig(Config *config) {
@@ -113,24 +121,22 @@ void VLC::tryConfig(const vector<deviceoutput> &outputs) {
     phoneDevice = config->getVLCPhoneDevice();
     speakerDevice = config->getVLCSpeakerDevice();
 
-    printlevel(LDEBUG, "\n");
+    gui->printlevel(LDEBUG, "\n");
     regex phoneRex(phoneDevice), speakerRex(speakerDevice);
     for (std::vector<deviceoutput>::const_iterator output = outputs.begin(); output != outputs.end(); ++output) {
         if (regex_match(output->device, phoneRex)) {
-            printlevel(LDEBUG, " --- Phone device\n");
+            gui->printlevel(LDEBUG, " --- Phone device\n");
             phoneOutput = output->output;
             phoneDevice = output->device;
         }
         if (regex_match(output->device, speakerRex)) {
-            printlevel(LDEBUG, " --- Speaker device\n");
+            gui->printlevel(LDEBUG, " --- Speaker device\n");
             speakerOutput = output->output;
             speakerDevice = output->device;
         }
-        printlevel(LDEBUG, "  Device:      %s\n", output->device.c_str());
-        printlevel(LDEBUG, "  Description: %s\n\n", output->deviceDescription.c_str());
-        if (msglevel >= LDEBUG) {
-            getchar();
-        }
+        gui->printlevel(LDEBUG, "  Device:      %s\n", output->device.c_str());
+        gui->printlevel(LDEBUG, "  Description: %s\n\n", output->deviceDescription.c_str());
+        gui->confirm(LDEBUG, "");
     }
 }
 
@@ -145,24 +151,24 @@ VLC::VLC() {
         if (!config->nextAudioDevices()) {
             break;
         }
-        printlevel(LDEBUG, "\nNo output combination found, retrying...\n");
+        gui->printlevel(LDEBUG, "\nNo output combination found, retrying...\n");
         tryConfig(outputs);
     }
     if (phoneDevice.empty() || phoneOutput.empty()) {
-        printlevel(LINFO, "\n");
-        printlevel(LWARNING, "Phone device not found, which to use?\n");
-        int i = selection(outputNames);
+        gui->printlevel(LINFO, "\n");
+        gui->printlevel(LWARNING, "Phone device not found, which to use?\n");
+        int i = gui->selection(outputNames);
         phoneOutput = outputs[i].output;
         phoneDevice = outputs[i].device;
-        printlevel(LINFO, "\n");
+        gui->printlevel(LINFO, "\n");
     }
     if (speakerDevice.empty() || speakerOutput.empty()) {
-        printlevel(LINFO, "\n");
-        printlevel(LWARNING, "Speaker device not found, which to use?\n");
-        int i = selection(outputNames);
+        gui->printlevel(LINFO, "\n");
+        gui->printlevel(LWARNING, "Speaker device not found, which to use?\n");
+        int i = gui->selection(outputNames);
         speakerOutput = outputs[i].output;
         speakerDevice = outputs[i].device;
-        printlevel(LINFO, "\n");
+        gui->printlevel(LINFO, "\n");
     }
 }
 

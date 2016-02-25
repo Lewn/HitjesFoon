@@ -2,6 +2,7 @@
 #define USBCONNECTION_H
 
 
+#include "GUI.h"
 #include "hidapi/hidapi.h"
 #include "../../telephoneProtocol.h"
 #include <stdio.h>
@@ -13,7 +14,7 @@ using namespace std;
 
 class USBConnection {
 public:
-    USBConnection();
+    USBConnection(GUI *gui);
     virtual ~USBConnection();
 
     void reset();
@@ -22,8 +23,9 @@ public:
     int isHornDown();
     int isEarthDown();
 
-    static void printUSB();
+    void printUSB();
 protected:
+    GUI *gui;
     hid_device* usbDevice;
     int dialNumber, dialTimes;
     int hornDown, earthDown;

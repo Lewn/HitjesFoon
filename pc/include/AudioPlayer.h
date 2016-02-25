@@ -22,7 +22,7 @@ public:
         SPEAKER
     };
 
-    AudioPlayer(AudioDevice device, AudioList *audioList);
+    AudioPlayer(GUI *gui, AudioDevice device, AudioList *audioList);
     virtual ~AudioPlayer();
 
     void setAudioDevice(AudioDevice device);
@@ -39,6 +39,7 @@ public:
     int getAudioIndex();
     float getAudioPosition();
 protected:
+    GUI *gui;
     string curOutput;
     list<AudioPlayerEventListener*> listeners;
 

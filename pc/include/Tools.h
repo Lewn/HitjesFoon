@@ -16,12 +16,6 @@
 #include <time.h>
 #include <algorithm>
 
-#ifdef _WIN32
-#include <curses.h>
-#else
-#include <ncurses.h>
-#endif
-
 using namespace std;
 
 char *trimLeft(char *toTrim);
@@ -32,35 +26,8 @@ std::string &ltrim(std::string &s);
 std::string &rtrim(std::string &s);
 std::string &trim(std::string &s);
 
-
 char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename);
 
-#ifndef _WIN32
-#include <unistd.h>
-#include <sys/select.h>
-#endif
-
-
-enum PRINT_LEVEL {
-    LERROR,
-    LWARNING,
-    LINFO,
-    LBGINFO,
-    LDEBUG,
-    LDEBUGSLOW
-};
-
-extern PRINT_LEVEL msglevel;
-
-void initScr();
-void deinitScr();
-int getchsilent();
-int getchar();
-void printlevel(PRINT_LEVEL level, const char *format, ...);
-int selection(vector<string> options);
-
-int getKey();
-int readKeyboard();
 void filesystemSafe(char *str);
 void filesystemSafe(string &str);
 

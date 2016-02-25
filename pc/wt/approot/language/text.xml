@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages xmlns:if="Wt.WTemplate.conditions">
+
+<!--LAYOUT message blocks-->
+	<message id="template-hitjesfoon-home">
+		<div>Dit is een stukje tekst, zou eigenlijk engels moeten zijn...</div>
+	</message>
+ </messages>

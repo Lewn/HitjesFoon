@@ -1,9 +1,10 @@
 #ifndef AUDIOMENUITEM_H
 #define AUDIOMENUITEM_H
 
+#include "Tools.h"
+#include "GUI.h"
 #include "vlc/vlc.h"
 #include "VLC.h"
-#include "Tools.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -13,13 +14,14 @@
 
 class AudioMenuItem {
 public:
-    AudioMenuItem(string path, AudioMenuItem **followup, unsigned char followupLen, bool tts);
+    AudioMenuItem(GUI *gui, string path, AudioMenuItem **followup, unsigned char followupLen, bool tts);
     ~AudioMenuItem();
 
     bool hasNext();
     AudioMenuItem *getFollowup(unsigned char index);
     libvlc_media_t *getMedia();
 protected:
+    GUI *gui;
     string text;
     libvlc_media_t *media;
     AudioMenuItem **followup;

@@ -6,6 +6,7 @@
 
 #include "vlc/vlc.h"
 #include "Tools.h"
+#include "GUI.h"
 #include "Config.h"
 
 #include <string.h>
@@ -18,6 +19,7 @@ public:
     static VLC *getInstance();
     static void deleteInstance();
 
+    static void setGUI(GUI *gui);
     static void setConfig(Config *config);
 
     string getDefaultPhoneOutput();
@@ -53,6 +55,7 @@ private:
     string phoneOutput;
     string speakerOutput;
 
+    static GUI *gui;
     static Config *config;
     static VLC *instance;
 

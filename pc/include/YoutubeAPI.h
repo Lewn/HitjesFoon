@@ -15,8 +15,9 @@
 #include <stdarg.h>
 #include <algorithm>
 
-#include "HTTPTransfer.h"
 #include "Tools.h"
+#include "GUI.h"
+#include "HTTPTransfer.h"
 #include "JsonParser.h"
 
 using namespace std;
@@ -28,12 +29,13 @@ public:
         SEARCH
     };
 
-    YoutubeAPI();
+    YoutubeAPI(GUI *gui);
     ~YoutubeAPI();
 
     string searchVid(const char *query, const char *dllocation);
 protected:
-    HTTPTransfer transfer;
+    GUI *gui;
+    HTTPTransfer *transfer;
 
     string urlDecode(const char *src);
 

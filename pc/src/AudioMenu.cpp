@@ -2,8 +2,7 @@
 #include "InputProcessor.h"
 
 
-AudioMenu::AudioMenu() {
-    initialItem = curItem = NULL;
+AudioMenu::AudioMenu(GUI *gui) : gui(gui), initialItem(NULL), curItem(NULL) {
 }
 
 AudioMenu::~AudioMenu() {
@@ -21,11 +20,11 @@ bool AudioMenu::process(int input) {
         AudioMenuItem *nextItem = curItem->getFollowup(input - 1);
         if (nextItem) {
             // get next audio menu item
-            printlevel(LDEBUG, "\nGoing into item %d ", input);
+            gui->printlevel(LDEBUG, "\nGoing into item %d ", input);
             curItem = nextItem;
             return true;
         } else {
-            printlevel(LDEBUG, "\nInvalid input %d ", input);
+            gui->printlevel(LDEBUG, "\nInvalid input %d ", input);
         }
     } else if (input == INPUT_EARTH_DOWN || input == INPUT_EARTH_SWAP) {
         // replay on earth button
@@ -50,7 +49,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
     // try to open the specified dir
     DIR *dir = opendir(path.c_str());
     if (!dir) {
-        printlevel(LERROR, "\nInvalid: '%s'\n", path.c_str());
+        gui->printlevel(LERROR, "\nInvalid: '%s'\n", path.c_str());
         throw "Path should point to an existing directory";
     }
 
@@ -60,7 +59,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
     int dirCount = 0;
     while ((entry = readdir(dir))) {
         if (stat(entry->d_name, &st) == -1) {
-            printlevel(LWARNING, "Invalid file '%s' in dir '%s'\n", entry->d_name, dir);
+            gui->printlevel(LWARNING, "Invalid file '%s' in dir '%s'\n", entry->d_name, dir);
             continue;
         }
         if (S_ISREG(st.st_mode)) {
@@ -87,7 +86,7 @@ AudioMenuItem *AudioMenu::createItem(string path) {
                 }
             }
         } else {
-            printlevel(LWARNING, "\nUnknown entry '%s' with type %d", entry->d_name, st.st_mode);
+            gui->printlevel(LWARNING, "\nUnknown entry '%s' with type %d", entry->d_name, st.st_mode);
         }
     }
     if (audioName.empty() && textName.empty()) {
@@ -102,9 +101,9 @@ AudioMenuItem *AudioMenu::createItem(string path) {
     closedir(dir);
     AudioMenuItem *item;
     if (!audioName.empty()) {
-        item = new AudioMenuItem(path + audioName, followup, dirCount, false);
+        item = new AudioMenuItem(gui, path + audioName, followup, dirCount, false);
     } else {
-        item = new AudioMenuItem(path + textName, followup, dirCount, true);
+        item = new AudioMenuItem(gui, path + textName, followup, dirCount, true);
     }
     return item;
 }

@@ -3,6 +3,7 @@
 
 #include "rapidjson/document.h"
 #include "Tools.h"
+#include "GUI.h"
 #include <stdio.h>
 #include <vector>
 
@@ -11,7 +12,7 @@ using namespace rapidjson;
 
 class JsonParser {
 public:
-    JsonParser();
+    JsonParser(GUI *gui);
     virtual ~JsonParser();
 
     void parse(const char *jsonString);
@@ -21,6 +22,7 @@ public:
     const char *getVideoTitle();
     vector<string> getVideoTitles();
 protected:
+    GUI *gui;
     Document root;
 private:
     JsonParser(const JsonParser &that) = delete;

@@ -1,6 +1,6 @@
 #include "JsonParser.h"
 
-JsonParser::JsonParser() {
+JsonParser::JsonParser(GUI *gui) : gui(gui) {
 }
 
 JsonParser::~JsonParser() {
@@ -10,7 +10,7 @@ void JsonParser::parse(const char *jsonString) {
     root.Parse(jsonString);
     if (!root.IsObject()) {
         // report to the user the failure and their locations in the document.
-        printlevel(LERROR, "JSON:\n%s\n", jsonString);
+        gui->printlevel(LERROR, "JSON:\n%s\n", jsonString);
         throw "Failed to parse configuration";
     }
 }

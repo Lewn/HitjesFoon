@@ -1,12 +1,13 @@
 #ifndef HTTPTRANSFER_H
 #define HTTPTRANSFER_H
 
+#include "GUI.h"
 #include <curl/curl.h>
 #include "Tools.h"
 
 class HTTPTransfer {
 public:
-    HTTPTransfer();
+    HTTPTransfer(GUI *gui);
     ~HTTPTransfer();
 
     void sendReceive();
@@ -17,6 +18,7 @@ public:
 
     string escape(const char *toEscape);
 protected:
+    GUI *gui;
     CURL *curl;
 
     void perform();

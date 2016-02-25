@@ -1,9 +1,6 @@
 #include "Config.h"
 
-
-extern PRINT_LEVEL msglevel;
-
-Config::Config(const char *configPath) {
+Config::Config(GUI *gui, const char *configPath) : gui(gui) {
     char buffer[65536];
 
     FILE *configFile = fopen(configPath, "r");
@@ -23,9 +20,9 @@ Config::Config(const char *configPath) {
 
     Value::MemberIterator msglevelMember = config->FindMember("msglevel");
     if (msglevelMember == config->MemberEnd()) {
-        printlevel(LDEBUG, "No msglevel found, using default (%d)\n\n", msglevel);
+        gui->printlevel(LDEBUG, "No msglevel found, using default (%d)\n\n", gui->getMsglevel());
     } else {
-        msglevel = (PRINT_LEVEL)msglevelMember->value.GetInt();
+        gui->setMsglevel((PRINT_LEVEL)msglevelMember->value.GetInt());
     }
 }
 

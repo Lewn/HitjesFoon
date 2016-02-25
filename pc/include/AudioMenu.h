@@ -6,9 +6,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "Tools.h"
+#include "GUI.h"
 #include "vlc/vlc.h"
 #include "AudioMenuItem.h"
-#include "Tools.h"
 
 #include <string>
 
@@ -16,7 +17,7 @@ using namespace std;
 
 class AudioMenu {
 public:
-    AudioMenu();
+    AudioMenu(GUI *gui);
     virtual ~AudioMenu();
     void fromPath(string path);
 
@@ -24,6 +25,7 @@ public:
     virtual libvlc_media_t *getMedia();
     virtual bool isEnded();
 protected:
+    GUI *gui;
     AudioMenuItem *initialItem;
     AudioMenuItem *curItem;
 
