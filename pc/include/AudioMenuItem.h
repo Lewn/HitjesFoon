@@ -2,7 +2,7 @@
 #define AUDIOMENUITEM_H
 
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "vlc/vlc.h"
 #include "VLC.h"
 

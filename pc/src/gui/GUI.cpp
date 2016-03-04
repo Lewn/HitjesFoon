@@ -1,4 +1,4 @@
-#include "GUI.h"
+#include "gui/GUI.h"
 
 GUI::GUI(PRINT_LEVEL msglevel) : msglevel(msglevel) {
 }

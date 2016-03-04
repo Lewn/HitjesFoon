@@ -24,8 +24,10 @@ enum ProcessType {
 
 #include <thread>
 #include <list>
+#include <algorithm>
 
-#include "GUI.h"
+#include "gui/GUI.h"
+#include "AudioList.h"
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
@@ -36,15 +38,23 @@ using namespace std;
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
-    InputProcessor(GUI *gui, AudioList *hitjesList, Config *config);
-    virtual ~InputProcessor();
+    static InputProcessor *getInstance();
+    static InputProcessor *getInstance(GUI *gui, AudioList *hitjesList, Config *config);
+    static void deleteInstance();
 
     AudioList *getHitjesList();
     void resetInput();
-    void process(int input);
     void requestInput();
+    void process(string input);
+    void process(int input);
+    void inputNum(int input);
     void audioPlayerEvent(Event evt, AudioPlayer *audioPlayer);
+
+    AudioPlayer *getPhoneAudioPlayer();
+    AudioPlayer *getSpeakerAudioPlayer();
 protected:
+    static InputProcessor *instance;
+
     GUI *gui;
     AudioList *hitjesList;
     ProcessType processType;
@@ -59,12 +69,16 @@ protected:
 
     list<int> hitjesQueue;
 
+    InputProcessor(GUI *gui, AudioList *hitjesList, Config *config);
+    virtual ~InputProcessor();
+
     void processAudioMenu(int input);
     void processNum(int input);
     void processAlt(int input);
 
     void playAudio(int curNumber);
     void playQueued();
+    void sendHitjesQueue(int current);
 
     void setEarthDown(bool down);
     void setHornDown(bool down);

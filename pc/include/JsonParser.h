@@ -3,7 +3,7 @@
 
 #include "rapidjson/document.h"
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include <stdio.h>
 #include <vector>
 

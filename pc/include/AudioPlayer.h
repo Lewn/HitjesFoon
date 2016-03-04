@@ -33,6 +33,9 @@ public:
     void stop();
     AudioPlayer *swapWith(AudioPlayer *other);
 
+    void setVolume(int volume);
+    int getVolume();
+
     void attachEventListener(AudioPlayerEventListener *listener);
 
     bool isPlaying();

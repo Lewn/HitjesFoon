@@ -1,5 +1,33 @@
 #include "InputProcessor.h"
 
+InputProcessor *InputProcessor::instance = NULL;
+
+InputProcessor *InputProcessor::getInstance() {
+    if (instance == NULL) {
+        throw "Couldn't instantiate InputProcessor, first call requires input arguments";
+    }
+    return instance;
+}
+
+InputProcessor *InputProcessor::getInstance(GUI *gui, AudioList *hitjesList, Config *config) {
+    if (instance == NULL) {
+        // we only need one input processor instance
+        instance = new InputProcessor(gui, hitjesList, config);
+        if (!instance) {
+            throw "Couldn't instantiate InputProcessor";
+        }
+        // Initialise volume when everything is ready
+        gui->setSpeakerVolume(instance->speakerAudioPlayer->getVolume());
+        gui->setPhoneVolume(instance->phoneAudioPlayer->getVolume());
+    }
+    return instance;
+}
+
+void InputProcessor::deleteInstance() {
+    SAFE_DELETE(instance);
+}
+
+
 InputProcessor::InputProcessor(GUI *gui, AudioList *hitjesList, Config *config) : gui(gui), hitjesList(hitjesList) {
     processType = PROCESS_LINEAR_SHUFFLE;
     phoneAudioPlayer = new AudioPlayer(gui, AudioPlayer::PHONE, hitjesList);
@@ -29,6 +57,7 @@ AudioList *InputProcessor::getHitjesList() {
 
 void InputProcessor::resetInput() {
     curNumber = numberCount = 0;
+    gui->setPhoneNum(curNumber);
 }
 
 void InputProcessor::requestInput() {
@@ -42,26 +71,56 @@ void InputProcessor::requestInput() {
     }
 }
 
-void InputProcessor::process(int input) {
-    if (curAudioMenu) {
-        processAudioMenu(input);
-    } else {
-        if (input >= 0 && input <= 9) {
-            processNum(input);
+void InputProcessor::process(string input) {
+    int c;
+    if (input.length() == 1) {
+        c = input[0];
+        if (c >= '0' && c <= '9') {
+            // got a number, return it
+            c = c - '0';
+            inputNum(c);
+            return;
+        } else if (c == 8 || c == 'd') {
+            // backspace, simulate earth button (reset number)
+            c = INPUT_EARTH_DOWN;
+        } else if (c == 's') {
+            // s, simulate horn (swap output)
+            c = INPUT_HORN_SWAP;
+        } else if (c == 'q') {
+            // q, return quit
+            c = INPUT_END;
+        } else if (c == 'u') {
+            c = INPUT_UPDATE;
+        } else if (c == 't') {
+            // t, testing purposes
+            c = INPUT_TEST;
         } else {
-            processAlt(input);
+            // Invalid input
+            return;
         }
-        // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
-        if (!speakerAudioPlayer->isPlaying()) {
-            // always check on update wether we want to do a queued action
-            if (!hitjesQueue.empty()) {
-                // done playing, play next in queue
-                playQueued();
-                requestInput();
-            } else if (processType == PROCESS_LINEAR_SHUFFLE) {
-                // shuffle a random number in the player
+        processAlt(c);
+    } else {
+        c = stoi(input);
+        inputNum(c);
+    }
+}
 
-            }
+void InputProcessor::process(int input) {
+    if (input >= 0 && input <= 9) {
+        processNum(input);
+    } else {
+        processAlt(input);
+    }
+    // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
+    if (!speakerAudioPlayer->isPlaying()) {
+        // always check on update wether we want to do a queued action
+        if (!hitjesQueue.empty()) {
+            // done playing, play next in queue
+            playQueued();
+            requestInput();
+        } else if (processType == PROCESS_LINEAR_SHUFFLE) {
+            // shuffle a random number in the player
+
         }
     }
 }
@@ -75,6 +134,8 @@ void InputProcessor::processAudioMenu(int input) {
                 phoneAudioPlayer->playAudio(toPlay);
             } else {
                 speakerAudioPlayer->playAudio(toPlay);
+                while (!speakerAudioPlayer->isPlaying());
+                sendHitjesQueue(0);
             }
         }
         if (curAudioMenu->isEnded()) {
@@ -92,21 +153,19 @@ void InputProcessor::processNum(int input) {
     curNumber = curNumber  * 10 + input;
     if (++numberCount == 3) {
         // play audio per three digit number
-        switch (curNumber) {
-            case 999:
-                // Play the config menu
-                SAFE_DELETE(curAudioMenu);
-                curAudioMenu = new ConfigAudioMenu(gui, configMenuPath);
-                break;
-            default:
-                playAudio(curNumber);
-        }
+        inputNum(curNumber);
         resetInput();
         requestInput();
+    } else {
+        gui->setPhoneNum(curNumber);
     }
 }
 
 void InputProcessor::processAlt(int input) {
+    if (curAudioMenu) {
+        processAudioMenu(input);
+        return;
+    }
     switch (input) {
         case INPUT_EARTH_UP:
             setEarthDown(false);
@@ -141,11 +200,27 @@ void InputProcessor::processAlt(int input) {
     }
 }
 
+void InputProcessor::inputNum(int num) {
+    if (curAudioMenu) {
+        processAudioMenu(num);
+    } else {
+        switch (num) {
+            case 999:
+                // Play the config menu
+                SAFE_DELETE(curAudioMenu);
+                curAudioMenu = new ConfigAudioMenu(gui, configMenuPath);
+                break;
+            default:
+                playAudio(num);
+        }
+    }
+}
+
 void InputProcessor::playAudio(int curNumber) {
     if (!hitjesList->getAudio(curNumber)) {
         // don't process non-existing hitjes
         gui->printlevel(LINFO, "\n");
-        gui->printlevel(LWARNING, "Hitje %d does not exist", curNumber);
+        gui->printlevel(LWARNING, "Hitje %d does not exist\n", curNumber);
         return;
     }
     switch (processType) {
@@ -163,9 +238,11 @@ void InputProcessor::playAudio(int curNumber) {
                     if (!speakerAudioPlayer->playAudio(curNumber)) {
                         throw "Could not play audio";
                     }
+                    sendHitjesQueue(curNumber);
                 } else {
                     gui->printlevel(LINFO, "\nQueued hitje %d", curNumber);
                     hitjesQueue.push_back(curNumber);
+                    sendHitjesQueue(0);
                 }
             }
             break;
@@ -178,6 +255,7 @@ void InputProcessor::playAudio(int curNumber) {
                 // play song directly at speakerAudioPlayer
                 gui->printlevel(LINFO, "\nPlaying hitje at speaker %d", curNumber);
                 speakerAudioPlayer->playAudio(curNumber);
+                sendHitjesQueue(curNumber);
             }
             break;
         case PROCESS_SWAP:
@@ -201,6 +279,14 @@ void InputProcessor::audioPlayerEvent(Event evt, AudioPlayer  *audioPlayer) {
     requestInput();
 }
 
+AudioPlayer *InputProcessor::getPhoneAudioPlayer() {
+    return phoneAudioPlayer;
+}
+
+AudioPlayer *InputProcessor::getSpeakerAudioPlayer() {
+    return speakerAudioPlayer;
+}
+
 void InputProcessor::playQueued() {
     int audioIndex = hitjesQueue.front();
     hitjesQueue.pop_front();
@@ -208,7 +294,20 @@ void InputProcessor::playQueued() {
         gui->printlevel(LINFO, "\nPlaying queued hitje %d", audioIndex);
         // wait for the player to actually start
         while (!speakerAudioPlayer->isPlaying());
+        sendHitjesQueue(audioIndex);
     }
+}
+
+void InputProcessor::sendHitjesQueue(int current) {
+    vector<int> queueCpy;
+    if (current == 0 && speakerAudioPlayer->isPlaying()) {
+        current = speakerAudioPlayer->getAudioIndex();
+    }
+    if (current != 0) {
+        queueCpy.push_back(current);
+    }
+    copy(hitjesQueue.begin(), hitjesQueue.end(), back_inserter(queueCpy));
+    gui->setPlaylist(queueCpy);
 }
 
 void InputProcessor::setEarthDown(bool down) {
@@ -224,6 +323,7 @@ void InputProcessor::setEarthDown(bool down) {
                 phoneAudioPlayer->stop();
             } else {
                 speakerAudioPlayer->stop();
+                sendHitjesQueue(0);
             }
         }
     }
@@ -240,16 +340,18 @@ void InputProcessor::setHornDown(bool down) {
 
 void InputProcessor::setOutput(bool phone) {
     switch (processType) {
+            int audioIndex;
         case PROCESS_SWAP:
             // swap the output directly between the two at press
             gui->printlevel(LINFO, "\nSwapped phone and speaker output");
+            audioIndex = phoneAudioPlayer->getAudioIndex();
             phoneAudioPlayer->swapWith(speakerAudioPlayer);
+            sendHitjesQueue(audioIndex);
             break;
         default:
             if (phone) {
             } else {
                 if (phoneOutput) {
-                    int audioIndex;
                     switch (processType) {
                         case PROCESS_LINEAR_SHUFFLE:
                         case PROCESS_LINEAR:
@@ -259,6 +361,7 @@ void InputProcessor::setOutput(bool phone) {
                                 gui->printlevel(LINFO, "\nQueued hitje %d for speaker that was playing on phone", audioIndex);
                                 hitjesQueue.push_back(audioIndex);
                                 phoneAudioPlayer->stop();
+                                sendHitjesQueue(0);
                             }
                             break;
                         case PROCESS_DIRECT:
@@ -268,6 +371,7 @@ void InputProcessor::setOutput(bool phone) {
                                 gui->printlevel(LINFO, "\nPlaying hitje %d at speaker that was playing on phone", audioIndex);
                                 speakerAudioPlayer->playAudio(audioIndex);
                                 phoneAudioPlayer->stop();
+                                sendHitjesQueue(audioIndex);
                             }
                             break;
                         case PROCESS_SWAP:

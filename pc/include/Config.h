@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 

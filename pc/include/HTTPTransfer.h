@@ -1,7 +1,7 @@
 #ifndef HTTPTRANSFER_H
 #define HTTPTRANSFER_H
 
-#include "GUI.h"
+#include "gui/GUI.h"
 #include <curl/curl.h>
 #include "Tools.h"
 

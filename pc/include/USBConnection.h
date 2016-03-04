@@ -2,7 +2,7 @@
 #define USBCONNECTION_H
 
 
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "hidapi/hidapi.h"
 #include "../../telephoneProtocol.h"
 #include <stdio.h>

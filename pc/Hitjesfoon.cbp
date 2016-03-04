@@ -16,6 +16,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="include" />
+					<Add directory="include/persistence" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -26,6 +27,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add directory="include" />
+					<Add directory="include/persistence" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -89,11 +91,6 @@
 		<Unit filename="include/AudioPlayerEventListener.h" />
 		<Unit filename="include/Config.h" />
 		<Unit filename="include/ConfigAudioMenu.h" />
-		<Unit filename="include/GUI.h" />
-		<Unit filename="include/GUICurses.h" />
-		<Unit filename="include/GUINull.h" />
-		<Unit filename="include/GUIWt.h" />
-		<Unit filename="include/GUIWtApplication.h" />
 		<Unit filename="include/HTTPTransfer.h" />
 		<Unit filename="include/InputProcessor.h" />
 		<Unit filename="include/JsonParser.h" />
@@ -101,6 +98,13 @@
 		<Unit filename="include/USBConnection.h" />
 		<Unit filename="include/VLC.h" />
 		<Unit filename="include/YoutubeAPI.h" />
+		<Unit filename="include/gui/GUI.h" />
+		<Unit filename="include/gui/GUICurses.h" />
+		<Unit filename="include/gui/GUINull.h" />
+		<Unit filename="include/gui/GUIWt.h" />
+		<Unit filename="include/persistence/Persistence.h" />
+		<Unit filename="include/persistence/PersistenceData.h" />
+		<Unit filename="include/widgets/WidgetHome.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/AudioList.cpp" />
 		<Unit filename="src/AudioMenu.cpp" />
@@ -108,11 +112,6 @@
 		<Unit filename="src/AudioPlayer.cpp" />
 		<Unit filename="src/Config.cpp" />
 		<Unit filename="src/ConfigAudioMenu.cpp" />
-		<Unit filename="src/GUI.cpp" />
-		<Unit filename="src/GUICurses.cpp" />
-		<Unit filename="src/GUINull.cpp" />
-		<Unit filename="src/GUIWt.cpp" />
-		<Unit filename="src/GUIWtApplication.cpp" />
 		<Unit filename="src/HTTPTransfer.cpp" />
 		<Unit filename="src/InputProcessor.cpp" />
 		<Unit filename="src/JsonParser.cpp" />
@@ -120,6 +119,13 @@
 		<Unit filename="src/USBConnection.cpp" />
 		<Unit filename="src/VLC.cpp" />
 		<Unit filename="src/YoutubeAPI.cpp" />
+		<Unit filename="src/gui/GUI.cpp" />
+		<Unit filename="src/gui/GUICurses.cpp" />
+		<Unit filename="src/gui/GUINull.cpp" />
+		<Unit filename="src/gui/GUIWt.cpp" />
+		<Unit filename="src/persistence/Persistence.cpp" />
+		<Unit filename="src/persistence/PersistenceData.cpp" />
+		<Unit filename="src/widgets/WidgetHome.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

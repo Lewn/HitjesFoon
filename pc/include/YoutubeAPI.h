@@ -16,7 +16,7 @@
 #include <algorithm>
 
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "HTTPTransfer.h"
 #include "JsonParser.h"
 

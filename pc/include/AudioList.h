@@ -3,21 +3,18 @@
 
 #define DEFAULT_DOWNLOAD 5
 
-class AudioList;
-
 #include "vlc/vlc.h"
 #include <cerrno>
 #include <dirent.h>
 
+#include <sstream>
+#include <iomanip>
+
 #include "Config.h"
 #include "VLC.h"
 #include "Tools.h"
-#include "InputProcessor.h"
 #include "YoutubeAPI.h"
-#include "GUI.h"
-
-#include <sstream>
-#include <iomanip>
+#include "gui/GUI.h"
 
 using namespace std;
 
@@ -29,6 +26,8 @@ struct Hitje {
 
     Hitje(libvlc_media_t *mediaData, int hitIndex, string title, string artist);
     ~Hitje();
+    string toString();
+    inline ostream &operator<<(ostream &str);
 };
 
 class AudioList {
@@ -41,11 +40,13 @@ public:
     bool update(unsigned int downloadCount);
     libvlc_media_t *getAudio(int audioIndex);
 
+    const vector<Hitje *> getHitjes();
+
 protected:
     GUI *gui;
     unsigned int downloadCount;
     YoutubeAPI *api;
-    vector<Hitje *> hitjesList;
+    vector<Hitje *> hitjes;
     string listFilePath;
     string hitjesPath;
     FILE *listFile;

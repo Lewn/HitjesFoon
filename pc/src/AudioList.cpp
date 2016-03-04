@@ -10,6 +10,19 @@ Hitje::~Hitje() {
     VLC::release(mediaData);
 }
 
+string Hitje::toString() {
+    stringstream str;
+    str << setfill('0') << setw(3) << hitIndex << ": ";
+    str << artist << " - " << title;
+    return str.str();
+}
+
+ostream &Hitje::operator<<(ostream &str) {
+    str << setfill('0') << setw(3) << hitIndex << ": ";
+    str << artist << " - " << title;
+    return str;
+}
+
 int AudioList::checkMediaFile(libvlc_media_t *mediaFile) {
     libvlc_media_parse(mediaFile);
     if (!libvlc_media_is_parsed(mediaFile)) {
@@ -56,24 +69,28 @@ AudioList::AudioList(GUI *gui, Config *config) : gui(gui) {
     } while (listFile == NULL);
 
     gui->printlevel(LINFO, "Creating the hitjeslist\n");
-    hitjesList.resize(999, NULL);
+    hitjes.resize(999, NULL);
     update(0);
 }
 
 AudioList::~AudioList() {
     // clear hitjeslist
-    for (unsigned int i = 0; i < hitjesList.size(); i++) {
-        SAFE_DELETE(hitjesList[i]);
+    for (unsigned int i = 0; i < hitjes.size(); i++) {
+        SAFE_DELETE(hitjes[i]);
     }
-    hitjesList.clear();
+    hitjes.clear();
     SAFE_DELETE(api);
 }
 
 libvlc_media_t *AudioList::getAudio(int audioIndex) {
-    if (audioIndex < 0 || audioIndex > 999 || hitjesList[audioIndex] == NULL) {
+    if (audioIndex < 0 || audioIndex > 999 || hitjes[audioIndex] == NULL) {
         return NULL;
     }
-    return hitjesList[audioIndex]->mediaData;
+    return hitjes[audioIndex]->mediaData;
+}
+
+const vector<Hitje *> AudioList::getHitjes() {
+    return hitjes;
 }
 
 string AudioList::createHitjeName(const Hitje * hitje, bool absolute) {
@@ -109,7 +126,6 @@ bool AudioList::update(unsigned int downloadCount) {
     char title[200];
     char artist[200];
     string hitjePath;
-    int hitjes = 0;
 
     buffer[0] = title[0] = artist[0] = '\0';
 
@@ -140,7 +156,6 @@ bool AudioList::update(unsigned int downloadCount) {
                     gui->printlevel(LERROR, "Invalid file, '%s'\n", hitjePath.c_str());
                 } else {
                     newHitjesList[hitIndex] = new Hitje(mediaFile, hitIndex, title, artist);
-                    hitjes++;
                     gui->printlevel(LDEBUG, "Successfully parsed media file\n");
                 }
                 SAFE_CLOSE(hitjeFile);
@@ -194,12 +209,12 @@ bool AudioList::update(unsigned int downloadCount) {
     listFile = NULL;
 
 // clear old hitjeslist
-    for (unsigned int i = 0; i < hitjesList.size(); i++) {
-        SAFE_DELETE(hitjesList[i]);
-        hitjesList[i] = newHitjesList[i];
+    for (unsigned int i = 0; i < hitjes.size(); i++) {
+        SAFE_DELETE(hitjes[i]);
+        hitjes[i] = newHitjesList[i];
     }
     newHitjesList.clear();
-    gui->printlevel(LINFO, "\nFound a total of %d hitjes\n", hitjes);
+//    gui->printlevel(LINFO, "\nFound a total of %d hitjes\n", hitjes);
 // return wether there is more to download
     return this->downloadCount == 0;
 }

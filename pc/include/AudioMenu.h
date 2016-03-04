@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "vlc/vlc.h"
 #include "AudioMenuItem.h"
 

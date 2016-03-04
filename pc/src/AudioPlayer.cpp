@@ -111,6 +111,14 @@ AudioPlayer *AudioPlayer::swapWith(AudioPlayer *other) {
     return other;
 }
 
+void AudioPlayer::setVolume(int volume) {
+    libvlc_audio_set_volume(audioPlayer, volume);
+}
+
+int AudioPlayer::getVolume() {
+    return libvlc_audio_get_volume(audioPlayer);
+}
+
 bool AudioPlayer::isPlaying() {
     return libvlc_media_player_is_playing(audioPlayer);
 }

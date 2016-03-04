@@ -1,4 +1,4 @@
-#include "GUICurses.h"
+#include "gui/GUICurses.h"
 
 GUICurses::GUICurses(PRINT_LEVEL msglevel) : GUI(msglevel) {
     initScr();

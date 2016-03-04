@@ -6,7 +6,7 @@
 
 #include "vlc/vlc.h"
 #include "Tools.h"
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "Config.h"
 
 #include <string.h>

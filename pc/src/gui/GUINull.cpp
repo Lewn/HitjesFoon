@@ -1,4 +1,4 @@
-#include "GUINull.h"
+#include "gui/GUINull.h"
 
 GUINull::GUINull(PRINT_LEVEL msglevel) : GUI(msglevel) {
 }
