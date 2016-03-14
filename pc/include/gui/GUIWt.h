@@ -1,10 +1,13 @@
 #ifndef GUIWT_H
 #define GUIWT_H
 
+#include "structs.h"
 #include "Tools.h"
+
 #include <vector>
 #include <iostream>
 #include <conio.h>
+#include <memory>
 
 #include <Wt/WApplication>
 #include <Wt/Utils>
@@ -35,11 +38,13 @@ public:
     void setServer(WServer &server);
     WApplication *createApplication(const WEnvironment& env);
 
-    void setPhoneNum(int num);
-    void setPlaylist(const vector<int> &playlist);
+    virtual void setPhoneNum(int num);
+    virtual void setPlaylist(const vector<int> &playlist);
 
     virtual void setSpeakerVolume(int volume);
     virtual void setPhoneVolume(int volume);
+
+    virtual void setDownloadState(std::shared_ptr<DownloadState> dlstate);
 
     void logAppend(PRINT_LEVEL level, string text);
     void logHTML(vector<string> &logv, const string &el, bool nlfirst, bool nlsecond);

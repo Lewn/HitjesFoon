@@ -9,7 +9,7 @@ YoutubeAPI::~YoutubeAPI() {
 }
 
 
-string YoutubeAPI::searchVid(const char *query, const char *dllocation) {
+string YoutubeAPI::searchVid(int id, const char *query, const char *dllocation) {
     // we only need the total amount of results and each results id (kind and channelId/videoId)
     string json = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
     JsonParser result(gui);
@@ -23,7 +23,7 @@ string YoutubeAPI::searchVid(const char *query, const char *dllocation) {
     vector<string> titles = result.getVideoTitles();
 
 #if defined(USE_YOUTUBE_DL)
-    filename = downloadYoutubeDL(dllocation, videoIds[0].c_str(), titles[0].c_str());
+    filename = downloadYoutubeDL(id, dllocation, videoIds[0].c_str(), titles[0].c_str());
 #else
     string videoInfo = getVideoInfo(videoIds[0].c_str());
     filename = getFileFromVideoInfo(videoInfo.c_str());
@@ -297,7 +297,7 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     int titleLen = strlen(title);
     char fileName[titleLen + 4 + 1];
     strncpy(fileName, title, titleLen);
-    strncpy(fileName + titleLen, ".mp4", 4);
+    strncpy(fileName + titleLen, ".mp3", 4);
     fileName[titleLen + 4] = 0;
 
     string decodedFilename = urlDecode(fileName);
@@ -312,7 +312,7 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     return decodedFilename;
 }
 
-string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title) {
+string YoutubeAPI::downloadYoutubeDL(int id, const char *dllocation, const char *videoId, const char *title) {
     gui->printlevel(LDEBUG, "Title: '%s'\n", title);
     string filename = "tmp";
 
@@ -327,31 +327,57 @@ string YoutubeAPI::downloadYoutubeDL(const char *dllocation, const char *videoId
     if (gui->getMsglevel() < PRINT_LEVEL::LBGINFO) {
         buffer += "--quiet --no-progress --no-warnings ";
     }
+    buffer += "--newline ";
     buffer += "--extract-audio --audio-quality 9 --audio-format mp3 -o ";
     buffer += '"' + filename + '"';
     buffer += " -- ";
     buffer += videoId;
-    // optionally apply a progress filter on youtube-dl output
-//    buffer += "--newline | grep --line-buffered --color=never -oP '^\[download\].*?\K[0-9.]+\%'";
-    buffer += " > temp.txt";
+    // redirect stderr to stdout, so we can read it
+    buffer += " 2>&1";
 
-    int ret = system(buffer.c_str());
-
-    std::ifstream temp("temp.txt");
-    std::string tempstr((std::istreambuf_iterator<char>(temp)),
-                        std::istreambuf_iterator<char>());
-    temp.close();
-    gui->printlevel(LBGINFO, "Got youtube-dl output:\n%s\n", tempstr.c_str());
-
-    remove("temp.txt");
-    if (ret == 0) {
-        gui->printlevel(LBGINFO, "Downloading done!\n");
-        // set extension to mp3
-        (*(filename.end() - 1)) = '3';
-    } else {
-        filename.clear();
-    }
+    performCmd(id, buffer);
+    // change extension to mp3 (as youtubeDL converted this (actually ffmpeg))
+    *(filename.end() - 1) = '3';
     return filename;
+}
+
+void YoutubeAPI::performCmd(int id, string cmd) {
+    char buf[1025];
+    cmatch match;
+    regex outputSearch("([0-9.]+)\\%\\s+of\\s+([0-9.]+)(G|M|K)iB\\s+at\\s+([0-9.]+)(G|M|K)iB/s\\s+ETA\\s+([0-9]+):([0-9]+)", regex_constants::ECMAScript | regex_constants::icase);
+    regex errorSearch("ERROR: (.+)");
+    shared_ptr<DownloadState> dlstate;
+
+    // Open command asynchronously
+    shared_ptr<FILE> cmdptr = cmdasync(cmd);
+    while (!feof(cmdptr.get())) {
+        if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
+            if (regex_search(buf, match, outputSearch)) {
+                dlstate = make_shared<DownloadState>();
+                dlstate->id = id;
+                dlstate->percentage = stof(match[1]);
+                dlstate->dlsize = reformat(match[2], match[3]);
+                dlstate->dlspeed = reformat(match[4], match[5]);
+                dlstate->eta = 60 * stoi(match[6]) + stoi(match[7]);
+
+                gui->setDownloadState(dlstate);
+            } else if (regex_search(buf, match, errorSearch)) {
+                // TODO: throw better exceptions
+                throw match[1].str().c_str();
+            }
+        }
+    }
+}
+
+float YoutubeAPI::reformat(string val, string type) {
+    float fval = stof(val);
+    // Convert kilo and giga to megabytes
+    if (type == "K") {
+        fval /= 1024;
+    } else if (type == "G") {
+        fval *= 1024;
+    }
+    return fval;
 }
 
 string YoutubeAPI::urlDecode(const char *src) {

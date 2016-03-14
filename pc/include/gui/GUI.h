@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <memory>
+
+#include "structs.h"
 
 using namespace std;
 
@@ -32,6 +35,8 @@ public:
 
     virtual void setSpeakerVolume(int volume) = 0;
     virtual void setPhoneVolume(int volume) = 0;
+
+    virtual void setDownloadState(shared_ptr<DownloadState> dlstate) = 0;
 protected:
     PRINT_LEVEL msglevel;
 private:

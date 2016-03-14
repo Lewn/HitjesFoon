@@ -5,6 +5,7 @@ Persistence::Persistence(WServer &server) : server(server) {
     stringData.connect(boost::bind(&Persistence::postOnChange, this, _1));
     intVectorData.connect(boost::bind(&Persistence::postOnChange, this, _1));
     stringVectorData.connect(boost::bind(&Persistence::postOnChange, this, _1));
+    downloadStateData.connect(boost::bind(&Persistence::postOnChange, this, _1));
 }
 
 Persistence::~Persistence() {
@@ -14,17 +15,21 @@ Persistence::~Persistence() {
 void Persistence::onChangeCallback(const PersistenceCallback &callback) {
     WApplication *app = WApplication::instance();
     lock_guard<mutex> guard(callbackMutex);
-    callbacks[app->sessionId()] = callback;
+    callbacks[app->sessionId()].push_back(callback);
 }
 
 void Persistence::postOnChange(const string &key) {
+    // TODO prevent update more than x changes per time
+    // or other solution, however prevent web interface crashes
     WApplication *app = WApplication::instance();
-    for (auto &callback : callbacks) {
-        string sessionId = callback.first;
-        if (app && app->sessionId() == sessionId) {
-            callback.second(key);
-        } else {
-            server.post(sessionId, boost::bind(callback.second, key));
+    for (auto &appCallbacks : callbacks) {
+        string sessionId = appCallbacks.first;
+        for (auto &callback : appCallbacks.second) {
+            if (app && app->sessionId() == sessionId) {
+                callback(key);
+            } else {
+                server.post(sessionId, boost::bind(callback, key));
+            }
         }
     }
 }
@@ -44,4 +49,8 @@ PersistenceData<vector<int>> &Persistence::getIntVectorData() {
 
 PersistenceData<vector<string>> &Persistence::getStringVectorData() {
     return stringVectorData;
+}
+
+PersistenceData<std::shared_ptr<DownloadState>> &Persistence::getDownloadStateData() {
+    return downloadStateData;
 }

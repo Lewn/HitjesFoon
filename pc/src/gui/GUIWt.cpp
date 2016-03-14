@@ -22,8 +22,8 @@ WApplication *GUIWt::createApplication(const WEnvironment& env) {
     WidgetHome *app = new WidgetHome(env, this, persistence);
 
     //    setCssTheme("polished");
-    WBootstrapTheme *bootstrapTheme = new Wt::WBootstrapTheme(app);
-    bootstrapTheme->setVersion(Wt::WBootstrapTheme::Version3);
+    WBootstrapTheme *bootstrapTheme = new WBootstrapTheme(app);
+    bootstrapTheme->setVersion(WBootstrapTheme::Version3);
     bootstrapTheme->setResponsive(true);
     app->setTheme(bootstrapTheme);
 
@@ -68,6 +68,11 @@ void GUIWt::setPhoneVolume(int volume) {
     persistence->getIntData().setVal("volume-phone", volume);
 }
 
+void GUIWt::setDownloadState(std::shared_ptr<DownloadState> dlstate) {
+    printlevel(LINFO, "Hitje update %d: %f\%, %f MB, %f MB/s, %d seconds\n", dlstate->id, dlstate->percentage, dlstate->dlsize, dlstate->dlspeed, dlstate->eta);
+    persistence->getDownloadStateData().setVal(to_string(dlstate->id), dlstate);
+}
+
 void GUIWt::logAppend(PRINT_LEVEL level, string text) {
     string style = "";
     string el;
@@ -76,6 +81,11 @@ void GUIWt::logAppend(PRINT_LEVEL level, string text) {
 
     // append log text
     persistence->getStringData().addVal("log", text);
+    // Don't print stringent log data to web interface
+    // (both slow and crashes!)
+    if (level > LINFO) {
+        return;
+    }
 
     // end with newline, erase
     if (nlfirst) {
@@ -90,7 +100,7 @@ void GUIWt::logAppend(PRINT_LEVEL level, string text) {
         } else if (level == LWARNING) {
             style = "style=\"color:orange\"";
         } else {
-//        style = "style=\"color:green\"";
+//            style = "style=\"color:green\"";
         }
 
         text = Utils::htmlEncode(text, Utils::HtmlEncodingFlag::EncodeNewLines);

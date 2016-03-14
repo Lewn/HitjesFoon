@@ -7,6 +7,7 @@
 
 #include <Wt/WServer>
 
+#include "structs.h"
 #include "Tools.h"
 #include "persistence/PersistenceData.h"
 
@@ -29,16 +30,18 @@ public:
     PersistenceData<string> &getStringData();
     PersistenceData<vector<int>> &getIntVectorData();
     PersistenceData<vector<string>> &getStringVectorData();
+    PersistenceData<std::shared_ptr<DownloadState>> &getDownloadStateData();
 
 protected:
     WServer &server;
     mutex callbackMutex;
 
-    unordered_map<string, PersistenceCallback> callbacks;
+    unordered_map<string, vector<PersistenceCallback>> callbacks;
     PersistenceData<int> intData;
     PersistenceData<string> stringData;
     PersistenceData<vector<int>> intVectorData;
     PersistenceData<vector<string>> stringVectorData;
+    PersistenceData<std::shared_ptr<DownloadState>> downloadStateData;
 
     void postOnChange(const string &key);
 private:

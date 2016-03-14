@@ -23,48 +23,32 @@
 #include "Tools.h"
 #include "gui/GUI.h"
 #include "widgets/WFilledTemplate.h"
+#include "widgets/WPlaylist.h"
+#include "widgets/WPlaybackControls.h"
+#include "widgets/WHitSearch.h"
 #include "Persistence.h"
 #include "InputProcessor.h"
 #include "AudioList.h"
 
-using namespace Wt;
 using namespace std;
 using namespace boost;
+using namespace Wt;
 
 class WidgetHome : public WApplication {
 public:
     WidgetHome(const WEnvironment& env, GUI *gui, Persistence *persistence);
     virtual ~WidgetHome();
 
-    void onPersistenceChange(string key);
-    void processHitInput();
-    void processSearchInput();
-    void processVolumeChange(int volume);
-    void processStop();
-    void processPlayPause();
+    void onPersistenceChange(const string &key);
 
 protected:
     GUI *gui;
     Persistence *persistence;
     WTemplate *home;
-    WLineEdit *hitInputText;
-    WText *hitHelpText;
-    WLineEdit *searchInputText;
-    WText *searchHelpText;
-    WText *currentlyTypingText;
-    WText *currentlyPlayingText;
-    WText *playlistText;
-    WSlider *volumeSlider;
-    WPushButton *stopBtn;
-    WPushButton *playpauseBtn;
 
     WContainerWidget *logContainer;
     WSound *logUpdate;
 
-    WSuggestionPopup *searchSP;
-    void initSearchSuggestions();
-
-    void updatePlaylist();
     void updateLog();
 private:
 };

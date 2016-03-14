@@ -1,6 +1,8 @@
 #ifndef PERSISTENCEDATA_H
 #define PERSISTENCEDATA_H
 
+#include "structs.h"
+
 #include <mutex>
 #include <unordered_map>
 
@@ -42,5 +44,6 @@ template class PersistenceData<int>;
 template class PersistenceData<string>;
 template class PersistenceData<vector<int>>;
 template class PersistenceData<vector<string>>;
+template class PersistenceData<std::shared_ptr<DownloadState>>;
 
 #endif // PERSISTENCEDATA_H

@@ -14,7 +14,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <algorithm>
+#include <memory>
+#include <regex>
 
+#include "structs.h"
 #include "Tools.h"
 #include "gui/GUI.h"
 #include "HTTPTransfer.h"
@@ -32,7 +35,7 @@ public:
     YoutubeAPI(GUI *gui);
     ~YoutubeAPI();
 
-    string searchVid(const char *query, const char *dllocation);
+    string searchVid(int id, const char *query, const char *dllocation);
 protected:
     GUI *gui;
     HTTPTransfer *transfer;
@@ -47,7 +50,9 @@ protected:
     string downloadEncodedUrl(const char *url, const char *title);
     void decryptSignature(char *sigstart, int siglen, char *decrypted);
 
-    string downloadYoutubeDL(const char *dllocation, const char *videoId, const char *title);
+    string downloadYoutubeDL(int id, const char *dllocation, const char *videoId, const char *title);
+    void performCmd(int id, string cmd);
+    float reformat(string val, string type);
 private:
     YoutubeAPI(const YoutubeAPI &that) = delete;
 };

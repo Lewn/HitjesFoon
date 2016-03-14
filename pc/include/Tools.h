@@ -15,6 +15,13 @@
 #include <stdio.h>
 #include <time.h>
 #include <algorithm>
+#include <memory>
+
+#ifdef __WIN32
+#include <windows.h>
+#else
+#include <cstdio>
+#endif
 
 using namespace std;
 
@@ -22,13 +29,15 @@ char *trimLeft(char *toTrim);
 char *trimRight(char *toTrim);
 char *trim(char *toTrim);
 
-std::string &ltrim(std::string &s);
-std::string &rtrim(std::string &s);
-std::string &trim(std::string &s);
+string &ltrim(string &s);
+string &rtrim(string &s);
+string &trim(string &s);
 
 char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filename);
 
 void filesystemSafe(char *str);
 void filesystemSafe(string &str);
+
+shared_ptr<FILE> cmdasync(string cmd);
 
 #endif // TOOLS_H

@@ -55,6 +55,8 @@ template <typename Type> void PersistenceData<Type>::addVal(const char *key, Typ
     addVal(string(key), add);
 }
 
+template <> void PersistenceData<std::shared_ptr<DownloadState>>::addVal(const char *key, std::shared_ptr<DownloadState> add) = delete;
+
 template <typename Type> void PersistenceData<Type>::addVal(const string &key, Type add) {
     typeMutex.lock();
     typename unordered_map<string, Type>::iterator keyval = vals.find(key);
@@ -90,6 +92,8 @@ template <> void PersistenceData<vector<string>>::addVal(const string &key, vect
     typeMutex.unlock();
     sig(key);
 }
+
+template <> void PersistenceData<std::shared_ptr<DownloadState>>::addVal(const string &key, std::shared_ptr<DownloadState> add) = delete;
 
 template <typename Type> void PersistenceData<Type>::manipulateVal(const char *key, const Callback &callback) {
     manipulateVal(string(key), callback);

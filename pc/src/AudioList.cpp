@@ -170,7 +170,6 @@ bool AudioList::update(unsigned int downloadCount) {
     } while (!feof(listFile));
     SAFE_CLOSE(listFile);
 
-    // TODO: delete all files not in list
     // All hitjes must start with a three digit number,
     // so delete all files that don't have this or whose
     // number is not in the hitjes list
@@ -214,8 +213,9 @@ bool AudioList::update(unsigned int downloadCount) {
         hitjes[i] = newHitjesList[i];
     }
     newHitjesList.clear();
-//    gui->printlevel(LINFO, "\nFound a total of %d hitjes\n", hitjes);
-// return wether there is more to download
+
+    gui->setHitjes(hitjes);
+    // return whether there is more to download
     return this->downloadCount == 0;
 }
 
@@ -289,7 +289,7 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
         string query = title;
         query += ' ';
         query += artist;
-        string baseName = api->searchVid(query.c_str(), hitjesPath.c_str());
+        string baseName = api->searchVid(hitIndex, query.c_str(), hitjesPath.c_str());
 
         if (!baseName.empty()) {
             string videoName = createHitjeName(hitIndex, title, artist, false);
@@ -302,8 +302,8 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
             // audio format already correct mp3, just move the file
             gui->printlevel(LBGINFO, "Moving '%s' to '%s'\n", baseName.c_str(), videoPath.c_str());
             if (rename(baseName.c_str(), videoPath.c_str())) {
-                gui->printlevel(LERROR, "Could not move file to correct location\n");
                 gui->printlevel(LERROR, "errno: %d\n", errno);
+                throw "Could not move file to correct location";
             }
 #else
             // use ffmpeg to get the audio file from video

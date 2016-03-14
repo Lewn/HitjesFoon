@@ -68,3 +68,15 @@ void filesystemSafe(string &str) {
         }
     }
 }
+
+shared_ptr<FILE> cmdasync(string cmd) {
+#ifdef __WIN32
+    shared_ptr<FILE> cmdptr(_popen(cmd.c_str(), "r"), _pclose);
+#else
+    shared_ptr<FILE> cmdptr(popen(cmd.c_str(), "r"), pclose);
+#endif // __WIN32
+    if (!cmdptr) {
+        throw "Could not open command asynchronously";
+    }
+    return cmdptr;
+}

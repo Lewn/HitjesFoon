@@ -4,6 +4,8 @@
 #include <Wt/WTemplate>
 #include <Wt/WContainerWidget>
 #include <Wt/WString>
+#include <Wt/WLocalizedStrings>
+#include <Wt/WApplication>
 
 #include <string>
 #include <vector>

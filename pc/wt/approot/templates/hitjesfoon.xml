@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <messages>
-  <message id="template-hitjesfoon-home">
+<message id="template-hitjesfoon-home">
 	<div id="hitje-input">
-		<legend>${strings-hitrequest}</legend>
-		<div class="form-horizontal">
-			<div class="form-group">
-				<div class="col-sm-5">${hitinput}</div>
-				<div class="col-sm-1">${hitok}</div>
-				<div class="help-block col-sm-5">${hithelp}</div>
-			</div>
-		</div>
-	</div>
-	<div id="hitje-search">
-		<legend>${strings-searchrequest}</legend>
-		<div class="form-horizontal">
-			<div class="form-group">
-				<div class="col-sm-5">${searchinput}</div>
-				<div class="col-sm-1">${searchok}</div>
-				<div class="help-block col-sm-5">${searchhelp}</div>
-			</div>
-		</div>
+		${template-hitjesfoon-home-input}
 	</div>
 	<div id="hitje-playing">
-		<legend>${strings-playing-info}</legend>
-		<div class="form-horizontal">
-			<div class="form-group">
-				<div class="col-sm-3">${strings-currently-typing}</div>
-				<div class="col-sm-2">${currently-typing}</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-3">${strings-currently-playing}</div>
-				<div class="col-sm-5">${currently-playing}</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-3">${strings-playlist}</div>
-				<div class="col-sm-5">${playlist}</div>
-			</div>
-		</div>
+		${template-hitjesfoon-home-playing}
 	</div>
 	<div id="playback-controls">
-		<legend>${strings-playback-controls}</legend>
-		<div class="form-horizontal">
-			<div class="form-group">
-				<div class="col-sm-3">${strings-control-volume}</div>
-				<div class="col-sm-4">${playback-volume}</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-3">${strings-control-play}</div>
-				<div class="col-sm-2">${playback-stop}${playback-playpause}</div>
-			</div>
-		</div>
+		${template-hitjesfoon-home-playback-controls}
 	</div>
-	
 	<br /><br />
 	<div class="list-group">${log}</div>
-  </message>
+</message>
+  
+<message id="template-hitjesfoon-home-input">
+	<legend>${strings-hitrequest}</legend>
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-5">${searchinput}</div>
+			<div class="col-sm-1">${searchok}</div>
+			<div class="help-block col-sm-5">${searchhelp}</div>
+		</div>
+	</div>
+</message>
+
+<message id="template-hitjesfoon-home-playing">
+	<legend>${strings-playing-info}</legend>
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-3">${strings-currently-typing}</div>
+			<div class="col-sm-2">${currently-typing}</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-3">${strings-currently-playing}</div>
+			<div class="col-sm-5">${currently-playing}</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-3">${strings-playlist}</div>
+			<div class="col-sm-5">${playlist}</div>
+		</div>
+	</div>
+</message>
+
+<message id="template-hitjesfoon-home-playback-controls">
+	<legend>${strings-playback-controls}</legend>
+	<div class="form-horizontal">
+			<div class="form-group">
+			<div class="col-sm-3">${strings-control-volume}</div>
+			<div class="col-sm-4">${playback-volume}</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-3">${strings-control-play}</div>
+			<div class="col-sm-2">${playback-stop}${playback-playpause}</div>
+		</div>
+	</div>
+</message>
 </messages>
