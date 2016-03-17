@@ -32,12 +32,12 @@ public:
         SEARCH
     };
 
-    YoutubeAPI(GUI *gui);
+    YoutubeAPI(GUI &gui);
     ~YoutubeAPI();
 
     string searchVid(int id, const char *query, const char *dllocation);
 protected:
-    GUI *gui;
+    GUI &gui;
     HTTPTransfer *transfer;
 
     string urlDecode(const char *src);

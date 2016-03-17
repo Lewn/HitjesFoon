@@ -1,19 +1,6 @@
 #ifndef INPUTPROCESSOR_H
 #define INPUTPROCESSOR_H
 
-enum InputVal {
-    INPUT_EARTH_UP = 11,
-    INPUT_EARTH_DOWN,
-    INPUT_EARTH_SWAP,
-    INPUT_HORN_UP,
-    INPUT_HORN_DOWN,
-    INPUT_HORN_SWAP,
-    INPUT_END,
-    INPUT_UPDATE,
-    INPUT_TEST,
-    INPUT_NONE
-};
-
 enum ProcessType {
     PROCESS_LINEAR,
     PROCESS_DIRECT,
@@ -27,6 +14,7 @@ enum ProcessType {
 #include <algorithm>
 
 #include "gui/GUI.h"
+#include "gui/GUIEvent.h"
 #include "AudioList.h"
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
@@ -38,9 +26,8 @@ using namespace std;
 
 class InputProcessor : public AudioPlayerEventListener {
 public:
-    static InputProcessor *getInstance();
-    static InputProcessor *getInstance(GUI *gui, AudioList *hitjesList, Config *config);
-    static void deleteInstance();
+    InputProcessor(GUI &gui, Config &config);
+    virtual ~InputProcessor();
 
     AudioList *getHitjesList();
     void resetInput();
@@ -48,15 +35,13 @@ public:
     void process(string input);
     void process(int input);
     void inputNum(int input);
+
     void audioPlayerEvent(Event evt, AudioPlayer *audioPlayer);
+    void playbackChangeEvent(const PlaybackState state);
 
-    AudioPlayer *getPhoneAudioPlayer();
-    AudioPlayer *getSpeakerAudioPlayer();
 protected:
-    static InputProcessor *instance;
-
-    GUI *gui;
-    AudioList *hitjesList;
+    GUI &gui;
+    AudioList hitjesList;
     ProcessType processType;
     int curNumber;
     int numberCount;
@@ -68,9 +53,6 @@ protected:
     AudioPlayer *speakerAudioPlayer;
 
     list<int> hitjesQueue;
-
-    InputProcessor(GUI *gui, AudioList *hitjesList, Config *config);
-    virtual ~InputProcessor();
 
     void processAudioMenu(int input);
     void processNum(int input);
@@ -91,8 +73,6 @@ protected:
 
 private:
     string configMenuPath;
-
-    InputProcessor(const InputProcessor &that) = delete;
 };
 
 #endif // INPUTPROCESSOR_H

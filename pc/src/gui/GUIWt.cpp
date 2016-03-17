@@ -13,15 +13,16 @@ void GUIWt::setServer(WServer &server) {
     vector<string> logv;
     logv.push_back("");
     persistence->getStringVectorData().initVal("logv", logv);
+    persistence->getIntData().initVal("playback-state", STOP);
 }
 
 WApplication *GUIWt::createApplication(const WEnvironment& env) {
     if (persistence == NULL) {
         throw "Persistence not created yet, first set server object";
     }
-    WidgetHome *app = new WidgetHome(env, this, persistence);
+    AHitjesfoon *app = new AHitjesfoon(env, *this, *persistence);
 
-    //    setCssTheme("polished");
+//    app->setCssTheme("polished");
     WBootstrapTheme *bootstrapTheme = new WBootstrapTheme(app);
     bootstrapTheme->setVersion(WBootstrapTheme::Version3);
     bootstrapTheme->setResponsive(true);
@@ -30,10 +31,13 @@ WApplication *GUIWt::createApplication(const WEnvironment& env) {
     // load the default bootstrap3 (sub-)theme
     app->useStyleSheet("resources/themes/bootstrap/3/bootstrap-theme.min.css");
 
-    app->messageResourceBundle().use(app->appRoot() + "language/strings");
-    app->messageResourceBundle().use(app->appRoot() + "templates/hitjesfoon");
+    app->messageResourceBundle().use(app->appRoot() + "language/home");
+    app->messageResourceBundle().use(app->appRoot() + "language/hitjeslist");
+    app->messageResourceBundle().use(app->appRoot() + "language/404");
+    app->messageResourceBundle().use(app->appRoot() + "templates/home");
+    app->messageResourceBundle().use(app->appRoot() + "templates/hitjeslist");
+    app->messageResourceBundle().use(app->appRoot() + "templates/404");
 
-    applications.push_back(app);
     return app;
 }
 
@@ -48,23 +52,35 @@ void GUIWt::printlevel(PRINT_LEVEL level, const char *format, va_list args) {
     }
 }
 
+void GUIWt::setPlaying() {
+    persistence->getIntData().setVal("playback-state", PLAY);
+}
+
+void GUIWt::setPaused() {
+    persistence->getIntData().setVal("playback-state", PAUSE);
+}
+
+void GUIWt::setStopped() {
+    persistence->getIntData().setVal("playback-state", STOP);
+}
+
 void GUIWt::setPhoneNum(int num) {
     persistence->getIntData().setVal("phone-num", num);
 }
 
 void GUIWt::setPlaylist(const vector<int> &playlist) {
+    // TODO more efficient way of updating phone-playlist, as it now is triggered too many times
+    // once when a hitje is stopped, then when the playlist is moved forward etc. etc.
     persistence->getIntVectorData().setVal("phone-playlist", playlist);
 }
 
 void GUIWt::setSpeakerVolume(int volume) {
-    InputProcessor *processor = InputProcessor::getInstance();
-    processor->getSpeakerAudioPlayer()->setVolume(volume);
+    events().speakerVolumeSig(volume);
     persistence->getIntData().setVal("volume-speaker", volume);
 }
 
 void GUIWt::setPhoneVolume(int volume) {
-    InputProcessor *processor = InputProcessor::getInstance();
-    processor->getPhoneAudioPlayer()->setVolume(volume);
+    events().phoneVolumeSig(volume);
     persistence->getIntData().setVal("volume-phone", volume);
 }
 

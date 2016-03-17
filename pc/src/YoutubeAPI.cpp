@@ -1,6 +1,6 @@
 #include "YoutubeAPI.h"
 
-YoutubeAPI::YoutubeAPI(GUI *gui) : gui(gui) {
+YoutubeAPI::YoutubeAPI(GUI &gui) : gui(gui) {
     transfer = new HTTPTransfer(gui);
 }
 
@@ -34,9 +34,9 @@ string YoutubeAPI::searchVid(int id, const char *query, const char *dllocation) 
 //        titles.erase(titles.begin());
 //
 //        // wait 10 seconds, if user typed y, go to next video id
-//        gui->printlevel(LINFO, "\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
+//        gui.printlevel(LINFO, "\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
 //        for (unsigned int titleIndex = 0; titleIndex < titles.size(); titleIndex++) {
-//            gui->printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].c_str());
+//            gui.printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].c_str());
 //        }
 //        int i;
 //        for (i = 0; i < 1000; i++) {
@@ -55,7 +55,7 @@ string YoutubeAPI::searchVid(int id, const char *query, const char *dllocation) 
 //            }
 //            napms(10000);
 //            if (i % 100 == 0) {
-//                gui->printlevel(LINFO, "%d seconds  \r", 10 - i / 100);
+//                gui.printlevel(LINFO, "%d seconds  \r", 10 - i / 100);
 //            }
 //        }
 //        if (i == 1000) {
@@ -100,9 +100,9 @@ string YoutubeAPI::makeRequest(RequestType requestType, const char *part, const 
     baseUrl += "&maxResults=";
     baseUrl += to_string(maxResults);
 
-    gui->printlevel(LDEBUG, "\n%s\n", baseUrl.c_str());
+    gui.printlevel(LDEBUG, "\n%s\n", baseUrl.c_str());
     string jsonString = transfer->get(baseUrl.c_str());
-    gui->printlevel(LDEBUG, "%s", jsonString.c_str());
+    gui.printlevel(LDEBUG, "%s", jsonString.c_str());
     return jsonString;
 }
 
@@ -170,7 +170,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
             case 'u':
                 // check for url
                 if (!strncmp(itr, "url=", 4)) {
-                    gui->printlevel(LDEBUG, "url found \n");
+                    gui.printlevel(LDEBUG, "url found \n");
                     if (urlStart || urlEnd) {
                         throw "two urls found";
                     }
@@ -189,7 +189,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
 
                     bool decrypt = !strncmp(itr, "s=", 2);
                     if (decrypt || !strncmp(itr, "sig=", 4)) {
-                        gui->printlevel(LDEBUG, "sig found \n");
+                        gui.printlevel(LDEBUG, "sig found \n");
                         if (sig[0]) {
                             throw "two sigs found";
                         }
@@ -203,7 +203,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
                             // TODO: implement player url extraction
                             decryptSignature(itr + 2, sigEnd - (itr + 2), sig);
                             if (!sig[0]) {
-                                gui->printlevel(LDEBUG, "couldn't decrypt sig\n");
+                                gui.printlevel(LDEBUG, "couldn't decrypt sig\n");
                             }
                         } else {
                             strncpy(sig, itr + 4, sigEnd - (itr + 4));
@@ -216,7 +216,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
             case 'i':
                 // check for signature
                 if (!strncmp(itr, "itag=", 5)) {
-                    gui->printlevel(LDEBUG, "itag found\n");
+                    gui.printlevel(LDEBUG, "itag found\n");
                     if (itagStart || itagEnd) {
                         throw "two itag found";
                     }
@@ -231,7 +231,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
                 break;
             case '\0':
             case ',':
-                gui->printlevel(LDEBUG, "Found comma\n");
+                gui.printlevel(LDEBUG, "Found comma\n");
                 // split on comma, save only when url and sig found
                 if (urlStart && urlEnd && sig[0] && itagStart && itagEnd) {
                     // only parse if all information found
@@ -261,12 +261,12 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
 
                         highestPriority = i;
 
-                        gui->printlevel(LBGINFO, "\nNew url inserted, %d: %s\n", itag, highestUrl);
+                        gui.printlevel(LBGINFO, "\nNew url inserted, %d: %s\n", itag, highestUrl);
                     } else {
-                        gui->printlevel(LBGINFO, "\nData with lower quality found\n");
+                        gui.printlevel(LBGINFO, "\nData with lower quality found\n");
                     }
                 } else {
-                    gui->printlevel(LWARNING, "\nNot all information found\n");
+                    gui.printlevel(LWARNING, "\nNot all information found\n");
                 }
 
                 urlStart = urlEnd = itagStart = itagEnd = NULL;
@@ -282,7 +282,7 @@ string YoutubeAPI::getFileFromVideoInfo(const char *videoInfo) {
 
     string fileName;
     if (highestUrl) {
-        gui->printlevel(LBGINFO, "Best url found: \n%s\n", highestUrl);
+        gui.printlevel(LBGINFO, "Best url found: \n%s\n", highestUrl);
         fileName = downloadEncodedUrl(highestUrl, titleStart);
         SAFE_DELETE_ARRAY(highestUrl);
     }
@@ -306,25 +306,25 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
         return (c == '+') || !((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '(' || c == ')' || c == '-' || c == '_' || c == '#' || c == '.');
     }, ' ');
 
-    gui->printlevel(LBGINFO, "\nStarted downloading '%s'\n", decodedFilename.c_str());
+    gui.printlevel(LBGINFO, "\nStarted downloading '%s'\n", decodedFilename.c_str());
     transfer->get(url, decodedFilename.c_str());
-    gui->printlevel(LBGINFO, "Downloading done!\n");
+    gui.printlevel(LBGINFO, "Downloading done!\n");
     return decodedFilename;
 }
 
 string YoutubeAPI::downloadYoutubeDL(int id, const char *dllocation, const char *videoId, const char *title) {
-    gui->printlevel(LDEBUG, "Title: '%s'\n", title);
+    gui.printlevel(LDEBUG, "Title: '%s'\n", title);
     string filename = "tmp";
 
     //filename = urlDecode(filename.c_str());
     filesystemSafe(filename);
     filename = dllocation + filename + ".mp4";
-    gui->printlevel(LDEBUG, "Filename: '%s'\n", filename.c_str());
+    gui.printlevel(LDEBUG, "Filename: '%s'\n", filename.c_str());
 
-    gui->printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
+    gui.printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
 
     string buffer = "youtube-dl ";
-    if (gui->getMsglevel() < PRINT_LEVEL::LBGINFO) {
+    if (gui.getMsglevel() < PRINT_LEVEL::LBGINFO) {
         buffer += "--quiet --no-progress --no-warnings ";
     }
     buffer += "--newline ";
@@ -346,10 +346,10 @@ void YoutubeAPI::performCmd(int id, string cmd) {
     cmatch match;
     regex outputSearch("([0-9.]+)\\%\\s+of\\s+([0-9.]+)(G|M|K)iB\\s+at\\s+([0-9.]+)(G|M|K)iB/s\\s+ETA\\s+([0-9]+):([0-9]+)", regex_constants::ECMAScript | regex_constants::icase);
     regex errorSearch("ERROR: (.+)");
-    shared_ptr<DownloadState> dlstate;
+    std::shared_ptr<DownloadState> dlstate;
 
     // Open command asynchronously
-    shared_ptr<FILE> cmdptr = cmdasync(cmd);
+    std::shared_ptr<FILE> cmdptr = cmdasync(cmd);
     while (!feof(cmdptr.get())) {
         if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
             if (regex_search(buf, match, outputSearch)) {
@@ -360,7 +360,7 @@ void YoutubeAPI::performCmd(int id, string cmd) {
                 dlstate->dlspeed = reformat(match[4], match[5]);
                 dlstate->eta = 60 * stoi(match[6]) + stoi(match[7]);
 
-                gui->setDownloadState(dlstate);
+                gui.setDownloadState(dlstate);
             } else if (regex_search(buf, match, errorSearch)) {
                 // TODO: throw better exceptions
                 throw match[1].str().c_str();
@@ -373,9 +373,9 @@ float YoutubeAPI::reformat(string val, string type) {
     float fval = stof(val);
     // Convert kilo and giga to megabytes
     if (type == "K") {
-        fval /= 1024;
+        fval /= 1000;
     } else if (type == "G") {
-        fval *= 1024;
+        fval *= 1000;
     }
     return fval;
 }
@@ -405,7 +405,7 @@ string YoutubeAPI::urlDecode(const char *src) {
 
 void YoutubeAPI::decryptSignature(char *sigstart, int siglen, char *decrypted) {
     return;
-    gui->printlevel(LDEBUG, "decrypted sig length %d\n", siglen);
+    gui.printlevel(LDEBUG, "decrypted sig length %d\n", siglen);
     switch (siglen) {
         case 93:
             reverse_copy(sigstart + 30, sigstart + 87, decrypted);      // 56 chars
@@ -455,7 +455,7 @@ void YoutubeAPI::decryptSignature(char *sigstart, int siglen, char *decrypted) {
             decrypted[81] = '\0';
             break;
     }
-    gui->printlevel(LDEBUG, "after decryption: %s\n", decrypted);
+    gui.printlevel(LDEBUG, "after decryption: %s\n", decrypted);
     //exit(1);
 //elif len(s) == 90:
 //    return s[25] + s[3: 25] + s[2] + s[26: 40] + s[77] + s[41: 77] + s[89] + s[78: 81]

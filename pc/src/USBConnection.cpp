@@ -1,11 +1,11 @@
 #include "USBConnection.h"
 
-USBConnection::USBConnection(GUI *gui) : gui(gui) {
+USBConnection::USBConnection(GUI &gui) : gui(gui) {
     printUSB();
 
     usbDevice = hid_open(0x16c0, 0x27d9, L"leon.loopik.nl:USBPhone");
     if (!usbDevice) {
-        gui->confirm(LWARNING, "Unable to open device, usb input will be disabled");
+        gui.confirm(LWARNING, "Unable to open device, usb input will be disabled");
     } else {
         hid_set_nonblocking(usbDevice, 1);
 
@@ -16,7 +16,7 @@ USBConnection::USBConnection(GUI *gui) : gui(gui) {
         buf[1] = 0x81;
         int res = hid_write(usbDevice, buf, 1);
         if (res < 0) {
-            gui->printlevel(LERROR, "Unable to write() (2)\n");
+            gui.printlevel(LERROR, "Unable to write() (2)\n");
             //usbDevice = NULL;
         }
 
@@ -45,7 +45,7 @@ int USBConnection::read() {
         memset(buf, 0, sizeof(buf));
         int res = hid_read(usbDevice, buf, sizeof(buf));
         if (res < 0) {
-            gui->confirm(LERROR, "USB read exception '%s'\n", hid_error(usbDevice));
+            gui.confirm(LERROR, "USB read exception '%s'\n", hid_error(usbDevice));
             throw "Read usb exception";
         }
         if (res) {
@@ -99,13 +99,13 @@ void USBConnection::printUSB() {
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
     while (cur_dev) {
-        gui->printlevel(LDEBUG, "Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
-        gui->printlevel(LDEBUG, "\n");
-        gui->printlevel(LDEBUG, "  Manufacturer: %ls\n", cur_dev->manufacturer_string);
-        gui->printlevel(LDEBUG, "  Product:      %ls\n", cur_dev->product_string);
-        gui->printlevel(LDEBUG, "  Release:      %hx\n", cur_dev->release_number);
-        gui->printlevel(LDEBUG, "  Interface:    %d\n",  cur_dev->interface_number);
-        gui->printlevel(LDEBUG, "\n");
+        gui.printlevel(LDEBUG, "Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
+        gui.printlevel(LDEBUG, "\n");
+        gui.printlevel(LDEBUG, "  Manufacturer: %ls\n", cur_dev->manufacturer_string);
+        gui.printlevel(LDEBUG, "  Product:      %ls\n", cur_dev->product_string);
+        gui.printlevel(LDEBUG, "  Release:      %hx\n", cur_dev->release_number);
+        gui.printlevel(LDEBUG, "  Interface:    %d\n",  cur_dev->interface_number);
+        gui.printlevel(LDEBUG, "\n");
         cur_dev = cur_dev->next;
     }
     hid_free_enumeration(devs);

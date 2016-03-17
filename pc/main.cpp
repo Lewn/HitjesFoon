@@ -25,7 +25,7 @@
 
 using namespace std;
 
-Wt::WApplication *createApplication(const Wt::WEnvironment& env, GUIWt &gui) {
+Wt::WApplication *createApplication(const Wt::WEnvironment &env, GUIWt &gui) {
     return gui.createApplication(env);
 }
 
@@ -39,9 +39,9 @@ Wt::WApplication *createApplication(const Wt::WEnvironment& env, GUIWt &gui) {
 int main(int argc, char **argv) {
     try {
 #ifdef GUI_CURSES
-        GUICurses gui = GUICurses(LINFO);
+        GUICurses gui(LINFO);
 #else
-        GUIWt gui = GUIWt(LINFO);
+        GUIWt gui(LINFO);
 #endif
         try {
 #if defined(GUI_WT)
@@ -55,25 +55,20 @@ int main(int argc, char **argv) {
 
             gui.printlevel(LINFO, "Starting hitjesfoon application...\n");
 
-            Config config(&gui, "config.txt");
+            Config config(gui, "config.txt");
             gui.printlevel(LDEBUG, "Read config file\n");
 
             VLC::setConfig(&config);
 
             // instantiate usb and vlc, cause we will need them
-            USBConnection connection(&gui);
+            USBConnection connection(gui);
             gui.printlevel(LDEBUG, "Instantiated usb connection\n");
             VLC::setGUI(&gui);
             VLC::getInstance();
             gui.printlevel(LDEBUG, "Instantiated vlc\n");
 
-            // create the list with all hitjes from file and put it in the processor
-            AudioList hitjesList(&gui, &config);
-            gui.printlevel(LDEBUG, "Read hitjeslist into memory\n");
-
-
             // create an input processor for processing keyboard and usb input
-            InputProcessor *processor = InputProcessor::getInstance(&gui, &hitjesList, &config);
+            InputProcessor processor(gui, config);
 
             // For a Witty gui, all should be handled by signals
             // First start the server
@@ -93,7 +88,7 @@ int main(int argc, char **argv) {
                         // end at q
                         break;
                     }
-                    processor->process(c);
+                    processor.process(c);
                 }
 #if defined(GUI_WT)
                 server.stop();
@@ -111,7 +106,7 @@ int main(int argc, char **argv) {
     } catch (...) {
         printf("Something went terribly wrong...\n");
     }
-    InputProcessor::deleteInstance();
+//    InputProcessor::deleteInstance();
     VLC::deleteInstance();
     return 0;
 }

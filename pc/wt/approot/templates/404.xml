@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+<message id="template-hitjesfoon-404">
+	<div>
+		<h1>404</h1>
+		<p>
+			${strings-404}
+		</p>
+	</div>
+</message>
+</messages>

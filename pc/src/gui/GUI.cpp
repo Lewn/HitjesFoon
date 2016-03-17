@@ -10,3 +10,29 @@ void GUI::setMsglevel(PRINT_LEVEL msglevel) {
 PRINT_LEVEL GUI::getMsglevel() {
     return msglevel;
 }
+
+GUIEvent &GUI::events() {
+    return guiEvents;
+}
+
+
+void GUI::setHitjes(const vector<Hitje *> &hitjes) {
+    this->hitjes = hitjes;
+}
+
+const vector<Hitje *> &GUI::getHitjes() {
+    return hitjes;
+}
+
+
+void GUI::inputPhoneNum(int num) {
+    events().inputPhoneNumSig(num);
+}
+
+void GUI::inputPhoneAlt(int alt) {
+    events().inputPhoneAltSig(alt);
+}
+
+void GUI::setPlaybackState(PlaybackState state) {
+    events().playbackSig(state);
+}

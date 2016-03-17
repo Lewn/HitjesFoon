@@ -1,13 +1,13 @@
 #include "HTTPTransfer.h"
 
-HTTPTransfer::HTTPTransfer(GUI *gui) : gui(gui) {
+HTTPTransfer::HTTPTransfer(GUI &gui) : gui(gui) {
     //curl_global_init(CURL_GLOBAL_ALL);
     curl = curl_easy_init();
     if (!curl) {
         throw "Could not initialize curl";
     }
     curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress);
-    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, gui);
+    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &gui);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
     //curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -46,7 +46,7 @@ void HTTPTransfer::perform() {
     CURLcode res = curl_easy_perform(curl);
     // Check for errors
     if (res != CURLE_OK) {
-        gui->printlevel(LERROR, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        gui.printlevel(LERROR, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl);
         throw "curl_easy_perform() failed";
     }
@@ -56,7 +56,7 @@ long HTTPTransfer::getStatusCode() {
     long statusCode;
     CURLcode res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
     if (res != CURLE_OK) {
-        gui->printlevel(LERROR, "curl_easy_getinfo() failed: %s\n", curl_easy_strerror(res));
+        gui.printlevel(LERROR, "curl_easy_getinfo() failed: %s\n", curl_easy_strerror(res));
         curl_easy_cleanup(curl);
         throw "couldn't retrieve status code";
     }

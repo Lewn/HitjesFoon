@@ -1,7 +1,6 @@
 #ifndef GUIWTAPPLICATION_H
 #define GUIWTAPPLICATION_H
 
-#include <Wt/WApplication>
 #include <Wt/WBreak>
 #include <Wt/WText>
 #include <Wt/WTextArea>
@@ -14,7 +13,6 @@
 #include <Wt/WSuggestionPopup>
 #include <Wt/WContainerWidget>
 #include <Wt/WTemplate>
-#include <Wt/WEnvironment>
 #include <Wt/WSlider>
 
 #include <string>
@@ -34,21 +32,25 @@ using namespace std;
 using namespace boost;
 using namespace Wt;
 
-class WidgetHome : public WApplication {
+class WHome : public WFilledTemplate {
 public:
-    WidgetHome(const WEnvironment& env, GUI *gui, Persistence *persistence);
-    virtual ~WidgetHome();
+    WHome(GUI &gui, Persistence &persistence, WContainerWidget *parent = NULL);
+    WHome(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
+    virtual ~WHome();
 
     void onPersistenceChange(const string &key);
 
 protected:
-    GUI *gui;
-    Persistence *persistence;
-    WTemplate *home;
+    GUI &gui;
+    Persistence &persistence;
 
+    WHitSearch *hitSearch;
+    WPlaylist *playlist;
+    WPlaybackControls *playbackControls;
     WContainerWidget *logContainer;
     WSound *logUpdate;
 
+    void buildWidget();
     void updateLog();
 private:
 };

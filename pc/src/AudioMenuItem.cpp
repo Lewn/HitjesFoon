@@ -8,7 +8,7 @@ int checkMediaFile(libvlc_media_t *mediaFile) {
     return libvlc_media_get_duration(mediaFile);
 }
 
-AudioMenuItem::AudioMenuItem(GUI *gui, string path, AudioMenuItem **followup, unsigned char followupLen, bool tts) : gui(gui), followup(followup), followupLen(followupLen) {
+AudioMenuItem::AudioMenuItem(GUI &gui, string path, AudioMenuItem **followup, unsigned char followupLen, bool tts) : gui(gui), followup(followup), followupLen(followupLen) {
     if (tts) {
         media = NULL;
         FILE *pFile;
@@ -69,7 +69,7 @@ AudioMenuItem *AudioMenuItem::getFollowup(unsigned char index) {
 
 libvlc_media_t *AudioMenuItem::getMedia() {
     if (!media) {
-        gui->printlevel(LDEBUG, "\n%s", text.c_str());
+        gui.printlevel(LDEBUG, "\n%s", text.c_str());
         system(text.c_str());
         return NULL;
     }

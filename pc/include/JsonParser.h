@@ -12,7 +12,7 @@ using namespace rapidjson;
 
 class JsonParser {
 public:
-    JsonParser(GUI *gui);
+    JsonParser(GUI &gui);
     virtual ~JsonParser();
 
     void parse(const char *jsonString);
@@ -22,7 +22,7 @@ public:
     const char *getVideoTitle();
     vector<string> getVideoTitles();
 protected:
-    GUI *gui;
+    GUI &gui;
     Document root;
 private:
     JsonParser(const JsonParser &that) = delete;

@@ -14,7 +14,7 @@ using namespace std;
 
 class USBConnection {
 public:
-    USBConnection(GUI *gui);
+    USBConnection(GUI &gui);
     virtual ~USBConnection();
 
     void reset();
@@ -25,7 +25,7 @@ public:
 
     void printUSB();
 protected:
-    GUI *gui;
+    GUI &gui;
     hid_device* usbDevice;
     int dialNumber, dialTimes;
     int hornDown, earthDown;

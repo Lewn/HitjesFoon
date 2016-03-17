@@ -19,10 +19,12 @@
 
 #include "gui/GUI.h"
 #include "gui/GUINull.h"
+#include "gui/GUIEvent.h"
+
+#include "widgets/AHitjesfoon.h"
 
 #include "InputProcessor.h"
 #include "Persistence.h"
-#include "widgets/WidgetHome.h"
 
 
 using namespace std;
@@ -38,6 +40,10 @@ public:
     void setServer(WServer &server);
     WApplication *createApplication(const WEnvironment& env);
 
+    virtual void setPlaying();
+    virtual void setPaused();
+    virtual void setStopped();
+
     virtual void setPhoneNum(int num);
     virtual void setPlaylist(const vector<int> &playlist);
 
@@ -52,7 +58,6 @@ public:
     virtual int getInput();
 protected:
     Persistence *persistence;
-    vector<WApplication *> applications;
 
     virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args);
 private:

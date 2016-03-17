@@ -22,7 +22,7 @@ public:
         SPEAKER
     };
 
-    AudioPlayer(GUI *gui, AudioDevice device, AudioList *audioList);
+    AudioPlayer(GUI &gui, AudioDevice device, AudioList &audioList);
     virtual ~AudioPlayer();
 
     void setAudioDevice(AudioDevice device);
@@ -30,10 +30,14 @@ public:
     bool playAudio(int audioIndex, float position);
     bool playAudio(libvlc_media_t *media);
     bool playAudio(libvlc_media_t *media, float position);
+
+    void pause();
+    void resume();
     void stop();
+
     AudioPlayer *swapWith(AudioPlayer *other);
 
-    void setVolume(int volume);
+    void setVolume(const int volume);
     int getVolume();
 
     void attachEventListener(AudioPlayerEventListener *listener);
@@ -42,14 +46,14 @@ public:
     int getAudioIndex();
     float getAudioPosition();
 protected:
-    GUI *gui;
+    GUI &gui;
     string curOutput;
     list<AudioPlayerEventListener*> listeners;
 
     static string audioOutputString(AudioDevice device);
     string audioDeviceString(AudioDevice device);
 
-    AudioList *audioList;
+    AudioList &audioList;
 
     static void callback (const libvlc_event_t *evt, void *userData);
     void notificate(AudioPlayerEventListener::Event eventType);

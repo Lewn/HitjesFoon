@@ -7,7 +7,7 @@
 
 class HTTPTransfer {
 public:
-    HTTPTransfer(GUI *gui);
+    HTTPTransfer(GUI &gui);
     ~HTTPTransfer();
 
     void sendReceive();
@@ -18,7 +18,7 @@ public:
 
     string escape(const char *toEscape);
 protected:
-    GUI *gui;
+    GUI &gui;
     CURL *curl;
 
     void perform();

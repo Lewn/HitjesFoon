@@ -52,7 +52,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-3">${strings-control-play}</div>
-			<div class="col-sm-2">${playback-stop}${playback-playpause}</div>
+			<div class="col-sm-2">${playback-stop}${playback-play}${playback-pause}</div>
 		</div>
 	</div>
 </message>

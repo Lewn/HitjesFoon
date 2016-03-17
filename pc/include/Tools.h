@@ -38,6 +38,6 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 void filesystemSafe(char *str);
 void filesystemSafe(string &str);
 
-shared_ptr<FILE> cmdasync(string cmd);
+std::shared_ptr<FILE> cmdasync(string cmd);
 
 #endif // TOOLS_H

@@ -10,29 +10,18 @@
 #include <sstream>
 #include <iomanip>
 
+#include "structs.h"
+#include "Tools.h"
 #include "Config.h"
 #include "VLC.h"
-#include "Tools.h"
 #include "YoutubeAPI.h"
 #include "gui/GUI.h"
 
 using namespace std;
 
-struct Hitje {
-    libvlc_media_t *mediaData;
-    int hitIndex;
-    string title;
-    string artist;
-
-    Hitje(libvlc_media_t *mediaData, int hitIndex, string title, string artist);
-    ~Hitje();
-    string toString();
-    inline ostream &operator<<(ostream &str);
-};
-
 class AudioList {
 public:
-    AudioList(GUI *gui, Config *config);
+    AudioList(GUI &gui, Config &config);
     virtual ~AudioList();
 
     string createHitjeName(const Hitje *hitje, bool absolute);
@@ -43,7 +32,7 @@ public:
     const vector<Hitje *> getHitjes();
 
 protected:
-    GUI *gui;
+    GUI &gui;
     unsigned int downloadCount;
     YoutubeAPI *api;
     vector<Hitje *> hitjes;

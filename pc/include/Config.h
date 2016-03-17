@@ -10,7 +10,7 @@ using namespace rapidjson;
 
 class Config {
 public:
-    Config(GUI *gui, const char *configPath);
+    Config(GUI &gui, const char *configPath);
     virtual ~Config();
 
     bool nextHitjesConfig();
@@ -23,7 +23,7 @@ public:
 
     string getConfigMenuPath();
 protected:
-    GUI *gui;
+    GUI &gui;
     Document *config = NULL;
 
     const Value *hitjesConfig = NULL;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+<message id="template-hitjesfoon-hitjeslist">
+	<div>
+		<legend>${strings-hitjeslist-title}</legend>
+		<div>
+			${hitjeslist}
+		</div>
+	</div>
+</message>
+</messages>

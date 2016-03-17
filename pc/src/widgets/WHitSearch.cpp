@@ -1,10 +1,10 @@
 #include "widgets/WHitSearch.h"
 
-WHitSearch::WHitSearch(GUI *gui, Persistence *persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home-input"), parent), gui(gui), persistence(persistence), searchSP(NULL) {
+WHitSearch::WHitSearch(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home-input"), parent), gui(gui), persistence(persistence), searchSP(NULL) {
     buildWidget();
 }
 
-WHitSearch::WHitSearch(GUI *gui, Persistence *persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence), searchSP(NULL) {
+WHitSearch::WHitSearch(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence), searchSP(NULL) {
     buildWidget();
 }
 
@@ -35,7 +35,7 @@ void WHitSearch::buildWidget() {
     searchOkBtn->clicked().connect(this, &WHitSearch::processSearchInput);
 
     // Listen to all persistence changes
-    persistence->onChangeCallback(boost::bind(&WHitSearch::onPersistenceChange, this, _1));
+    persistence.onChangeCallback(boost::bind(&WHitSearch::onPersistenceChange, this, _1));
 }
 
 void WHitSearch::onPersistenceChange(const string &key) {
@@ -47,18 +47,17 @@ void WHitSearch::processSearchInput() {
     if (searchInputText->validate() == WValidator::Valid) {
         try {
             int num = stoi(ser);
-            InputProcessor *inputProcessor = InputProcessor::getInstance();
-            inputProcessor->inputNum(num);
+            gui.inputPhoneNum(num);
             searchInputText->setText("");
         } catch (...) {
             string helpText = "Input '" + ser + "' is not a valid input (must start with number)";
             searchHelpText->setText(helpText);
-            gui->printlevel(LERROR, "%s\n", helpText.c_str());
+            gui.printlevel(LERROR, "%s\n", helpText.c_str());
         }
     } else {
         string helpText = "Invalid input, '" + ser + "'. Cannot request too large.";
         searchHelpText->setText(helpText);
-        gui->printlevel(LERROR, "Invalid input, '%s'\nCannot request too large\n", ser.c_str());
+        gui.printlevel(LERROR, "Invalid input, '%s'\nCannot request too large\n", ser.c_str());
     }
 }
 
@@ -78,9 +77,7 @@ void WHitSearch::initSearchSuggestions() {
 
         searchSP->setMaximumSize(WLength::Auto, WLength(200, WLength::Unit::Pixel));
 
-        InputProcessor *processor = InputProcessor::getInstance();
-        AudioList *audioList = processor->getHitjesList();
-        const vector<Hitje *> hitjes = audioList->getHitjes();
+        const vector<Hitje *> hitjes = gui.getHitjes();
         for (Hitje *hitje : hitjes) {
             if (hitje != NULL) {
                 searchSP->addSuggestion(hitje->toString());

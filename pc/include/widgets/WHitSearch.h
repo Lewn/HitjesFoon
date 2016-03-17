@@ -20,16 +20,16 @@ using namespace Wt;
 
 class WHitSearch : public WFilledTemplate {
 public:
-    WHitSearch(GUI *gui, Persistence *persistence, WContainerWidget *parent = NULL);
-    WHitSearch(GUI *gui, Persistence *persistence, const WString &text, WContainerWidget *parent = NULL);
+    WHitSearch(GUI &gui, Persistence &persistence, WContainerWidget *parent = NULL);
+    WHitSearch(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     ~WHitSearch();
 
     void onPersistenceChange(const string &key);
     void processSearchInput();
 
 protected:
-    GUI *gui;
-    Persistence *persistence;
+    GUI &gui;
+    Persistence &persistence;
 
     WLineEdit *searchInputText;
     WText *searchHelpText;

@@ -17,7 +17,7 @@ using namespace std;
 
 class AudioMenu {
 public:
-    AudioMenu(GUI *gui);
+    AudioMenu(GUI &gui);
     virtual ~AudioMenu();
     void fromPath(string path);
 
@@ -25,7 +25,7 @@ public:
     virtual libvlc_media_t *getMedia();
     virtual bool isEnded();
 protected:
-    GUI *gui;
+    GUI &gui;
     AudioMenuItem *initialItem;
     AudioMenuItem *curItem;
 
