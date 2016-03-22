@@ -18,7 +18,7 @@ enum InputVal {
 #include <string>
 #include <memory>
 
-#include "structs.h"
+#include "Structs.h"
 #include "gui/GUIEvent.h"
 
 using namespace std;
@@ -41,9 +41,6 @@ public:
 
     GUIEvent &events();
 
-    void setHitjes(const vector<Hitje *> &hitjes);
-    const vector<Hitje *> &getHitjes();
-
     virtual void printlevel(PRINT_LEVEL level, const char *format, ...) = 0;
     virtual void confirm(PRINT_LEVEL level, const char *format, ...) = 0;
     virtual int getInput() = 0;
@@ -63,11 +60,10 @@ public:
     virtual void setSpeakerVolume(int volume) = 0;
     virtual void setPhoneVolume(int volume) = 0;
 
-    virtual void setDownloadState(std::shared_ptr<DownloadState> dlstate) = 0;
+    virtual void setHitje(Hitje hitje) = 0;
 protected:
     PRINT_LEVEL msglevel;
     GUIEvent guiEvents;
-    vector<Hitje *> hitjes;
 private:
 };
 

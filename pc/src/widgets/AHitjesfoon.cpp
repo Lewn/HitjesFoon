@@ -15,8 +15,8 @@ AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persist
     navigation->setTitle("Hitjesfoon", WLink(WLink::InternalPath, "/"));
     navigation->setResponsive(true);
 
+    // TODO no stacked widget (only has maximum height?)
     WStackedWidget *contentsStack = new WStackedWidget();
-    contentsStack->addWidget(w404);
 
     // Setup a Left-aligned menu.
     menu = new WMenu(contentsStack);
@@ -24,19 +24,16 @@ AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persist
 
     homeItem = new WMenuItem("Home", home);
     homeItem->setPathComponent("/");
+    homeItem->setLink(WLink(WLink::InternalPath, "/"));
     menu->addItem(homeItem);
     hitjesListItem = new WMenuItem("Hitjes list", hitjesList);
     hitjesListItem->setPathComponent("/hitjeslist");
+    hitjesListItem->setLink(WLink(WLink::InternalPath, "/hitjeslist"));
     menu->addItem(hitjesListItem);
-    w404Item = new WMenuItem("404", w404);
-    w404Item->setPathComponent("/404");
-//    menu->setItemHidden(w404Item, true);
-    menu->addItem(w404Item);
 
-    WVBoxLayout *layout = new WVBoxLayout(root());
-    layout->addWidget(navigation);
-    layout->addWidget(contentsStack, 1);
-//    layout->setContentsMargins(0, 0, 0, 0);
+    root()->addWidget(navigation);
+    root()->addWidget(contentsStack);
+    root()->addWidget(w404);
 
     // TODO add as default menu
     menu->addStyleClass("navbar-nav");
@@ -54,10 +51,6 @@ AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persist
 
     internalPathChanged().connect(this, onPathChange);
     onPathChange();
-
-    persistence.onChangeCallback(std::bind([ = ] (const string & key) {
-        triggerUpdate();
-    }, std::placeholders::_1));
 }
 
 AHitjesfoon::~AHitjesfoon() {
@@ -68,16 +61,19 @@ AHitjesfoon::~AHitjesfoon() {
 
 
 void AHitjesfoon::onPathChange() {
-    printf("Changed internal path to %s\n", internalPath().c_str());
+    bool notfound = false;
     if (internalPath() == "/" || internalPath() == "/home") {
         // Swap page for homepage
+        setInternalPath("/");
         menu->select(homeItem);
     } else if (internalPath() == "/hitjeslist") {
         // Swap page for hitjeslist page
         menu->select(hitjesListItem);
     } else {
         // Show 404
-        printf("Found 404 path\n");
-        menu->select(w404Item);
+        menu->select(0);
+        notfound = true;
     }
+    w404->setHidden(notfound);
+    menu->contentsStack()->setHidden(!notfound);
 }

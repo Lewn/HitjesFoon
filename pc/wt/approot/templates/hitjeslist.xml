@@ -8,4 +8,15 @@
 		</div>
 	</div>
 </message>
+
+<message id="template-hitjesfoon-hitjeslist-hitje">
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-1">${hitje-num}</div>
+			<div class="col-sm-2">${hitje-artist}</div>
+			<div class="col-sm-3">${hitje-title}</div>
+			<div class="col-sm-4">${hitje-info}${hitje-bar}</div>
+		</div>
+	</div>
+</message>
 </messages>

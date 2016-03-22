@@ -74,8 +74,9 @@ bool AudioPlayer::playAudio(int audioIndex) {
 }
 
 bool AudioPlayer::playAudio(int audioIndex, float position) {
-    libvlc_media_t *media = audioList.getAudio(audioIndex);
+    libvlc_media_t *media = audioList.getHitje(audioIndex).getMediaData();
     bool success = playAudio(media, position);
+    VLC::release(media);
     this->audioIndex = audioIndex;
     return success;
 }

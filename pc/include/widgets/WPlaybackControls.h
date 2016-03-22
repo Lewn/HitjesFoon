@@ -1,7 +1,7 @@
 #ifndef WPLAYBACKCONTROLS_H
 #define WPLAYBACKCONTROLS_H
 
-
+#include <Wt/WApplication>
 #include <Wt/WPushButton>
 #include <Wt/WSlider>
 

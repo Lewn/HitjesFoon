@@ -52,6 +52,7 @@ void GUIWt::printlevel(PRINT_LEVEL level, const char *format, va_list args) {
     }
 }
 
+
 void GUIWt::setPlaying() {
     persistence->getIntData().setVal("playback-state", PLAY);
 }
@@ -84,9 +85,8 @@ void GUIWt::setPhoneVolume(int volume) {
     persistence->getIntData().setVal("volume-phone", volume);
 }
 
-void GUIWt::setDownloadState(std::shared_ptr<DownloadState> dlstate) {
-    printlevel(LINFO, "Hitje update %d: %f\%, %f MB, %f MB/s, %d seconds\n", dlstate->id, dlstate->percentage, dlstate->dlsize, dlstate->dlspeed, dlstate->eta);
-    persistence->getDownloadStateData().setVal(to_string(dlstate->id), dlstate);
+void GUIWt::setHitje(Hitje hitje) {
+    persistence->getHitjeData().setVal(to_string(hitje.hitIndex), hitje);
 }
 
 void GUIWt::logAppend(PRINT_LEVEL level, string text) {

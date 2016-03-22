@@ -1,7 +1,7 @@
 #ifndef GUIWT_H
 #define GUIWT_H
 
-#include "structs.h"
+#include "Structs.h"
 #include "Tools.h"
 
 #include <vector>
@@ -50,7 +50,7 @@ public:
     virtual void setSpeakerVolume(int volume);
     virtual void setPhoneVolume(int volume);
 
-    virtual void setDownloadState(std::shared_ptr<DownloadState> dlstate);
+    virtual void setHitje(Hitje hitje);
 
     void logAppend(PRINT_LEVEL level, string text);
     void logHTML(vector<string> &logv, const string &el, bool nlfirst, bool nlsecond);

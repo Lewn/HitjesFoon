@@ -5,7 +5,7 @@ Persistence::Persistence(WServer &server) : server(server) {
     stringData.connect(boost::bind(&Persistence::postOnChange, this, _1));
     intVectorData.connect(boost::bind(&Persistence::postOnChange, this, _1));
     stringVectorData.connect(boost::bind(&Persistence::postOnChange, this, _1));
-    downloadStateData.connect(boost::bind(&Persistence::postOnChange, this, _1));
+    hitjeData.connect(boost::bind(&Persistence::postOnChange, this, _1));
 }
 
 Persistence::~Persistence() {
@@ -51,6 +51,6 @@ PersistenceData<vector<string>> &Persistence::getStringVectorData() {
     return stringVectorData;
 }
 
-PersistenceData<std::shared_ptr<DownloadState>> &Persistence::getDownloadStateData() {
-    return downloadStateData;
+PersistenceData<Hitje> &Persistence::getHitjeData() {
+    return hitjeData;
 }

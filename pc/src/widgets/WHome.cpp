@@ -42,8 +42,10 @@ void WHome::onPersistenceChange(const string &key) {
 //        logUpdate->play();
     } else if (key == "logv") {
         updateLog();
+        WApplication *app = WApplication::instance();
+        app->triggerUpdate();
     } else {
-        printf("Persistence change key %s\n", key.c_str());
+//        printf("Persistence change key %s\n", key.c_str());
     }
 }
 

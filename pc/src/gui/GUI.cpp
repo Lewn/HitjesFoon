@@ -16,14 +16,6 @@ GUIEvent &GUI::events() {
 }
 
 
-void GUI::setHitjes(const vector<Hitje *> &hitjes) {
-    this->hitjes = hitjes;
-}
-
-const vector<Hitje *> &GUI::getHitjes() {
-    return hitjes;
-}
-
 
 void GUI::inputPhoneNum(int num) {
     events().inputPhoneNumSig(num);

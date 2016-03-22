@@ -1,40 +1,9 @@
 #include "AudioList.h"
 
-Hitje::Hitje(libvlc_media_t *mediaData, int hitIndex, string title, string artist) : hitIndex(hitIndex) {
-    this->mediaData = mediaData;
-    this->title = title;
-    this->artist = artist;
-}
-
-Hitje::~Hitje() {
-    VLC::release(mediaData);
-}
-
-string Hitje::toString() {
-    stringstream str;
-    str << setfill('0') << setw(3) << hitIndex << ": ";
-    str << artist << " - " << title;
-    return str.str();
-}
-
-ostream &Hitje::operator<<(ostream &str) {
-    str << setfill('0') << setw(3) << hitIndex << ": ";
-    str << artist << " - " << title;
-    return str;
-}
-
-int AudioList::checkMediaFile(libvlc_media_t *mediaFile) {
-    libvlc_media_parse(mediaFile);
-    if (!libvlc_media_is_parsed(mediaFile)) {
-        return 0;
-    }
-    return libvlc_media_get_duration(mediaFile);
-}
-
-AudioList::AudioList(GUI &gui, Config &config) : gui(gui) {
-    api = new YoutubeAPI(gui);
+AudioList::AudioList(GUI &gui, Config &config) : gui(gui), api(gui) {
     DIR *dir;
     // save the hitjeslist string in own memory for future reference
+    FILE *listFile = NULL;
     do {
         listFilePath = config.getHitjesList();
         listFile = fopen(listFilePath.c_str(), "r");
@@ -49,6 +18,7 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui) {
                 gui.printlevel(LWARNING, "Invalid hitjespath specified, '%s', %d", hitjesPath.c_str(), errno);
             }
             closedir(dir);
+            // TODO use boost filesystem
 #ifdef _WIN32   // Stupid windows paths
             if (hitjesPath.back() != '\\') {
                 hitjesPath += '\\';
@@ -67,108 +37,53 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui) {
             gui.printlevel(LINFO, "Trying next hitjes config...\n");
         }
     } while (listFile == NULL);
+    SAFE_CLOSE(listFile);
 
     gui.printlevel(LINFO, "Creating the hitjeslist\n");
-    hitjes.resize(999, NULL);
+    // TODO no hitje 0 needed
+    for (int i = 0; i < 1000; i++) {
+        hitjes.insert(hitjes.end(), Hitje(i));
+    }
     update(0);
 }
 
 AudioList::~AudioList() {
-    // clear hitjeslist
-    for (unsigned int i = 0; i < hitjes.size(); i++) {
-        SAFE_DELETE(hitjes[i]);
-    }
-    hitjes.clear();
-    SAFE_DELETE(api);
 }
 
-libvlc_media_t *AudioList::getAudio(int audioIndex) {
-    if (audioIndex < 0 || audioIndex > 999 || hitjes[audioIndex] == NULL) {
-        return NULL;
+const Hitje &AudioList::getHitje(int hitjeIndex) {
+    if (hitjeIndex < 0 || hitjeIndex > 999) {
+        throw "Hitindex out of range";
     }
-    return hitjes[audioIndex]->mediaData;
-}
-
-const vector<Hitje *> AudioList::getHitjes() {
-    return hitjes;
-}
-
-string AudioList::createHitjeName(const Hitje * hitje, bool absolute) {
-    return createHitjeName(hitje->hitIndex, hitje->title, hitje->artist, absolute);
-}
-
-string AudioList::createHitjeName(int hitIndex, string title, string artist, bool absolute) {
-    trim(title);
-    trim(artist);
-    if (title.empty()) {
-        title = "notitle";
-    }
-    if (artist.empty()) {
-        artist = "unknown";
-    }
-    // "ddd - artist: title.mp3"
-    ostringstream videoNameStream;
-    videoNameStream << setfill('0') << setw(3) << hitIndex;
-    videoNameStream << " - " << artist << " - " << title << ".mp3";
-    string videoName = videoNameStream.str();
-    filesystemSafe(videoName);
-    if (absolute) {
-        return hitjesPath + videoName;
-    }
-    return videoName;
+    return hitjes[hitjeIndex];
 }
 
 
 bool AudioList::update(unsigned int downloadCount) {
     this->downloadCount = downloadCount;
-    int hitIndex = 0;
-    char buffer[1000];
-    char title[200];
-    char artist[200];
-    string hitjePath;
-
-    buffer[0] = title[0] = artist[0] = '\0';
-
-    // Create a new list with 999 hitjes
-    vector<Hitje *> newHitjesList(999);
-
-    if (listFile == NULL) {
-        listFile = fopen(listFilePath.c_str(), "r");
-    }
+    int hitIndex;
     string fileOutput;
+    ifstream listFileStream;
 
-    VLC *VLCInstance = VLC::getInstance();
+    gui.printlevel(LINFO, "Updating..\n");
+    // enable exceptions on fail to open or read
+    // TODO throws a basic_ios::clear exception? (cannot be properly handled)
+//    listFileStream.exceptions(ifstream::failbit | ifstream::badbit);
+    listFileStream.open(listFilePath.c_str(), ifstream::binary);
 
-    skipInvalidLines(buffer, &hitIndex, title, artist, fileOutput);
+    printf("Skipping lines\n");
+    hitIndex = skipInvalidLines(listFileStream, fileOutput);
     do {
         if (hitIndex <= 0 || hitIndex >= 999) {
-            gui.printlevel(LDEBUG, "Wrong hitindex, skipping %d: '%s' '%s'\n", hitIndex, title, artist);
-        } else if (newHitjesList[hitIndex]) {
-            gui.printlevel(LERROR, "Hitindex %d is defined multiple times\n", hitIndex);
+            gui.printlevel(LDEBUG, "Wrong hitindex, skipping %d\n", hitIndex);
         } else {
-            // and use all data to create a new element in list
-            hitjePath = createHitjeName(hitIndex, title, artist, true);
-            FILE *hitjeFile = fopen(hitjePath.c_str(), "r");
-            if (hitjeFile != NULL) {
-                gui.printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath.c_str());
-                libvlc_media_t *mediaFile = VLCInstance->newMediaFromPath(hitjePath.c_str());
-                if (!checkMediaFile(mediaFile)) {
-                    gui.printlevel(LERROR, "Invalid file, '%s'\n", hitjePath.c_str());
-                } else {
-                    newHitjesList[hitIndex] = new Hitje(mediaFile, hitIndex, title, artist);
-                    gui.printlevel(LDEBUG, "Successfully parsed media file\n");
-                }
-                SAFE_CLOSE(hitjeFile);
-            }
+            // Got hitje successfully
+            gui.printlevel(LBGINFO, "Found hitje %d\n", hitIndex);
         }
-        gui.printlevel(LDEBUG, "Retrieving next line\n");
         do {
-            if (fgets(buffer, 999, listFile) && !parseBuf(buffer, &hitIndex, title, artist, fileOutput)) {
-                hitIndex = -1;
-            }
-        } while (!feof(listFile) && hitIndex == -1);
-    } while (!feof(listFile));
-    SAFE_CLOSE(listFile);
+            hitIndex = readLine(listFileStream, fileOutput);
+        } while (!listFileStream.eof() && hitIndex == 0);
+    } while (!listFileStream.eof());
+    listFileStream.close();
 
     // All hitjes must start with a three digit number,
     // so delete all files that don't have this or whose
@@ -184,9 +99,9 @@ bool AudioList::update(unsigned int downloadCount) {
                 // Get first three digits and parse int.
                 strncpy(intbuf, ent->d_name, 3);
                 sscanf(intbuf, "%d", &hitIndex);
-                if (newHitjesList[hitIndex]) {
-                    string hitjeName = createHitjeName(newHitjesList[hitIndex], false);
-                    if (!strcmp(ent->d_name, hitjeName.c_str())) {
+                if (hitjes[hitIndex]) {
+                    string hitjeFilename = hitjes[hitIndex].createFilename();
+                    if (!strcmp(ent->d_name, hitjeFilename.c_str())) {
                         continue;
                     }
                 }
@@ -205,130 +120,91 @@ bool AudioList::update(unsigned int downloadCount) {
     //listFile = fopen(listFilePath, "w");
     //fputs(fileOutput.data(), listFile);
     //SAFE_CLOSE(listFile);
-    listFile = NULL;
 
-// clear old hitjeslist
-    for (unsigned int i = 0; i < hitjes.size(); i++) {
-        SAFE_DELETE(hitjes[i]);
-        hitjes[i] = newHitjesList[i];
+    for (const Hitje &hitje : hitjes) {
+        gui.setHitje(hitje);
     }
-    newHitjesList.clear();
 
-    gui.setHitjes(hitjes);
     // return whether there is more to download
     return this->downloadCount == 0;
 }
 
-void AudioList::skipInvalidLines(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput) {
+int AudioList::skipInvalidLines(ifstream &listFileStream, string &fileOutput) {
+    int hitIndex;
     // loop through all lines without hitjes
     do {
-        if (feof(listFile)) {
+        if (listFileStream.eof()) {
             // reached end of file without any hitjes
             throw "No valid hitjes file";
         }
-        fgets(buffer, 999, listFile);
-    } while (parseBuf(buffer, hitIndex, title, artist, fileOutput));
+        hitIndex = readLine(listFileStream, fileOutput);
+    } while (hitIndex == 0);
     gui.printlevel(LDEBUG, "Skipped all non hitjes lines\n");
+    return hitIndex;
 }
 
-bool AudioList::parseBuf(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput) {
-    *hitIndex = 0;
-    artist[0] = title[0] = 0;
-    gui.printlevel(LDEBUG, "Parsing buffer:\n");
-    gui.printlevel(LDEBUG, "%s", buffer);
-    int res = sscanf(buffer, "%d;%[^;];%[^;\n]", hitIndex, title, artist);
-    gui.printlevel(LDEBUG, "Got %d: '%s' '%s'\n", *hitIndex, title, artist);
+int AudioList::readLine(ifstream &listFileStream, string &fileOutput) {
+    int hitIndex;
+    string title, artist;
+    // TODO no use of buffer possible? (detect newline manually)
+    stringbuf line;
+    gui.printlevel(LDEBUG, "Retrieving next line\n");
+    // Read a line in buffer
+    listFileStream.get(line);
+    // ignore newline characters
+    listFileStream.ignore();
+    istringstream buffer(line.str());
+    gui.printlevel(LDEBUG, "\n%s\n", buffer.str().c_str());
 
-    if (!hitIndex || !*hitIndex) {
-        // couldn't read line, reset
-        res = 0;
-    } else if (res >= 2 && strlen(trim(title)) == 0) {
-        // No title, don't search this file
-        res = 1;
+    buffer >> hitIndex;             // read hit index
+    // skip until ;
+    buffer.ignore(numeric_limits<streamsize>::max(), ';');
+    getline(buffer, title, ';');    // read until ; as title
+    getline(buffer, artist, ';');   // read until ; as artist
+
+    title = trim(title);
+    artist = trim(artist);
+    gui.printlevel(LDEBUG, "Got %d: '%s' '%s'\n", hitIndex, title.c_str(), artist.c_str());
+
+    if (hitIndex <= 0 || hitIndex >= 999 || title.empty()) {
+        // Some of the information was missing or wrong
+        // TODO inform user of wrong information
+        // Just keep the contents
+        fileOutput += line.str();
+        // Signal an invalid line
+        return 0;
     }
-    if (res <= 1) {
-        // No valid line, just keep the contents
-        fileOutput += buffer;
-        return false;
-    }
-    string hitjePath = createHitjeName(*hitIndex, title, artist, true);
-    FILE *fileTest = fopen(hitjePath.c_str(), "r");
-    if (downloadCount && fileTest == NULL) {
-        // We need to download more and file does not exist yet
+
+    // Store all data in hitje
+    hitjes[hitIndex].title = title;
+    hitjes[hitIndex].artist = artist;
+    // Try to create the media file for this hitje
+    if (!createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
+        // Couldn't create, no worries, just download it
         gui.printlevel(LDEBUG, "\n\nTrying to download youtube\n");
-        // no file found, title and artist are given, download from internet
-        string newpath = getVideoFile(*hitIndex, title, artist);
-
-        if (!newpath.empty()) {
-            fileTest = fopen(hitjePath.c_str(), "r");
-            if (fileTest == NULL) {
-                gui.printlevel(LWARNING, "Could not open '%s'\n", hitjePath.c_str());
-                // We should have just downloaded this exact file, something went wrong
-                throw "File could not be downloaded correctly";
-            }
+        if (downloadVideoFile(hitjes[hitIndex])) {
+            // Successfully downloaded new file, decrease download counter
             downloadCount--;
-            gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjePath.c_str());
-
+            gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjes[hitIndex].toString().c_str());
         }
     }
-    SAFE_CLOSE(fileTest);
 
     // Some valid data, copy all the data that was valid
-    fileOutput += to_string(*hitIndex);
+    fileOutput += to_string(hitIndex);
     fileOutput += ';';
     fileOutput += title;
     fileOutput += ';';
     fileOutput += artist;
     fileOutput += "\n";
     // If the file existed already, we have a valid index
-    return true;
+    return hitIndex;
 }
 
-string AudioList::getVideoFile(int hitIndex, const char *title, const char *artist) {
+bool AudioList::downloadVideoFile(Hitje &hitje) {
     try {
-        string query = title;
-        query += ' ';
-        query += artist;
-        string baseName = api->searchVid(hitIndex, query.c_str(), hitjesPath.c_str());
-
-        if (!baseName.empty()) {
-            string videoName = createHitjeName(hitIndex, title, artist, false);
-
-            gui.printlevel(LBGINFO, "Done searching and found %s\n", videoName.c_str());
-            // create path for saving audio data
-            string videoPath = hitjesPath + videoName;
-
-#if defined (USE_YOUTUBE_DL)
-            // audio format already correct mp3, just move the file
-            gui.printlevel(LBGINFO, "Moving '%s' to '%s'\n", baseName.c_str(), videoPath.c_str());
-            if (rename(baseName.c_str(), videoPath.c_str())) {
-                gui.printlevel(LERROR, "errno: %d\n", errno);
-                throw "Could not move file to correct location";
-            }
-#else
-            // use ffmpeg to get the audio file from video
-            string decodeCmd = "ffmpeg -n -i ";
-            decodeCmd += '"' + baseName + '"';
-            decodeCmd += " -f mp3 -vn ";
-            decodeCmd += '"' + videoPath + '"';
-            gui.printlevel(LDEBUG, "calling ffmpeg with '%s'\n", decodeCmd.c_str());
-            system(decodeCmd.c_str());
-
-            FILE *musicFile = fopen(videoPath.c_str(), "r");
-            bool fileExists = musicFile != NULL;
-            SAFE_CLOSE(musicFile);
-
-            if (!fileExists) {
-                throw "File conversion failed";
-            }
-
-            // video file is not needed anymore, SAFE_DELETE(it
-            remove(baseName.c_str());
-            gui.printlevel(LBGINFO, "Basename: %s\n", baseName.c_str());
-            gui.printlevel(LBGINFO, "Removed old file\n");
-#endif // USE_YOUTUBE_DL
-            gui.printlevel(LBGINFO, "\n\nSuccessfully got file '%s'\n", videoName.c_str());
-            return videoName;
+        string query = hitje.artist + ' ' + hitje.title;
+        if (api.searchVid(hitje, query, hitjesPath)) {
+            return createMediaFile(hitje);
         } else {
             gui.printlevel(LWARNING, "No suitable video file found\n");
         }
@@ -336,5 +212,37 @@ string AudioList::getVideoFile(int hitIndex, const char *title, const char *arti
         // on any error, still continue
         gui.confirm(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
     }
-    return "";
+    return false;
 }
+
+
+bool AudioList::createMediaFile(Hitje &hitje) {
+    // Create the media file, check if it is parseable
+    string hitjePath = hitjesPath + hitje.createFilename();
+    // Try to open the file
+    ifstream hitjeFileStream(hitjePath.c_str(), ifstream::binary);
+    if (!hitjeFileStream.good()) {
+        // Error during opening, don't parse it further (may not exist?)
+        return false;
+    }
+    hitjeFileStream.close();
+    // Try to parse the file as media data
+    gui.printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath.c_str());
+    libvlc_media_t *mediaData = VLC::getInstance()->newMediaFromPath(hitjePath.c_str());
+    if (mediaData == NULL) {
+        // Something went wrong opening the media (wrong format, corrupted etc.)
+        gui.printlevel(LERROR, "Invalid file, '%s'\n", hitjePath.c_str());
+        return false;
+    }
+    // Successfully parsed media file, means we can use it
+    // Store it in the hitje
+    hitje.setMediaData(mediaData);
+    gui.setHitje(hitje);
+    gui.printlevel(LDEBUG, "Successfully parsed media file\n");
+    // Release the data (decrease refcount, hitje keeps its own)
+    VLC::release(mediaData);
+    return true;
+}
+
+
+

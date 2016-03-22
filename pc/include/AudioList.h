@@ -1,16 +1,21 @@
 #ifndef AUDIOLIST_H
 #define AUDIOLIST_H
 
-#define DEFAULT_DOWNLOAD 5
+#define DEFAULT_DOWNLOAD    5
+#define BUF_SIZE            2048
 
 #include "vlc/vlc.h"
 #include <cerrno>
 #include <dirent.h>
 
+#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <thread>
+#include <chrono>
 
-#include "structs.h"
+#include "Structs.h"
 #include "Tools.h"
 #include "Config.h"
 #include "VLC.h"
@@ -24,30 +29,24 @@ public:
     AudioList(GUI &gui, Config &config);
     virtual ~AudioList();
 
-    string createHitjeName(const Hitje *hitje, bool absolute);
-    string createHitjeName(int hitIndex, string title, string artist, bool absolute);
     bool update(unsigned int downloadCount);
-    libvlc_media_t *getAudio(int audioIndex);
-
-    const vector<Hitje *> getHitjes();
+    const Hitje &getHitje(int hitjeIndex);
 
 protected:
     GUI &gui;
     unsigned int downloadCount;
-    YoutubeAPI *api;
-    vector<Hitje *> hitjes;
+    YoutubeAPI api;
+    vector<Hitje> hitjes;
     string listFilePath;
     string hitjesPath;
-    FILE *listFile;
 
-    int checkMediaFile(libvlc_media_t *mediaFile);
-
-    void skipInvalidLines(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
-    bool parseBuf(char *buffer, int *hitIndex, char *title, char *artist, string &fileOutput);
-    string getVideoFile(int hitIndex, const char *title, const char *artist);
+    int skipInvalidLines(ifstream &listFileStream, string &fileOutput);
+    int readLine(ifstream &listFileStream, string &fileOutput);
+    bool downloadVideoFile(Hitje &hitje);
+    bool createMediaFile(Hitje &hitje);
 
 private:
-    AudioList(const AudioList &that) = delete;
+    AudioList(const AudioList & that) = delete;
 };
 
 #endif // AUDIOLIST_H

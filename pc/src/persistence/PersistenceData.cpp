@@ -17,9 +17,7 @@ template <typename Type> void PersistenceData<Type>::initVal(const char *key, co
 
 template <typename Type> void PersistenceData<Type>::initVal(const string &key, const Type &val) {
     typeMutex.lock();
-    typename unordered_map<string, Type>::const_iterator keyval = vals.find(key);
-    if (keyval == vals.end()) {
-        vals[key] = val;
+    if (vals.insert({key, val}).second) {
         typeMutex.unlock();
         sig(key);
     } else {
@@ -45,17 +43,28 @@ template <typename Type> void PersistenceData<Type>::setVal(const char *key, con
 }
 
 template <typename Type> void PersistenceData<Type>::setVal(const string &key, const Type &val) {
+    bool change = false;
     typeMutex.lock();
-    vals[key] = val;
+    // make sure no element is inside, as it stops insert
+    auto keyval = vals.find(key);
+    if (keyval == vals.end()) {
+        vals.insert({key, val});
+        change = true;
+    } else if (keyval->second != val) {
+        keyval->second = val;
+        change = true;
+    }
     typeMutex.unlock();
-    sig(key);
+    if (change) {
+        sig(key);
+    }
 }
 
 template <typename Type> void PersistenceData<Type>::addVal(const char *key, Type add) {
     addVal(string(key), add);
 }
 
-template <> void PersistenceData<std::shared_ptr<DownloadState>>::addVal(const char *key, std::shared_ptr<DownloadState> add) = delete;
+template <> void PersistenceData<Hitje>::addVal(const char *key, Hitje add) = delete;
 
 template <typename Type> void PersistenceData<Type>::addVal(const string &key, Type add) {
     typeMutex.lock();
@@ -93,7 +102,7 @@ template <> void PersistenceData<vector<string>>::addVal(const string &key, vect
     sig(key);
 }
 
-template <> void PersistenceData<std::shared_ptr<DownloadState>>::addVal(const string &key, std::shared_ptr<DownloadState> add) = delete;
+template <> void PersistenceData<Hitje>::addVal(const string &key, Hitje add) = delete;
 
 template <typename Type> void PersistenceData<Type>::manipulateVal(const char *key, const Callback &callback) {
     manipulateVal(string(key), callback);

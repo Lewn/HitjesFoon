@@ -1,19 +1,9 @@
 #ifndef GUIWTAPPLICATION_H
 #define GUIWTAPPLICATION_H
 
-#include <Wt/WBreak>
-#include <Wt/WText>
-#include <Wt/WTextArea>
-#include <Wt/WLineEdit>
-#include <Wt/WPushButton>
-#include <Wt/WLabel>
-#include <Wt/WIntValidator>
-#include <Wt/WLengthValidator>
+#include <Wt/WApplication>
 #include <Wt/WSound>
-#include <Wt/WSuggestionPopup>
 #include <Wt/WContainerWidget>
-#include <Wt/WTemplate>
-#include <Wt/WSlider>
 
 #include <string>
 #include <iostream>

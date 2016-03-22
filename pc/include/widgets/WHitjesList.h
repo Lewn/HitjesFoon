@@ -1,9 +1,12 @@
 #ifndef WHITJESLIST_H
 #define WHITJESLIST_H
 
+#include <Wt/WContainerWidget>
+#include <Wt/WText>
 
 #include "gui/GUI.h"
 #include "widgets/WFilledTemplate.h"
+#include "widgets/WHitje.h"
 #include "Persistence.h"
 
 using namespace std;
@@ -15,9 +18,13 @@ public:
     WHitjesList(GUI &gui, Persistence &persistence, WContainerWidget *parent = NULL);
     WHitjesList(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     virtual ~WHitjesList();
+
+    void onPersistenceChange(const string &key);
 protected:
     GUI &gui;
     Persistence &persistence;
+
+    WContainerWidget *hitjesContainer;
 
     void buildWidget();
 private:

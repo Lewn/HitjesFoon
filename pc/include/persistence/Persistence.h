@@ -7,7 +7,7 @@
 
 #include <Wt/WServer>
 
-#include "structs.h"
+#include "Structs.h"
 #include "Tools.h"
 #include "persistence/PersistenceData.h"
 
@@ -30,7 +30,7 @@ public:
     PersistenceData<string> &getStringData();
     PersistenceData<vector<int>> &getIntVectorData();
     PersistenceData<vector<string>> &getStringVectorData();
-    PersistenceData<std::shared_ptr<DownloadState>> &getDownloadStateData();
+    PersistenceData<Hitje> &getHitjeData();
 
 protected:
     WServer &server;
@@ -41,7 +41,7 @@ protected:
     PersistenceData<string> stringData;
     PersistenceData<vector<int>> intVectorData;
     PersistenceData<vector<string>> stringVectorData;
-    PersistenceData<std::shared_ptr<DownloadState>> downloadStateData;
+    PersistenceData<Hitje> hitjeData;
 
     void postOnChange(const string &key);
 private:

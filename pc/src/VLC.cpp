@@ -19,7 +19,13 @@ string VLC::getDefaultSpeakerDevice() {
 }
 
 libvlc_media_t *VLC::newMediaFromPath(const char *path) {
-    return libvlc_media_new_path(libvlcInstance, path);
+    libvlc_media_t *mediaData = libvlc_media_new_path(libvlcInstance, path);
+    libvlc_media_parse(mediaData);
+    if (!libvlc_media_is_parsed(mediaData) || libvlc_media_get_duration(mediaData) == 0) {
+        VLC::release(mediaData);
+        return NULL;
+    }
+    return mediaData;
 }
 
 libvlc_media_list_t *VLC::newMediaList() {
@@ -34,7 +40,40 @@ libvlc_media_list_player_t *VLC::newMediaListPlayer() {
     return libvlc_media_list_player_new(libvlcInstance);
 }
 
+
+
+void VLC::retain(libvlc_media_t *media) {
+    // Retain doesn't check for NULL
+    if (media != NULL) {
+        libvlc_media_retain(media);
+    }
+}
+
+void VLC::retain(libvlc_media_list_t *mediaList) {
+    // Retain doesn't check for NULL
+    if (mediaList != NULL) {
+        libvlc_media_list_retain(mediaList);
+    }
+}
+
+void VLC::retain(libvlc_media_player_t *mediaPlayer) {
+    // Retain doesn't check for NULL
+    if (mediaPlayer != NULL) {
+        libvlc_media_player_retain(mediaPlayer);
+    }
+}
+
+void VLC::retain(libvlc_media_list_player_t *mediaListPlayer) {
+    // Retain doesn't check for NULL
+    if (mediaListPlayer != NULL) {
+        libvlc_media_list_player_retain(mediaListPlayer);
+    }
+}
+
+
 void VLC::release(libvlc_media_t *media) {
+    // TODO make safe by setting to NULL
+    // TODO does this fail with NULL?
     libvlc_media_release(media);
 }
 

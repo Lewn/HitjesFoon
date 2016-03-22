@@ -29,8 +29,10 @@ void WPlaylist::buildWidget() {
 void WPlaylist::onPersistenceChange(const string &key) {
     if (key == "phone-num") {
         currentlyTypingText->setText(to_string(persistence.getIntData().getVal(key)));
+        WApplication::instance()->triggerUpdate();
     } else if (key == "phone-playlist") {
         updatePlaylist();
+        WApplication::instance()->triggerUpdate();
     }
 }
 
@@ -39,15 +41,16 @@ void WPlaylist::updatePlaylist() {
     string buf;
     const vector<int> playlist = persistence.getIntVectorData().getVal("phone-playlist");
 
-    const vector<Hitje *> &hitjes = gui.getHitjes();
     for (unsigned int i = 1; i < playlist.size(); i++) {
-        buf += "<div>" + hitjes[playlist[i]]->toString() + "</div>";
+        Hitje hitje = persistence.getHitjeData().getVal(to_string(playlist[i]));
+        buf += "<div>" + hitje.toString() + "</div>";
     }
     playlistText->setText(WString(buf));
 
     if (playlist.size() != 0) {
-        gui.printlevel(LINFO, "Set currently playing to %s\n", hitjes[playlist[0]]->toString().c_str());
-        currentlyPlayingText->setText(WString(hitjes[playlist[0]]->toString()));
+        Hitje hitje = persistence.getHitjeData().getVal(to_string(playlist[0]));
+        gui.printlevel(LINFO, "Set currently playing to %s\n", hitje.toString().c_str());
+        currentlyPlayingText->setText(WString(hitje.toString()));
     } else {
         gui.printlevel(LINFO, "Emptied currently playing\n");
         currentlyPlayingText->setText(WString());

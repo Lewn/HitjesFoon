@@ -9,60 +9,71 @@ YoutubeAPI::~YoutubeAPI() {
 }
 
 
-string YoutubeAPI::searchVid(int id, const char *query, const char *dllocation) {
+bool YoutubeAPI::searchVid(Hitje &hitje, const string &query, const string &hitjesPath) {
+    // Signal that we are downloading
+    hitje.downloadState.downloading = true;
+    gui.setHitje(hitje);
     // we only need the total amount of results and each results id (kind and channelId/videoId)
-    string json = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query);
+    string json = makeRequest(SEARCH, "id,snippet", "pageInfo/totalResults,items(id,snippet/title)", 5, query.c_str());
     JsonParser result(gui);
     result.parse(json.c_str());
     if (result.getTotalResults() == 0) {
         throw "Nothing found while searching";
     }
 
+    string hitjeFilename = hitje.createFilename();
+    gui.printlevel(LBGINFO, "Done searching and found %s\n", hitjeFilename.c_str());
+    // create path for saving audio data
+    string hitjePath = hitjesPath + hitjeFilename;
+
     string filename;
     vector<string> videoIds = result.getVideoIds();
     vector<string> titles = result.getVideoTitles();
 
 #if defined(USE_YOUTUBE_DL)
-    filename = downloadYoutubeDL(id, dllocation, videoIds[0].c_str(), titles[0].c_str());
+    // TODO set correct filename directly
+    filename = downloadYoutubeDL(hitje, hitjesPath, videoIds[0].c_str(), titles[0].c_str());
+    if (filename.empty()) {
+        return false;
+    }
+
+    // audio format already correct mp3, just move the file
+    gui.printlevel(LBGINFO, "Moving '%s' to '%s'\n", filename.c_str(), hitjePath.c_str());
+    if (rename(filename.c_str(), hitjePath.c_str())) {
+        gui.printlevel(LERROR, "errno: %d\n", errno);
+        throw "Could not move file to correct location";
+    }
 #else
     string videoInfo = getVideoInfo(videoIds[0].c_str());
     filename = getFileFromVideoInfo(videoInfo.c_str());
+    if (filename.empty()) {
+        return false;
+    }
+
+    // use ffmpeg to get the audio file from video
+    string decodeCmd = "ffmpeg -n -i ";
+    decodeCmd += '"' + filename + '"';
+    decodeCmd += " -f mp3 -vn ";
+    decodeCmd += '"' + hitjePath + '"';
+    gui.printlevel(LDEBUG, "calling ffmpeg with '%s'\n", decodeCmd.c_str());
+    system(decodeCmd.c_str());
+
+    FILE *musicFile = fopen(hitjePath.c_str(), "r");
+    bool fileExists = musicFile != NULL;
+    SAFE_CLOSE(musicFile);
+
+    if (!fileExists) {
+        throw "File conversion failed";
+    }
+
+    // video file is not needed anymore, remove it
+    remove(filename.c_str());
+    gui.printlevel(LBGINFO, "Basename: %s\n", filename.c_str());
+    gui.printlevel(LBGINFO, "Removed old file\n");
 #endif
 
-//    while (false && filename.empty() && videoIds.size() > 1) {
-//        videoIds.erase(videoIds.begin());
-//        titles.erase(titles.begin());
-//
-//        // wait 10 seconds, if user typed y, go to next video id
-//        gui.printlevel(LINFO, "\nNo valid video found, which alternative to download? (1-%d)\n", titles.size());
-//        for (unsigned int titleIndex = 0; titleIndex < titles.size(); titleIndex++) {
-//            gui.printlevel(LINFO, " %d: %s\n", titleIndex + 1, titles[titleIndex].c_str());
-//        }
-//        int i;
-//        for (i = 0; i < 1000; i++) {
-//            int c = getchsilent();
-//            if (c != ERR) {
-//                unsigned int index = c - '0' - 1;
-//                if (index >= 0 && index < titles.size()) {
-//#if defined(USE_YOUTUBE_DL)
-//                    filename = downloadYoutubeDL(dllocation, videoIds[0].c_str(), titles[0].c_str());
-//#else
-//                    string videoInfo = getVideoInfo(videoIds[0].c_str());
-//                    filename = getFileFromVideoInfo(videoInfo.c_str());
-//#endif
-//                }
-//                break;
-//            }
-//            napms(10000);
-//            if (i % 100 == 0) {
-//                gui.printlevel(LINFO, "%d seconds  \r", 10 - i / 100);
-//            }
-//        }
-//        if (i == 1000) {
-//            break;
-//        }
-//    }
-    return filename;
+    hitje.downloadState.downloading = false;
+    return true;
 }
 
 string YoutubeAPI::makeRequest(RequestType requestType, const char *part, const char *fields, unsigned char maxResults, const char *extra) {
@@ -312,13 +323,13 @@ string YoutubeAPI::downloadEncodedUrl(const char *url, const char *title) {
     return decodedFilename;
 }
 
-string YoutubeAPI::downloadYoutubeDL(int id, const char *dllocation, const char *videoId, const char *title) {
+string YoutubeAPI::downloadYoutubeDL(Hitje &hitje, const string &hitjesPath, const char *videoId, const char *title) {
     gui.printlevel(LDEBUG, "Title: '%s'\n", title);
     string filename = "tmp";
 
     //filename = urlDecode(filename.c_str());
     filesystemSafe(filename);
-    filename = dllocation + filename + ".mp4";
+    filename = hitjesPath + filename + ".mp4";
     gui.printlevel(LDEBUG, "Filename: '%s'\n", filename.c_str());
 
     gui.printlevel(LBGINFO, "\nStarted downloading '%s' using youtube-dl\n", filename.c_str());
@@ -335,32 +346,29 @@ string YoutubeAPI::downloadYoutubeDL(int id, const char *dllocation, const char 
     // redirect stderr to stdout, so we can read it
     buffer += " 2>&1";
 
-    performCmd(id, buffer);
+    performCmd(hitje, buffer);
     // change extension to mp3 (as youtubeDL converted this (actually ffmpeg))
     *(filename.end() - 1) = '3';
     return filename;
 }
 
-void YoutubeAPI::performCmd(int id, string cmd) {
+void YoutubeAPI::performCmd(Hitje &hitje, string cmd) {
     char buf[1025];
     cmatch match;
     regex outputSearch("([0-9.]+)\\%\\s+of\\s+([0-9.]+)(G|M|K)iB\\s+at\\s+([0-9.]+)(G|M|K)iB/s\\s+ETA\\s+([0-9]+):([0-9]+)", regex_constants::ECMAScript | regex_constants::icase);
     regex errorSearch("ERROR: (.+)");
-    std::shared_ptr<DownloadState> dlstate;
 
     // Open command asynchronously
     std::shared_ptr<FILE> cmdptr = cmdasync(cmd);
     while (!feof(cmdptr.get())) {
         if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
             if (regex_search(buf, match, outputSearch)) {
-                dlstate = make_shared<DownloadState>();
-                dlstate->id = id;
-                dlstate->percentage = stof(match[1]);
-                dlstate->dlsize = reformat(match[2], match[3]);
-                dlstate->dlspeed = reformat(match[4], match[5]);
-                dlstate->eta = 60 * stoi(match[6]) + stoi(match[7]);
+                hitje.downloadState.percentage = stof(match[1]);
+                hitje.downloadState.dlsize = reformat(match[2], match[3]);
+                hitje.downloadState.dlspeed = reformat(match[4], match[5]);
+                hitje.downloadState.eta = 60 * stoi(match[6]) + stoi(match[7]);
 
-                gui.setDownloadState(dlstate);
+                gui.setHitje(hitje);
             } else if (regex_search(buf, match, errorSearch)) {
                 // TODO: throw better exceptions
                 throw match[1].str().c_str();

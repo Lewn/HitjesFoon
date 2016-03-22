@@ -196,7 +196,7 @@ void InputProcessor::inputNum(int num) {
 }
 
 void InputProcessor::playAudio(int curNumber) {
-    if (!hitjesList.getAudio(curNumber)) {
+    if (!hitjesList.getHitje(curNumber)) {
         // don't process non-existing hitjes
         gui.printlevel(LINFO, "\n");
         gui.printlevel(LWARNING, "Hitje %d does not exist\n", curNumber);

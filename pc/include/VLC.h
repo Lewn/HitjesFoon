@@ -32,6 +32,11 @@ public:
     libvlc_media_player_t *newMediaPlayer();
     libvlc_media_list_player_t *newMediaListPlayer();
 
+    static void retain(libvlc_media_t *media);
+    static void retain(libvlc_media_list_t *mediaList);
+    static void retain(libvlc_media_player_t *mediaPlayer);
+    static void retain(libvlc_media_list_player_t *mediaListPlayer);
+
     static void release(libvlc_media_t *media);
     static void release(libvlc_media_list_t *mediaList);
     static void release(libvlc_media_player_t *mediaPlayer);

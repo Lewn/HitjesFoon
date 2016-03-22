@@ -7,6 +7,7 @@
 #include <Wt/WStackedWidget>
 #include <Wt/WMenu>
 #include <Wt/WVBoxLayout>
+#include <Wt/WLink>
 
 #include "Tools.h"
 #include "widgets/WHome.h"
@@ -33,7 +34,6 @@ protected:
     WMenu *menu;
     WMenuItem *homeItem;
     WMenuItem *hitjesListItem;
-    WMenuItem *w404Item;
 private:
 };
 

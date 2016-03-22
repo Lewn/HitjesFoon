@@ -2,6 +2,7 @@
 #define WPLAYLIST_H
 
 
+#include <Wt/WApplication>
 #include <Wt/WPushButton>
 #include <Wt/WText>
 

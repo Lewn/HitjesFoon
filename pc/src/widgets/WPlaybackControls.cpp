@@ -51,10 +51,12 @@ void WPlaybackControls::updatePlayPause() {
 void WPlaybackControls::onPersistenceChange(const string &key) {
     if (key == "volume-speaker") {
         volumeSlider->setValue(persistence.getIntData().getVal("volume-speaker"));
+        WApplication::instance()->triggerUpdate();
     } else if (key == "volume-phone") {
 
     } else if (key == "playback-state") {
         updatePlayPause();
+        WApplication::instance()->triggerUpdate();
     }
 }
 

@@ -77,10 +77,11 @@ void WHitSearch::initSearchSuggestions() {
 
         searchSP->setMaximumSize(WLength::Auto, WLength(200, WLength::Unit::Pixel));
 
-        const vector<Hitje *> hitjes = gui.getHitjes();
-        for (Hitje *hitje : hitjes) {
-            if (hitje != NULL) {
-                searchSP->addSuggestion(hitje->toString());
+        for (unsigned int i = 1; i < 1000; i++) {
+            // loop all hitjes
+            Hitje hitje = persistence.getHitjeData().getVal(to_string(i));
+            if (hitje) {
+                searchSP->addSuggestion(hitje.toString());
             }
         }
     }
