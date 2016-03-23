@@ -91,7 +91,7 @@ void InputProcessor::process(int input) {
         processAlt(input);
     }
     // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
-    if (!speakerAudioPlayer->isPlaying()) {
+    if (!speakerAudioPlayer->isBusy()) {
         // always check on update wether we want to do a queued action
         if (!hitjesQueue.empty()) {
             // done playing, play next in queue
@@ -212,7 +212,8 @@ void InputProcessor::playAudio(int curNumber) {
                 phoneAudioPlayer->playAudio(curNumber);
             } else {
                 // list song for playing at speakerAudioPlayer
-                if (!speakerAudioPlayer->isPlaying()) {
+                // Audio index is also set when paused (isPlaying() returns false in that case)
+                if (!speakerAudioPlayer->isBusy()) {
                     gui.printlevel(LINFO, "\nPlaying hitje %d at speakers", curNumber);
                     if (!speakerAudioPlayer->playAudio(curNumber)) {
                         throw "Could not play audio";
@@ -291,7 +292,7 @@ void InputProcessor::playQueued() {
 
 void InputProcessor::sendHitjesQueue(int current) {
     vector<int> queueCpy;
-    if (current == 0 && speakerAudioPlayer->isPlaying()) {
+    if (current == 0 && speakerAudioPlayer->isBusy()) {
         current = speakerAudioPlayer->getAudioIndex();
     }
     if (current != 0) {

@@ -1,11 +1,16 @@
 #include "widgets/WHome.h"
 
-WHome::WHome(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home"), parent), gui(gui), persistence(persistence) {
-    buildWidget();
-}
+WHome::WHome(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WHome(gui, persistence, WString::tr("template-hitjesfoon-home"), parent) {}
 
 WHome::WHome(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
     buildWidget();
+}
+
+WHome::~WHome() {
+    SAFE_DELETE(playbackControls);
+    SAFE_DELETE(playlist);
+    SAFE_DELETE(hitSearch);
+    SAFE_DELETE(logUpdate);
 }
 
 
@@ -26,13 +31,6 @@ void WHome::buildWidget() {
 
     // Listen to all persistence changes
     persistence.onChangeCallback(boost::bind(&WHome::onPersistenceChange, this, _1));
-}
-
-WHome::~WHome() {
-    SAFE_DELETE(playbackControls);
-    SAFE_DELETE(playlist);
-    SAFE_DELETE(hitSearch);
-    SAFE_DELETE(logUpdate);
 }
 
 

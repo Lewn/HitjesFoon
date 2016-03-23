@@ -1,4 +1,4 @@
-#include "AHitjesfoon.h"
+#include "widgets/AHitjesfoon.h"
 
 AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persistence) : WApplication(env), gui(gui), persistence(persistence) {
     setTitle("Hitjesfoon");
@@ -74,6 +74,6 @@ void AHitjesfoon::onPathChange() {
         menu->select(0);
         notfound = true;
     }
-    w404->setHidden(notfound);
-    menu->contentsStack()->setHidden(!notfound);
+    w404->setHidden(!notfound);
+    menu->contentsStack()->setHidden(notfound);
 }

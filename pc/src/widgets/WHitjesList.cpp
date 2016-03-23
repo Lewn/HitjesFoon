@@ -1,8 +1,6 @@
-#include "WHitjesList.h"
+#include "widgets/WHitjesList.h"
 
-WHitjesList::WHitjesList(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-hitjeslist"), parent), gui(gui), persistence(persistence) {
-    buildWidget();
-}
+WHitjesList::WHitjesList(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WHitjesList(gui, persistence, WString::tr("template-hitjesfoon-hitjeslist"), parent) {}
 
 WHitjesList::WHitjesList(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
     buildWidget();
@@ -13,6 +11,7 @@ WHitjesList::~WHitjesList() {
 }
 
 void WHitjesList::buildWidget() {
+    // TODO button to download all hitjes
     hitjesContainer = new WContainerWidget();
     bindWidget("hitjeslist", hitjesContainer);
     for (unsigned int i = 1; i < 1000; i++) {

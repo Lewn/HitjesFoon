@@ -38,6 +38,7 @@ protected:
     void buildWidget();
 
     void initSearchSuggestions();
+    void addSuggestions();
 private:
 };
 

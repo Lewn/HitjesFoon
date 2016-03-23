@@ -39,6 +39,14 @@ void WHitSearch::buildWidget() {
 }
 
 void WHitSearch::onPersistenceChange(const string &key) {
+    try {
+        persistence.getHitjeData().getVal(key);
+        // TODO can do this without clearing? (Maybe extend class)
+        searchSP->clearSuggestions();
+        addSuggestions();
+    } catch (const char *e) {
+        // Wasn't a hitje, ignore
+    }
 }
 
 
@@ -77,12 +85,16 @@ void WHitSearch::initSearchSuggestions() {
 
         searchSP->setMaximumSize(WLength::Auto, WLength(200, WLength::Unit::Pixel));
 
-        for (unsigned int i = 1; i < 1000; i++) {
-            // loop all hitjes
-            Hitje hitje = persistence.getHitjeData().getVal(to_string(i));
-            if (hitje) {
-                searchSP->addSuggestion(hitje.toString());
-            }
+        addSuggestions();
+    }
+}
+
+void WHitSearch::addSuggestions() {
+    for (unsigned int i = 1; i < 1000; i++) {
+        // loop all hitjes
+        const Hitje &hitje = persistence.getHitjeData().getVal(to_string(i));
+        if (hitje) {
+            searchSP->addSuggestion(hitje.toString());
         }
     }
 }

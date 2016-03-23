@@ -29,3 +29,6 @@ void GUIEvent::playback(const PlaybackCallback &callback) {
     playbackSig.connect(callback);
 }
 
+void GUIEvent::hitjeChange(const HitjeChangeCallback &callback) {
+    hitjeChangeSig.connect(callback);
+}

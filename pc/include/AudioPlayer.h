@@ -43,6 +43,7 @@ public:
     void attachEventListener(AudioPlayerEventListener *listener);
 
     bool isPlaying();
+    bool isBusy();
     int getAudioIndex();
     float getAudioPosition();
 protected:

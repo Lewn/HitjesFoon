@@ -4,7 +4,6 @@
 #define DEFAULT_DOWNLOAD    5
 #define BUF_SIZE            2048
 
-#include "vlc/vlc.h"
 #include <cerrno>
 #include <dirent.h>
 
@@ -17,9 +16,9 @@
 
 #include "Structs.h"
 #include "Tools.h"
+#include "Hitje.h"
 #include "Config.h"
-#include "VLC.h"
-#include "YoutubeAPI.h"
+#include "retrieve/Retriever.h"
 #include "gui/GUI.h"
 
 using namespace std;
@@ -30,21 +29,20 @@ public:
     virtual ~AudioList();
 
     bool update(unsigned int downloadCount);
+    void hitjeUpdate(const Hitje &hitje);
     const Hitje &getHitje(int hitjeIndex);
 
 protected:
     GUI &gui;
     unsigned int downloadCount;
-    YoutubeAPI api;
+    Retriever retriever;
     vector<Hitje> hitjes;
-    string listFilePath;
     string hitjesPath;
+    string listFilePath;
 
     int skipInvalidLines(ifstream &listFileStream, string &fileOutput);
     int readLine(ifstream &listFileStream, string &fileOutput);
     bool downloadVideoFile(Hitje &hitje);
-    bool createMediaFile(Hitje &hitje);
-
 private:
     AudioList(const AudioList & that) = delete;
 };

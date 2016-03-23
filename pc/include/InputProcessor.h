@@ -13,14 +13,15 @@ enum ProcessType {
 #include <list>
 #include <algorithm>
 
+#include "Tools.h"
+#include "Hitje.h"
+#include "Config.h"
 #include "gui/GUI.h"
 #include "gui/GUIEvent.h"
 #include "AudioList.h"
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
-#include "Tools.h"
-#include "Config.h"
 
 using namespace std;
 

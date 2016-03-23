@@ -9,6 +9,7 @@
 
 #include "Structs.h"
 #include "Tools.h"
+#include "Hitje.h"
 #include "persistence/PersistenceData.h"
 
 using namespace std;

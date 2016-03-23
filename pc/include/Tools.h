@@ -1,8 +1,6 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-#define USE_YOUTUBE_DL
-
 
 #define SAFE_DELETE(x) delete(x); x = NULL
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL

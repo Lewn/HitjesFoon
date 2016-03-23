@@ -1,18 +1,31 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-// TODO rename to data types or something?
-// Hitje became too extensive
-// Maybe simply move Hitje to its own class
-
 #include <string>
-#include <sstream>
-#include <iomanip>
-
-#include "Tools.h"
-#include "vlc/vlc.h"
 
 using namespace std;
+
+enum ScraperDataType {
+    INVALID,
+    YOUTUBE,
+    SOUNDCLOUD
+};
+
+struct ScraperData {
+    ScraperDataType type = INVALID;
+    string query;
+};
+
+struct YoutubeScraperData : public ScraperData {
+    YoutubeScraperData(ScraperData &data);
+    ScraperDataType type = YOUTUBE;
+    string videoId;
+};
+
+struct SoundcloudScraperData : public ScraperData {
+    SoundcloudScraperData(ScraperData &data);
+    ScraperDataType type = SOUNDCLOUD;
+};
 
 struct DownloadState {
     bool downloading = false;
@@ -20,35 +33,13 @@ struct DownloadState {
     int eta = 0;
 };
 
+inline bool operator==(const DownloadState& lhs, const DownloadState& rhs) {
+    return lhs.downloading == rhs.downloading && lhs.percentage == rhs.percentage && lhs.dlsize == rhs.dlsize && lhs.dlspeed == rhs.dlspeed && lhs.eta == rhs.eta;
+}
 
-class Hitje {
-public:
-    int hitIndex;
-    string artist, title;
-    DownloadState downloadState;
-
-    Hitje(int hitIndex);
-    Hitje(libvlc_media_t *mediaData, int hitIndex, string artist, string title);
-    Hitje(const Hitje &other);
-    ~Hitje();
-
-    string toString() const;
-    inline ostream &operator<<(ostream &str) const;
-    operator bool() const;
-    operator !() const;
-    operator ==(const Hitje& other) const;
-    operator !=(const Hitje& other) const;
-
-    string createFilename() const;
-
-    // Increases/decreases refcount, take care for memory management!
-    libvlc_media_t *getMediaData() const;
-    void setMediaData(libvlc_media_t *newMediaData);
-
-private:
-    libvlc_media_t *mediaData;
-};
-
+inline bool operator!=(const DownloadState& lhs, const DownloadState& rhs) {
+    return !(lhs == rhs);
+}
 
 
 #endif

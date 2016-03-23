@@ -19,6 +19,7 @@ enum InputVal {
 #include <memory>
 
 #include "Structs.h"
+#include "Hitje.h"
 #include "gui/GUIEvent.h"
 
 using namespace std;

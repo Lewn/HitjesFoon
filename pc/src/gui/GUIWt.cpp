@@ -87,12 +87,13 @@ void GUIWt::setPhoneVolume(int volume) {
 
 void GUIWt::setHitje(Hitje hitje) {
     persistence->getHitjeData().setVal(to_string(hitje.hitIndex), hitje);
+    events().hitjeChangeSig(hitje);
 }
 
 void GUIWt::logAppend(PRINT_LEVEL level, string text) {
     string style = "";
     string el;
-    bool nlfirst = (text.size() > 1) && (*(text.begin()) == '\n');
+    bool nlfirst = (text.size() > 1) && (*(text.cbegin()) == '\n');
     bool nlsecond = (*(text.cend() - 1) == '\n');
 
     // append log text

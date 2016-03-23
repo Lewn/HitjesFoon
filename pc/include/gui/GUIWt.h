@@ -17,6 +17,7 @@
 #include <Wt/WRegExpValidator>
 #include <Wt/WBootstrapTheme>
 
+#include "Hitje.h"
 #include "gui/GUI.h"
 #include "gui/GUINull.h"
 #include "gui/GUIEvent.h"

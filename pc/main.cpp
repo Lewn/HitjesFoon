@@ -10,8 +10,8 @@
 
 #include "USBConnection.h"
 #include "Tools.h"
-#include "YoutubeAPI.h"
 #include "gui/GUI.h"
+#include "retrieve/Retriever.h"
 
 #ifdef GUI_CURSES
 #include "GUICurses.h"

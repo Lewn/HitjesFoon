@@ -1,7 +1,7 @@
 #ifndef PERSISTENCEDATA_H
 #define PERSISTENCEDATA_H
 
-#include "Structs.h"
+#include "Hitje.h"
 
 #include <mutex>
 #include <unordered_map>
@@ -33,7 +33,7 @@ public:
     void manipulateVal(const string &key, const Callback &callback);
 
 protected:
-    mutex typeMutex;
+    std::mutex typeMutex;
     changeSignal sig;
 
     unordered_map<string, Type> vals;

@@ -28,6 +28,7 @@ void Persistence::postOnChange(const string &key) {
             if (app && app->sessionId() == sessionId) {
                 callback(key);
             } else {
+                // TODO use fallback function to remove dead sessions from list
                 server.post(sessionId, boost::bind(callback, key));
             }
         }

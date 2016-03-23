@@ -6,12 +6,15 @@
 
 #include <Wt/WApplication>
 #include <Wt/WText>
+#include <Wt/WPushButton>
 #include <Wt/WProgressBar>
 
-#include "gui/GUI.h"
-#include "widgets/WFilledTemplate.h"
-#include "Persistence.h"
 #include "Structs.h"
+#include "Hitje.h"
+#include "gui/GUI.h"
+#include "Persistence.h"
+#include "widgets/WFilledTemplate.h"
+#include "retrieve/Retriever.h"
 
 using namespace std;
 using namespace boost;
@@ -24,14 +27,17 @@ public:
     virtual ~WHitje();
 
     void onPersistenceChange(const string &key);
+    void download(const WMouseEvent &e);
 protected:
     GUI &gui;
     Persistence &persistence;
+    mutex dlmutex;
 
     int hitIndex;
     WText *artistText;
     WText *titleText;
     WText *infoText;
+    WPushButton *downloadBtn;
     WProgressBar *pgBar;
 
     void buildWidget();

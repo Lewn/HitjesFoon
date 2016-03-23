@@ -1,6 +1,6 @@
 #include "AudioList.h"
 
-AudioList::AudioList(GUI &gui, Config &config) : gui(gui), api(gui) {
+AudioList::AudioList(GUI &gui, Config &config) : gui(gui), retriever(gui) {
     DIR *dir;
     // save the hitjeslist string in own memory for future reference
     FILE *listFile = NULL;
@@ -42,8 +42,9 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui), api(gui) {
     gui.printlevel(LINFO, "Creating the hitjeslist\n");
     // TODO no hitje 0 needed
     for (int i = 0; i < 1000; i++) {
-        hitjes.insert(hitjes.end(), Hitje(i));
+        hitjes.push_back(Hitje(i, hitjesPath));
     }
+    gui.events().hitjeChange(boost::bind(&AudioList::hitjeUpdate, this, _1));
     update(0);
 }
 
@@ -55,6 +56,13 @@ const Hitje &AudioList::getHitje(int hitjeIndex) {
         throw "Hitindex out of range";
     }
     return hitjes[hitjeIndex];
+}
+
+void AudioList::hitjeUpdate(const Hitje &hitje) {
+    // TODO currently has loop on update
+    // TODO write changes to file
+    // Propagate external hitje changes back to list
+    hitjes[hitje.hitIndex] = hitje;
 }
 
 
@@ -179,9 +187,8 @@ int AudioList::readLine(ifstream &listFileStream, string &fileOutput) {
     hitjes[hitIndex].title = title;
     hitjes[hitIndex].artist = artist;
     // Try to create the media file for this hitje
-    if (!createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
+    if (!retriever.createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
         // Couldn't create, no worries, just download it
-        gui.printlevel(LDEBUG, "\n\nTrying to download youtube\n");
         if (downloadVideoFile(hitjes[hitIndex])) {
             // Successfully downloaded new file, decrease download counter
             downloadCount--;
@@ -202,9 +209,8 @@ int AudioList::readLine(ifstream &listFileStream, string &fileOutput) {
 
 bool AudioList::downloadVideoFile(Hitje &hitje) {
     try {
-        string query = hitje.artist + ' ' + hitje.title;
-        if (api.searchVid(hitje, query, hitjesPath)) {
-            return createMediaFile(hitje);
+        if (retriever.retrieve(hitje)) {
+            return true;
         } else {
             gui.printlevel(LWARNING, "No suitable video file found\n");
         }
@@ -213,35 +219,6 @@ bool AudioList::downloadVideoFile(Hitje &hitje) {
         gui.confirm(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
     }
     return false;
-}
-
-
-bool AudioList::createMediaFile(Hitje &hitje) {
-    // Create the media file, check if it is parseable
-    string hitjePath = hitjesPath + hitje.createFilename();
-    // Try to open the file
-    ifstream hitjeFileStream(hitjePath.c_str(), ifstream::binary);
-    if (!hitjeFileStream.good()) {
-        // Error during opening, don't parse it further (may not exist?)
-        return false;
-    }
-    hitjeFileStream.close();
-    // Try to parse the file as media data
-    gui.printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath.c_str());
-    libvlc_media_t *mediaData = VLC::getInstance()->newMediaFromPath(hitjePath.c_str());
-    if (mediaData == NULL) {
-        // Something went wrong opening the media (wrong format, corrupted etc.)
-        gui.printlevel(LERROR, "Invalid file, '%s'\n", hitjePath.c_str());
-        return false;
-    }
-    // Successfully parsed media file, means we can use it
-    // Store it in the hitje
-    hitje.setMediaData(mediaData);
-    gui.setHitje(hitje);
-    gui.printlevel(LDEBUG, "Successfully parsed media file\n");
-    // Release the data (decrease refcount, hitje keeps its own)
-    VLC::release(mediaData);
-    return true;
 }
 
 

@@ -108,7 +108,7 @@ void AudioPlayer::pause() {
 
 void AudioPlayer::resume() {
     // Check audio index if there is even a hitje to resume
-    if (!isPlaying() && audioIndex != 0) {
+    if (!isPlaying() && isBusy()) {
         libvlc_media_player_set_pause(audioPlayer, false);
         gui.setPlaying();
     }
@@ -139,6 +139,23 @@ int AudioPlayer::getVolume() {
 
 bool AudioPlayer::isPlaying() {
     return libvlc_media_player_is_playing(audioPlayer);
+}
+
+bool AudioPlayer::isBusy() {
+    libvlc_state_t state = libvlc_media_player_get_state(audioPlayer);
+    switch (state) {
+        case libvlc_Opening:
+        case libvlc_Buffering:
+        case libvlc_Playing:
+        case libvlc_Paused:
+            return true;
+        case libvlc_NothingSpecial:
+        case libvlc_Stopped:
+        case libvlc_Ended:
+        case libvlc_Error:
+            return false;
+    }
+    throw "Invalid audio player state";
 }
 
 int AudioPlayer::getAudioIndex() {

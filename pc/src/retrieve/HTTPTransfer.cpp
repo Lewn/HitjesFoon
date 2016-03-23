@@ -1,9 +1,9 @@
-#include "HTTPTransfer.h"
+#include "retrieve/HTTPTransfer.h"
 
 HTTPTransfer::HTTPTransfer(GUI &gui) : gui(gui) {
-    //curl_global_init(CURL_GLOBAL_ALL);
+    // TODO make memory safe on exceptions (like when internet is down?)
     curl = curl_easy_init();
-    if (!curl) {
+    if (curl == NULL) {
         throw "Could not initialize curl";
     }
     curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress);
@@ -11,6 +11,11 @@ HTTPTransfer::HTTPTransfer(GUI &gui) : gui(gui) {
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
     //curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+}
+
+HTTPTransfer::HTTPTransfer(const HTTPTransfer &that) : HTTPTransfer(that.gui) {
+    // TODO use shared ptr instead?
+    // constructs a new curl object
 }
 
 HTTPTransfer::~HTTPTransfer() {
