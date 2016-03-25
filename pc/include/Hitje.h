@@ -25,9 +25,9 @@ public:
     string toString() const;
     inline ostream &operator<<(ostream &str) const;
     operator bool() const;
-    operator !() const;
-    operator ==(const Hitje& other) const;
-    operator !=(const Hitje& other) const;
+    bool operator !() const;
+    bool operator ==(const Hitje& other) const;
+    bool operator !=(const Hitje& other) const;
     Hitje &operator=(const Hitje &other);
 
     string createFilename(bool absolute = false, bool extension = true) const;

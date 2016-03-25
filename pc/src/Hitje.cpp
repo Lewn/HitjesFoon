@@ -47,15 +47,15 @@ Hitje::operator bool() const {
     return mediaData != NULL;
 }
 
-Hitje::operator!() const {
+bool Hitje::operator!() const {
     return mediaData == NULL;
 }
 
-Hitje::operator ==(const Hitje& other) const {
+bool Hitje::operator ==(const Hitje& other) const {
     return hitIndex == other.hitIndex && mediaData == other.mediaData && artist == other.artist && title == other.title && downloadState == other.downloadState;
 }
 
-Hitje::operator !=(const Hitje& other) const {
+bool Hitje::operator !=(const Hitje& other) const {
     return hitIndex != other.hitIndex || mediaData != other.mediaData || artist != other.artist || title != other.title || downloadState != other.downloadState;
 }
 

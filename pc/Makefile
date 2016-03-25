@@ -9,11 +9,11 @@ AR = ar
 LD = g++
 MAKE = make
 
-INC = -Ivlc/include -Ihidapi -Iinclude -Icurl/include -Irapidjson/include -Ihidapi/hidapi -Ipdcurses -Iwt/include
+INC = -Ivlc/include -Ihidapi -Iinclude -Icurl/include -Irapidjson/include -Ihidapi/hidapi -Iwt/include
 CFLAGS = -std=c++11 -Wall -fexceptions -DCURL_STATICLIB
 RESINC = 
 LIBDIR = 
-LIB = -lwt -lwthttp -lboost_date_time-mgw53-mt-1_60 -lboost_regex-mgw53-mt-1_60 -lboost_program_options-mgw53-mt-1_60 -lboost_signals-mgw53-mt-1_60 -lboost_random-mgw53-mt-1_60 -lboost_system-mgw53-mt-1_60 -lboost_thread-mgw53-mt-1_60 -lboost_filesystem-mgw53-mt-1_60 -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lncurses
+LIB = -lwt -lwthttp -lboost_date_time-mgw53-mt-1_60 -lboost_regex-mgw53-mt-1_60 -lboost_program_options-mgw53-mt-1_60 -lboost_signals-mgw53-mt-1_60 -lboost_random-mgw53-mt-1_60 -lboost_system-mgw53-mt-1_60 -lboost_thread-mgw53-mt-1_60 -lboost_filesystem-mgw53-mt-1_60 -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lcurses
 LDFLAGS = -L"curl/lib" -L"vlc/lib" -L"hidapi/linux"
 
 INC_DEBUG = $(INC)
@@ -51,7 +51,10 @@ hidapi/linux/hid.o:
 
 before_debug: hidapi/linux/hid.o
 	mkdir -p bin/Debug
-	mkdir -p $(OBJDIR_DEBUG)/src
+	mkdir -p $(OBJDIR_DEBUG)/src/gui
+	mkdir -p $(OBJDIR_DEBUG)/src/widgets
+	mkdir -p $(OBJDIR_DEBUG)/src/retrieve/downloader
+	mkdir -p $(OBJDIR_DEBUG)/src/retrieve/scraper
 
 after_debug: 
 
@@ -179,8 +182,10 @@ clean_debug:
 
 before_release: hidapi/linux/hid.o
 	mkdir -p bin/Release
-	mkdir -p $(OBJDIR_RELEASE)
-	mkdir -p $(OBJDIR_RELEASE)/src
+	mkdir -p $(OBJDIR_RELEASE)/src/gui
+	mkdir -p $(OBJDIR_RELEASE)/src/widgets
+	mkdir -p $(OBJDIR_RELEASE)/src/retrieve/downloader
+	mkdir -p $(OBJDIR_RELEASE)/src/retrieve/scraper
 
 after_release: 
 
