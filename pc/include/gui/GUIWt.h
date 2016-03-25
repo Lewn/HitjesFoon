@@ -4,9 +4,11 @@
 #include "Structs.h"
 #include "Tools.h"
 
+#ifdef __WIN32__
+#include <conio.h>
+#endif
 #include <vector>
 #include <iostream>
-#include <conio.h>
 #include <memory>
 
 #include <Wt/WApplication>

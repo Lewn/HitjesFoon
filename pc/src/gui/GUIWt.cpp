@@ -154,9 +154,11 @@ int GUIWt::getInput() {
     if (app == NULL) {
         // No user input, get from terminal
         // Still require a reliable cross platform solution
+#ifdef __WIN32__
         if (kbhit()) {
             c = getch();
         }
+#endif
     } else {
         // Get input from the users browser and process
         printlevel(LWARNING, "function getInput not implemented yet\n");
