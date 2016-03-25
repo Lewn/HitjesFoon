@@ -30,7 +30,7 @@ void WPlaybackControls::buildWidget() {
     updatePlayPause();
 
     // Process on value change
-    volumeSlider->valueChanged().connect(boost::bind(WPlaybackControls::processVolumeChange, this, _1));
+    volumeSlider->valueChanged().connect(boost::bind(&WPlaybackControls::processVolumeChange, this, _1));
     // Also directly process on slide event (too many triggers, feels jerky)
 //    volumeSlider->sliderMoved().connect(boost::bind(WPlaybackControls::processVolumeChange, this, _1));
 

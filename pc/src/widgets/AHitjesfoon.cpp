@@ -49,7 +49,7 @@ AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persist
     navigation->resolveWidget("expand-button")->addStyleClass("navbar-toggle");
     navigation->resolveWidget("contents")->setHidden(false);
 
-    internalPathChanged().connect(this, onPathChange);
+    internalPathChanged().connect(this, &AHitjesfoon::onPathChange);
     onPathChange();
 }
 
