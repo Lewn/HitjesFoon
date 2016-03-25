@@ -13,9 +13,20 @@ Persistence::~Persistence() {
 }
 
 void Persistence::onChangeCallback(const PersistenceCallback &callback) {
-    WApplication *app = WApplication::instance();
     lock_guard<mutex> guard(callbackMutex);
-    callbacks[app->sessionId()].push_back(callback);
+    callbacks[getSessionId()].push_back(callback);
+}
+
+
+string Persistence::getSessionId() {
+    if (isServer()) {
+        return "server";
+    }
+    return WApplication::instance()->sessionId();
+}
+
+bool Persistence::isServer() {
+    return WApplication::instance() == NULL;
 }
 
 void Persistence::postOnChange(const string &key) {
@@ -25,7 +36,8 @@ void Persistence::postOnChange(const string &key) {
     for (auto &appCallbacks : callbacks) {
         string sessionId = appCallbacks.first;
         for (auto &callback : appCallbacks.second) {
-            if (app && app->sessionId() == sessionId) {
+            // TODO run server callbacks in separate thread instead of user thread?
+            if (sessionId == "server" || (app && app->sessionId() == sessionId)) {
                 callback(key);
             } else {
                 // TODO use fallback function to remove dead sessions from list

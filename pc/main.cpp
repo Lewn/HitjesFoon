@@ -100,13 +100,13 @@ int main(int argc, char **argv) {
             gui.confirm(LERROR, "%s", ex.what());
 #endif
         } catch (const std::ios_base::failure &e) {
-            gui.printlevel(LDEBUG, "IOS base error caught: %s\n", e.what());
+            gui.printlevel(LERROR, "IOS base error caught: %s\n", e.what());
         } catch (const std::logic_error &e) {
-            gui.printlevel(LDEBUG, "Logic error caught: %s\n", e.what());
+            gui.printlevel(LERROR, "Logic error caught: %s\n", e.what());
         } catch (const std::runtime_error &e) {
-            gui.printlevel(LDEBUG, "Runtime error caught: %s\n", e.what());
+            gui.printlevel(LERROR, "Runtime error caught: %s\n", e.what());
         } catch (const std::exception &e) {
-            gui.printlevel(LDEBUG, "Exception caught: %s\n", e.what());
+            gui.printlevel(LERROR, "Exception caught: %s\n", e.what());
         } catch (const char *ex) {
             printf(ex);
             //gui.confirm(LERROR, "%s\n", ex);

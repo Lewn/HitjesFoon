@@ -59,38 +59,36 @@ const Hitje &AudioList::getHitje(int hitjeIndex) {
 }
 
 void AudioList::hitjeUpdate(const Hitje &hitje) {
-    // TODO currently has loop on update
-    // TODO write changes to file
     // Propagate external hitje changes back to list
-    hitjes[hitje.hitIndex] = hitje;
+    if (hitjes[hitje.hitIndex] != hitje) {
+        hitjes[hitje.hitIndex] = hitje;
+        // Write the changes to the file
+        writeUpdate();
+    }
 }
-
 
 bool AudioList::update(unsigned int downloadCount) {
     this->downloadCount = downloadCount;
     int hitIndex;
-    string fileOutput;
     ifstream listFileStream;
 
-    gui.printlevel(LINFO, "Updating..\n");
-    // enable exceptions on fail to open or read
-    // TODO throws a basic_ios::clear exception? (cannot be properly handled)
-//    listFileStream.exceptions(ifstream::failbit | ifstream::badbit);
-    listFileStream.open(listFilePath.c_str(), ifstream::binary);
+    gui.printlevel(LBGINFO, "Updating hitjeslist\n");
 
-    printf("Skipping lines\n");
-    hitIndex = skipInvalidLines(listFileStream, fileOutput);
-    do {
+    // Enable exceptions on fail to open or read
+    listFileStream.exceptions(ifstream::failbit | ifstream::badbit);
+    listFileStream.open(listFilePath.c_str(), ifstream::binary | ifstream::in);
+    hitIndex = skipInvalidLines(listFileStream);
+    while (!listFileStream.eof()) {
         if (hitIndex <= 0 || hitIndex >= 999) {
             gui.printlevel(LDEBUG, "Wrong hitindex, skipping %d\n", hitIndex);
         } else {
             // Got hitje successfully
-            gui.printlevel(LBGINFO, "Found hitje %d\n", hitIndex);
+            gui.printlevel(LDEBUG, "Found hitje %d\n", hitIndex);
         }
         do {
-            hitIndex = readLine(listFileStream, fileOutput);
+            hitIndex = readLine(listFileStream);
         } while (!listFileStream.eof() && hitIndex == 0);
-    } while (!listFileStream.eof());
+    }
     listFileStream.close();
 
     // All hitjes must start with a three digit number,
@@ -103,107 +101,202 @@ bool AudioList::update(unsigned int downloadCount) {
         intbuf[3] = '\0';
         // Loop over all files in hitjes directory
         while ((ent = readdir(dir)) != NULL) {
-            if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0) {
+            string entryName(ent->d_name);
+            // TODO also use boost filesystem for reading directories
+            // Don't try and alter level up entries....
+            if (entryName != "." && entryName != "..") {
                 // Get first three digits and parse int.
                 strncpy(intbuf, ent->d_name, 3);
-                sscanf(intbuf, "%d", &hitIndex);
+                hitIndex = atoi(intbuf);
                 if (hitjes[hitIndex]) {
                     string hitjeFilename = hitjes[hitIndex].createFilename();
-                    if (!strcmp(ent->d_name, hitjeFilename.c_str())) {
+                    // Check for incorrect or duplicate filenames
+                    if (hitjeFilename == entryName) {
+                        // Don't delete correct files
                         continue;
                     }
                 }
-                string absPath = hitjesPath + ent->d_name;
-                gui.printlevel(LWARNING, "Deleting unused file '%s'\n", ent->d_name);
+                string absPath = hitjesPath + entryName;
+                gui.printlevel(LWARNING, "Deleting unused file '%s'\n", entryName.c_str());
                 remove(absPath.c_str());
             }
         }
         closedir(dir);
     } else {
-        gui.printlevel(LERROR, "Could not clean hitjes files, directory not accessible\n");
+        gui.printlevel(LERROR, "Could not clean hitjes, directory not accessible\n");
     }
 
-
-// TODO: write updates to list (config?) file
-    //listFile = fopen(listFilePath, "w");
-    //fputs(fileOutput.data(), listFile);
-    //SAFE_CLOSE(listFile);
-
+    // And copy all hitjes to the gui, to apply the changes
+    // Only changed hitjes are actually forwarded
     for (const Hitje &hitje : hitjes) {
         gui.setHitje(hitje);
     }
+
+    gui.printlevel(LBGINFO, "Successfully updated hitjeslist\n");
 
     // return whether there is more to download
     return this->downloadCount == 0;
 }
 
-int AudioList::skipInvalidLines(ifstream &listFileStream, string &fileOutput) {
+
+void AudioList::writeUpdate() {
+    ifstream inputStream;
+    ofstream outputStream;
+    // Enable exceptions on fail to open or read
+    inputStream.exceptions(ifstream::failbit | ifstream::badbit);
+    outputStream.exceptions(ifstream::failbit | ifstream::badbit);
+
+    gui.printlevel(LBGINFO, "Writing update file\n");
+
+    // Generate a random bu file (just an easy safety measure for possibly restoring lost file)
+    // Only 100 backups are kept at max, keeping usage not too much
+    // TODO generate using boost filesystem, extension is fucked up now...
+    string buFile = listFilePath + "_bu";
+    buFile += to_string(rand() % 100);
+    rename(listFilePath.c_str(), buFile.c_str());
+    try {
+        // Open justly created bu stream as input file, to read it's contents
+        inputStream.open(buFile.c_str(), ifstream::binary | ifstream::in);
+        // Write previous contents and newly updated hitjes to the regular file
+        outputStream.open(listFilePath.c_str(), ofstream::trunc | ofstream::binary | ofstream::out);
+        // Read and write all lines
+        while (!inputStream.eof()) {
+            readLine(inputStream, &outputStream);
+        }
+        gui.printlevel(LBGINFO, "Read and written whole file successfully\n");
+        inputStream.close();
+        outputStream.close();
+        return;
+    } catch (const std::exception &e) {
+        gui.printlevel(LERROR, "While writing update, exception caught: %s\n", e.what());
+    } catch (const char *e) {
+        gui.printlevel(LERROR, "While writing update, error thrown: %s\n", e);
+    } catch (...) {
+        // If anything goes wrong, nothing bad happened, we just can't detail to user
+        gui.printlevel(LERROR, "While writing update, something bad happened...\n");
+    }
+    gui.printlevel(LBGINFO, "Some error occured, unrolling changes\n");
+    // Something bad happened, unroll changes
+    // Meaning we delete the newly created (corrupt) file
+    remove(listFilePath.c_str());
+    // And moving the backup back as regular file
+    rename(buFile.c_str(), listFilePath.c_str());
+    gui.printlevel(LBGINFO, "Done unrolling changes\n");
+}
+
+int AudioList::skipInvalidLines(ifstream &listFileStream) {
     int hitIndex;
     // loop through all lines without hitjes
     do {
-        if (listFileStream.eof()) {
-            // reached end of file without any hitjes
-            throw "No valid hitjes file";
-        }
-        hitIndex = readLine(listFileStream, fileOutput);
-    } while (hitIndex == 0);
+        hitIndex = readLine(listFileStream);
+    } while (!listFileStream.eof() && hitIndex == 0);
     gui.printlevel(LDEBUG, "Skipped all non hitjes lines\n");
     return hitIndex;
 }
 
-int AudioList::readLine(ifstream &listFileStream, string &fileOutput) {
+int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
     int hitIndex;
-    string title, artist;
-    // TODO no use of buffer possible? (detect newline manually)
-    stringbuf line;
+    // Use a buffer to ensure line by line output
+    // on errors the next line can be extracted without problem
+    string line;
     gui.printlevel(LDEBUG, "Retrieving next line\n");
+    // If no more characters are available, stop prematurely
+    // prevents exceptions on get()
+    if (listFileStream.peek() == EOF) { return 0; }
     // Read a line in buffer
-    listFileStream.get(line);
-    // ignore newline characters
-    listFileStream.ignore();
-    istringstream buffer(line.str());
-    gui.printlevel(LDEBUG, "\n%s\n", buffer.str().c_str());
+    getline(listFileStream, line);
 
-    buffer >> hitIndex;             // read hit index
-    // skip until ;
-    buffer.ignore(numeric_limits<streamsize>::max(), ';');
-    getline(buffer, title, ';');    // read until ; as title
-    getline(buffer, artist, ';');   // read until ; as artist
-
-    title = trim(title);
-    artist = trim(artist);
-    gui.printlevel(LDEBUG, "Got %d: '%s' '%s'\n", hitIndex, title.c_str(), artist.c_str());
-
-    if (hitIndex <= 0 || hitIndex >= 999 || title.empty()) {
+    if (fileOutput != NULL) {
+        // If we want to write to file, we only need to parse the index
+        hitIndex = parseHitIndex(line);
+    } else {
+        // Try to parse the whole line
+        hitIndex = parseLine(line);
+    }
+    if (hitIndex == 0) {
         // Some of the information was missing or wrong
-        // TODO inform user of wrong information
-        // Just keep the contents
-        fileOutput += line.str();
+        if (fileOutput != NULL) {
+            // Just keep the contents
+            (*fileOutput) << line << "\n";
+        }
         // Signal an invalid line
         return 0;
     }
 
-    // Store all data in hitje
-    hitjes[hitIndex].title = title;
-    hitjes[hitIndex].artist = artist;
-    // Try to create the media file for this hitje
-    if (!retriever.createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
-        // Couldn't create, no worries, just download it
-        if (downloadVideoFile(hitjes[hitIndex])) {
-            // Successfully downloaded new file, decrease download counter
-            downloadCount--;
-            gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjes[hitIndex].toString().c_str());
+    // Depending on whether we have an output file we want to read or write
+    // Either parse the media file, or write the updated hitjes
+    if (fileOutput == NULL) {
+        // Try to create the media file for this hitje
+        if (!retriever.createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
+            // Couldn't create, no worries, just download it
+            if (downloadVideoFile(hitjes[hitIndex])) {
+                // Successfully downloaded new file, decrease download counter
+                downloadCount--;
+                gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjes[hitIndex].toString().c_str());
+            }
         }
+    } else {
+        // Some valid data, copy all the data that was valid
+        (*fileOutput) << to_string(hitIndex) << ';'
+                      << hitjes[hitIndex].title << ';'
+                      << hitjes[hitIndex].artist << '\n';
+    }
+    // If the file existed already, we have a valid index
+    return hitIndex;
+}
+
+
+int AudioList::parseHitIndex(string &line) {
+    int hitIndex;
+    istringstream lineStream(line);
+
+    // read hit index
+    lineStream >> hitIndex;
+    if (lineStream.fail() || hitIndex <= 0 || hitIndex >= 999) {
+        gui.printlevel(LDEBUG, "Incorrect hitindex, skipping\n");
+        return 0;
+    }
+    return hitIndex;
+}
+
+int AudioList::parseLine(string &line) {
+    int hitIndex;
+    string title, artist;
+    istringstream lineStream(line);
+
+    gui.printlevel(LDEBUG, "Parsing line: \n%s\n", line.c_str());
+
+    // read hit index
+    lineStream >> hitIndex;
+    if (lineStream.fail() || hitIndex <= 0 || hitIndex >= 999) {
+        gui.printlevel(LDEBUG, "Incorrect hitindex, skipping\n");
+        return 0;
+    }
+    // skip until ;
+    lineStream.ignore(numeric_limits<streamsize>::max(), ';');
+    // read until ; as title
+    getline(lineStream, title, ';');
+    if (lineStream.fail()) {
+        gui.printlevel(LERROR, "Error parsing title for hitindex %d\n", hitIndex);
+        return 0;
+    }
+    // title is correct, store it
+    hitjes[hitIndex].title = title;
+    // read until ; as artist
+    getline(lineStream, artist, ';');
+    if (lineStream.fail()) {
+        gui.printlevel(LDEBUG, "Error parsing artist for %d\n", hitIndex);
+        return 0;
+    }
+    // artist is correct, store it
+    hitjes[hitIndex].artist = artist;
+
+    if (hitjes[hitIndex].title.empty() || hitjes[hitIndex].artist.empty()) {
+        gui.printlevel(LDEBUG, "Either title or artist not set for hitje %d, skipping\n", hitIndex);
+        return 0;
     }
 
-    // Some valid data, copy all the data that was valid
-    fileOutput += to_string(hitIndex);
-    fileOutput += ';';
-    fileOutput += title;
-    fileOutput += ';';
-    fileOutput += artist;
-    fileOutput += "\n";
-    // If the file existed already, we have a valid index
+    gui.printlevel(LDEBUG, "Got %d: '%s' '%s'\n", hitIndex, title.c_str(), artist.c_str());
     return hitIndex;
 }
 

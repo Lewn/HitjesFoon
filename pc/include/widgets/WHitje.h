@@ -5,6 +5,8 @@
 #include <iomanip>
 
 #include <Wt/WApplication>
+#include <Wt/WDialog>
+#include <Wt/WLineEdit>
 #include <Wt/WText>
 #include <Wt/WPushButton>
 #include <Wt/WProgressBar>
@@ -27,11 +29,14 @@ public:
     virtual ~WHitje();
 
     void onPersistenceChange(const string &key);
+    void showDialog(bool artist);
     void download(const WMouseEvent &e);
 protected:
     GUI &gui;
     Persistence &persistence;
+    WDialog *editDialog = NULL;
     mutex dlmutex;
+    bool editingArtist;
 
     int hitIndex;
     WText *artistText;

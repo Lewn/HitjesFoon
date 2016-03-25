@@ -14,6 +14,17 @@ void GUIWt::setServer(WServer &server) {
     logv.push_back("");
     persistence->getStringVectorData().initVal("logv", logv);
     persistence->getIntData().initVal("playback-state", STOP);
+    // Listen to all persistence changes
+    persistence->onChangeCallback(boost::bind(&GUIWt::onPersistenceChange, this, _1));
+}
+
+void GUIWt::onPersistenceChange(const string &key) {
+    try {
+        // Try to retrieve as hitje
+        const Hitje &hitje = persistence->getHitjeData().getVal(key);
+        // If successful, propagate changes to listeners
+        events().hitjeChangeSig(hitje);
+    } catch (...) {}
 }
 
 WApplication *GUIWt::createApplication(const WEnvironment& env) {
@@ -87,7 +98,6 @@ void GUIWt::setPhoneVolume(int volume) {
 
 void GUIWt::setHitje(Hitje hitje) {
     persistence->getHitjeData().setVal(to_string(hitje.hitIndex), hitje);
-    events().hitjeChangeSig(hitje);
 }
 
 void GUIWt::logAppend(PRINT_LEVEL level, string text) {

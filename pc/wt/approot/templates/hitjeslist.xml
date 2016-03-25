@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <messages>
 <message id="template-hitjesfoon-hitjeslist">
-	<div style="max-width:800px;margin:0 auto;">
+	<div style="padding:10px;max-width:1200px;margin:0 auto;">
 		<legend>${strings-hitjeslist-title}</legend>
 		<div>
 			${hitjeslist}
@@ -13,9 +13,9 @@
 	<div class="form-horizontal">
 		<div class="form-group">
 			<div class="col-sm-1" style="margin:7px">${hitje-num}</div>
-			<div class="col-sm-2" style="margin:7px">${hitje-artist}</div>
-			<div class="col-sm-3" style="margin:7px">${hitje-title}</div>
-			<div class="col-sm-4" style="margin-left:7px;margin-right:7px">${hitje-info}${hitje-bar}${hitje-download}</div>
+			<div class="col-sm-3" style="margin:7px">${hitje-artist}</div>
+			<div class="col-sm-4" style="margin:7px">${hitje-title}</div>
+			<div class="col-sm-3" style="margin-left:7px;margin-right:7px">${hitje-info}${hitje-bar}${hitje-download}</div>
 		</div>
 	</div>
 </message>

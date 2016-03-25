@@ -44,6 +44,8 @@ protected:
     PersistenceData<vector<string>> stringVectorData;
     PersistenceData<Hitje> hitjeData;
 
+    string getSessionId();
+    bool isServer();
     void postOnChange(const string &key);
 private:
 };

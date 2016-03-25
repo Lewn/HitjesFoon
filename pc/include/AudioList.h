@@ -40,8 +40,11 @@ protected:
     string hitjesPath;
     string listFilePath;
 
-    int skipInvalidLines(ifstream &listFileStream, string &fileOutput);
-    int readLine(ifstream &listFileStream, string &fileOutput);
+    void writeUpdate();
+    int skipInvalidLines(ifstream &listFileStream);
+    int readLine(ifstream &listFileStream, ofstream *fileOutput = NULL);
+    int parseHitIndex(string &line);
+    int parseLine(string &line);
     bool downloadVideoFile(Hitje &hitje);
 private:
     AudioList(const AudioList & that) = delete;

@@ -25,12 +25,6 @@ void Hitje::init(libvlc_media_t *mediaData, string artist, string title) {
     this->mediaData = mediaData;
     this->artist = trim(artist);
     this->title = trim(title);
-    if (this->artist.empty()) {
-        this->artist = "unknown";
-    }
-    if (this->title.empty()) {
-        this->title = "no title";
-    }
 }
 
 string Hitje::toString() const {

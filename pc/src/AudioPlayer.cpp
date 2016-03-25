@@ -187,7 +187,7 @@ void AudioPlayer::callback(const libvlc_event_t *evt, void *userData) {
             player->notificate(AudioPlayerEventListener::DONE);
             break;
         default:
-            player->gui.printlevel(LDEBUG, "\n\nUnkown event triggered\n");
+            player->gui.printlevel(LDEBUG, "\n\nUnknown event triggered\n");
     }
 }
 void AudioPlayer::notificate(AudioPlayerEventListener::Event eventType) {

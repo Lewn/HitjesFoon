@@ -39,6 +39,7 @@ public:
     virtual ~GUIWt();
 
     void setServer(WServer &server);
+    void onPersistenceChange(const string &key);
     WApplication *createApplication(const WEnvironment& env);
 
     virtual void setPlaying();
