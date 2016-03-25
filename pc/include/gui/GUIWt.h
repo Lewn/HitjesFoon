@@ -25,7 +25,7 @@
 #include "widgets/AHitjesfoon.h"
 
 #include "InputProcessor.h"
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 
 
 using namespace std;

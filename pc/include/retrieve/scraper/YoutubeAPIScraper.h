@@ -7,7 +7,7 @@
 
 #include "Structs.h"
 #include "Tools.h"
-#include "Scraper.h"
+#include "retrieve/scraper/Scraper.h"
 #include "gui/GUI.h"
 #include "retrieve/HTTPTransfer.h"
 #include "JsonParser.h"

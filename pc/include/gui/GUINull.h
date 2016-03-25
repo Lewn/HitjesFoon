@@ -1,9 +1,10 @@
 #ifndef GUINULL_H
 #define GUINULL_H
 
-#include "GUI.h"
 #include <iostream>
 #include <cstdarg>
+
+#include "gui/GUI.h"
 
 using namespace std;
 

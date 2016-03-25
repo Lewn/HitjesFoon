@@ -5,7 +5,7 @@
 
 #include "Structs.h"
 #include "Tools.h"
-#include "Downloader.h"
+#include "retrieve/downloader/Downloader.h"
 #include "gui/GUI.h"
 #include "retrieve/HTTPTransfer.h"
 #include "JsonParser.h"

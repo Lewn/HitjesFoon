@@ -14,7 +14,7 @@
 #include "retrieve/Retriever.h"
 
 #ifdef GUI_CURSES
-#include "GUICurses.h"
+#include "gui/GUICurses.h"
 #elif defined(GUI_WT)
 #include <Wt/WServer>
 #include <Wt/WApplication>

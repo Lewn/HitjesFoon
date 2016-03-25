@@ -9,7 +9,7 @@
 #include "gui/GUI.h"
 #include "gui/GUIEvent.h"
 #include "widgets/WFilledTemplate.h"
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 
 using namespace std;
 using namespace boost;

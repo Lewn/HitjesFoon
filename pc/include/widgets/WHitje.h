@@ -14,7 +14,7 @@
 #include "Structs.h"
 #include "Hitje.h"
 #include "gui/GUI.h"
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 #include "widgets/WFilledTemplate.h"
 #include "retrieve/Retriever.h"
 

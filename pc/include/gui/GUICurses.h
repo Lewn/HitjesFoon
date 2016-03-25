@@ -1,7 +1,7 @@
 #ifndef GUICURSES_H
 #define GUICURSES_H
 
-#include "GUI.h"
+#include "gui/GUI.h"
 #include "InputProcessor.h"
 
 #ifdef _WIN32

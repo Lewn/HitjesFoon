@@ -1,7 +1,7 @@
 #ifndef YOUTUBEMANUALDOWNLOADER_H
 #define YOUTUBEMANUALDOWNLOADER_H
 
-#include "Downloader.h"
+#include "retrieve/downloader/Downloader.h"
 
 class YoutubeManualDownloader : public Downloader {
 public:

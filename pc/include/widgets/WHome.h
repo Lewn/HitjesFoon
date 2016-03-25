@@ -14,7 +14,7 @@
 #include "widgets/WPlaylist.h"
 #include "widgets/WPlaybackControls.h"
 #include "widgets/WHitSearch.h"
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 #include "InputProcessor.h"
 #include "AudioList.h"
 

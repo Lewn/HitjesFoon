@@ -1,4 +1,4 @@
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 
 Persistence::Persistence(WServer &server) : server(server) {
     intData.connect(boost::bind(&Persistence::postOnChange, this, _1));

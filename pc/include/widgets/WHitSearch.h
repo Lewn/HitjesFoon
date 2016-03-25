@@ -10,7 +10,7 @@
 
 #include "gui/GUI.h"
 #include "widgets/WFilledTemplate.h"
-#include "Persistence.h"
+#include "persistence/Persistence.h"
 #include "InputProcessor.h"
 
 using namespace std;
