@@ -54,13 +54,17 @@ WApplication *GUIWt::createApplication(const WEnvironment& env) {
 
 
 void GUIWt::printlevel(PRINT_LEVEL level, const char *format, va_list args) {
-    GUINull::printlevel(level, format, args);
     if (persistence != NULL) {
         char buf[1000];
-        vsnprintf(buf, sizeof(buf), format, args);
+        // Copy arguments, as list can only be iterated once
+        va_list argsCpy;
+        va_copy(argsCpy, args);
+        vsnprintf(buf, sizeof(buf), format, argsCpy);
 
         logAppend(level, buf);
+        va_end(argsCpy);
     }
+    GUINull::printlevel(level, format, args);
 }
 
 
