@@ -77,6 +77,7 @@ void WHitSearch::initSearchSuggestions() {
         searchOptions.highlightEndTag = "</span>";
         searchOptions.whitespace = " \\n";
         searchOptions.wordSeparators = "-., \"@\\n;";
+        searchOptions.listSeparator = NULL;
 
         searchSP = new WSuggestionPopup(
             WSuggestionPopup::generateMatcherJS(searchOptions),
