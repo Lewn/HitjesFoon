@@ -13,7 +13,7 @@ INC = -Ivlc/include -Ihidapi -Iinclude -Icurl/include -Irapidjson/include -Ihida
 CFLAGS = -std=c++11 -Wall -fexceptions -DCURL_STATICLIB
 RESINC = 
 LIBDIR = 
-LIB = -lwt -lwthttp -lboost_date_time-mgw53-mt-1_60 -lboost_regex-mgw53-mt-1_60 -lboost_program_options-mgw53-mt-1_60 -lboost_signals-mgw53-mt-1_60 -lboost_random-mgw53-mt-1_60 -lboost_system-mgw53-mt-1_60 -lboost_thread-mgw53-mt-1_60 -lboost_filesystem-mgw53-mt-1_60 -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lcurses
+LIB = -lwt -lwthttp -lboost_date_time -lboost_regex -lboost_program_options -lboost_signals -lboost_random -lboost_system -lboost_thread -lboost_filesystem -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lcurses
 LDFLAGS = -L"curl/lib" -L"vlc/lib" -L"hidapi/linux"
 
 INC_DEBUG = $(INC)
@@ -36,7 +36,7 @@ LIB_RELEASE = $(LIB)
 LDFLAGS_RELEASE = $(LDFLAGS) -s
 OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
-OUT_RELEASE = bin/Release/Hitjesfoon.exe
+OUT_RELEASE = bin/Release/Hitjesfoon
 
 OBJ_DEBUG = $(OBJDIR_DEBUG)/src/gui/GUINull.o $(OBJDIR_DEBUG)/src/gui/GUIEvent.o $(OBJDIR_DEBUG)/src/gui/GUICurses.o $(OBJDIR_DEBUG)/src/gui/GUI.o $(OBJDIR_DEBUG)/src/VLC.o $(OBJDIR_DEBUG)/src/USBConnection.o $(OBJDIR_DEBUG)/src/Tools.o $(OBJDIR_DEBUG)/src/Structs.o $(OBJDIR_DEBUG)/src/JsonParser.o $(OBJDIR_DEBUG)/src/InputProcessor.o $(OBJDIR_DEBUG)/src/Hitje.o $(OBJDIR_DEBUG)/src/ConfigAudioMenu.o $(OBJDIR_DEBUG)/src/Config.o $(OBJDIR_DEBUG)/src/AudioPlayer.o $(OBJDIR_DEBUG)/src/AudioMenuItem.o $(OBJDIR_DEBUG)/src/AudioMenu.o $(OBJDIR_DEBUG)/src/AudioList.o $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/src/widgets/WPlaylist.o $(OBJDIR_DEBUG)/src/widgets/WPlaybackControls.o $(OBJDIR_DEBUG)/src/widgets/WHome.o $(OBJDIR_DEBUG)/src/widgets/WHitjesList.o $(OBJDIR_DEBUG)/src/widgets/WHitje.o $(OBJDIR_DEBUG)/src/widgets/WHitSearch.o $(OBJDIR_DEBUG)/src/widgets/WFilledTemplate.o $(OBJDIR_DEBUG)/src/widgets/W404.o $(OBJDIR_DEBUG)/src/widgets/AHitjesfoon.o $(OBJDIR_DEBUG)/src/retrieve/scraper/YoutubeAPIScraper.o $(OBJDIR_DEBUG)/src/retrieve/scraper/Scraper.o $(OBJDIR_DEBUG)/src/retrieve/downloader/YoutubeManualDownloader.o $(OBJDIR_DEBUG)/src/retrieve/downloader/YoutubeDL.o $(OBJDIR_DEBUG)/src/retrieve/downloader/Downloader.o $(OBJDIR_DEBUG)/src/retrieve/Retriever.o $(OBJDIR_DEBUG)/src/retrieve/HTTPTransfer.o $(OBJDIR_DEBUG)/src/persistence/PersistenceData.o $(OBJDIR_DEBUG)/src/persistence/Persistence.o $(OBJDIR_DEBUG)/src/gui/GUIWt.o
 
@@ -55,6 +55,7 @@ before_debug: hidapi/linux/hid.o
 	mkdir -p $(OBJDIR_DEBUG)/src/widgets
 	mkdir -p $(OBJDIR_DEBUG)/src/retrieve/downloader
 	mkdir -p $(OBJDIR_DEBUG)/src/retrieve/scraper
+	mkdir -p $(OBJDIR_DEBUG)/src/persistence
 
 after_debug: 
 
@@ -186,6 +187,7 @@ before_release: hidapi/linux/hid.o
 	mkdir -p $(OBJDIR_RELEASE)/src/widgets
 	mkdir -p $(OBJDIR_RELEASE)/src/retrieve/downloader
 	mkdir -p $(OBJDIR_RELEASE)/src/retrieve/scraper
+	mkdir -p $(OBJDIR_RELEASE)/src/persistence
 
 after_release: 
 
