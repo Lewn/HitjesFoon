@@ -61,9 +61,13 @@ const Hitje &AudioList::getHitje(int hitjeIndex) {
 void AudioList::hitjeUpdate(const Hitje &hitje) {
     // Propagate external hitje changes back to list
     if (hitjes[hitje.hitIndex] != hitje) {
+        const Hitje &oldHitje = hitjes[hitje.hitIndex];
         hitjes[hitje.hitIndex] = hitje;
         // Write the changes to the file
-        writeUpdate();
+        if (oldHitje.hitIndex != hitje.hitIndex || oldHitje.title != hitje.title || oldHitje.artist != hitje.artist) {
+            // Only write when actually something interesting happened to the file
+            writeUpdate();
+        }
     }
 }
 
@@ -227,6 +231,7 @@ int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
     // Either parse the media file, or write the updated hitjes
     if (fileOutput == NULL) {
         // Try to create the media file for this hitje
+        gui.printlevel(LDEBUG, "Creating media file\n");
         if (!retriever.createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
             // Couldn't create, no worries, just download it
             if (downloadVideoFile(hitjes[hitIndex])) {
@@ -241,6 +246,7 @@ int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
                       << hitjes[hitIndex].title << ';'
                       << hitjes[hitIndex].artist << '\n';
     }
+    gui.printlevel(LDEBUG, "Done retrieving line\n");
     // If the file existed already, we have a valid index
     return hitIndex;
 }

@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
         } catch (const std::exception &e) {
             gui.printlevel(LERROR, "Exception caught: %s\n", e.what());
         } catch (const char *ex) {
-            printf(ex);
+            printf("%s\n", ex);
             //gui.confirm(LERROR, "%s\n", ex);
         }
     } catch (...) {

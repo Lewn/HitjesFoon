@@ -11,6 +11,7 @@ Retriever::~Retriever() {
 
 
 bool Retriever::retrieve(Hitje &hitje) {
+    gui.printlevel(LDEBUG, "Retrieving hitje %s\n", hitje.toString().c_str());
     bool downloaded = false;
     // Signal start of download to gui
     hitje.downloadState.downloading = true;
@@ -92,10 +93,12 @@ bool Retriever::createMediaFile(Hitje &hitje) {
     // Create the media file, check if it is parseable
     // Construct filename including path
     string hitjePath = hitje.createFilename(true);
+    gui.printlevel(LDEBUG, "Trying to open media data\n");
     // Try to open the file
     ifstream hitjeFileStream(hitjePath.c_str(), ifstream::binary);
     if (!hitjeFileStream.good()) {
         // Error during opening, don't parse it further (may not exist?)
+        gui.printlevel(LDEBUG, "Couldn't open file, no media data\n");
         return false;
     }
     hitjeFileStream.close();
