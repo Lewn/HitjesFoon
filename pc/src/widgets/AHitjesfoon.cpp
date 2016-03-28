@@ -3,10 +3,18 @@
 AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persistence) : WApplication(env), gui(gui), persistence(persistence) {
     setTitle("Hitjesfoon");
     enableUpdates(true);
+}
 
+AHitjesfoon::~AHitjesfoon() {
+}
+
+void AHitjesfoon::buildWidget() {
     home = new WHome(gui, persistence);
+    home->buildWidget();
     hitjesList = new WHitjesList(gui, persistence);
+    hitjesList->buildWidget();
     w404 = new W404(gui, persistence);
+    w404->buildWidget();
 
 
     WNavigationBar *navigation = new WNavigationBar();
@@ -51,12 +59,6 @@ AHitjesfoon::AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persist
 
     internalPathChanged().connect(this, &AHitjesfoon::onPathChange);
     onPathChange();
-}
-
-AHitjesfoon::~AHitjesfoon() {
-    SAFE_DELETE(w404);
-    SAFE_DELETE(hitjesList);
-    SAFE_DELETE(home);
 }
 
 

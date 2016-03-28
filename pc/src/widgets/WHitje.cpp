@@ -3,7 +3,6 @@
 WHitje::WHitje(GUI &gui, Persistence &persistence, int hitIndex, WContainerWidget *parent) : WHitje(gui, persistence, WString::tr("template-hitjesfoon-hitjeslist-hitje"), hitIndex, parent) {}
 
 WHitje::WHitje(GUI &gui, Persistence &persistence, const WString &text, int hitIndex, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence), hitIndex(hitIndex) {
-    buildWidget();
 }
 
 WHitje::~WHitje() {

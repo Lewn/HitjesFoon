@@ -1,6 +1,7 @@
 #ifndef YOUTUBEDL_H
 #define YOUTUBEDL_H
 
+#include <string>
 #include <regex>
 
 #include "Structs.h"

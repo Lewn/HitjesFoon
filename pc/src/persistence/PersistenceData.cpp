@@ -33,6 +33,7 @@ template <typename Type> const Type &PersistenceData<Type>::getVal(const string 
     lock_guard<mutex> guard(typeMutex);
     typename unordered_map<string, Type>::const_iterator keyval = vals.find(key);
     if (keyval == vals.end()) {
+        cout << "\n1: For key " << key << "\n";
         throw "PersistenceData key not found";
     }
     return keyval->second;
@@ -71,6 +72,7 @@ template <typename Type> void PersistenceData<Type>::addVal(const string &key, T
     typename unordered_map<string, Type>::iterator keyval = vals.find(key);
     if (keyval == vals.end()) {
         typeMutex.unlock();
+        cout << "\n2: For key " << key << "\n";
         throw "PersistenceData key not found";
     }
     keyval->second += add;
@@ -83,6 +85,7 @@ template <> void PersistenceData<vector<int>>::addVal(const string &key, vector<
     unordered_map<string, vector<int>>::iterator keyval = vals.find(key);
     if (keyval == vals.end()) {
         typeMutex.unlock();
+        cout << "\n3: For key " << key << "\n";
         throw "PersistenceData key not found";
     }
     keyval->second.insert(keyval->second.end(), add.begin(), add.end());
@@ -95,6 +98,7 @@ template <> void PersistenceData<vector<string>>::addVal(const string &key, vect
     unordered_map<string, vector<string>>::iterator keyval = vals.find(key);
     if (keyval == vals.end()) {
         typeMutex.unlock();
+        cout << "\n4: For key " << key << "\n";
         throw "PersistenceData key not found";
     }
     keyval->second.insert(keyval->second.end(), add.begin(), add.end());
@@ -117,6 +121,7 @@ template <typename Type> void PersistenceData<Type>::manipulateVal(const string 
         sig(key);
     } else {
         typeMutex.unlock();
+        cout << "\n5: For key " << key << "\n";
         throw "PersistenceData key not found";
     }
 }

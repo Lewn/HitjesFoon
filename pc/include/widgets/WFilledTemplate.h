@@ -20,6 +20,7 @@ public:
     WFilledTemplate(const WString &text, WContainerWidget *parent = NULL);
     virtual ~WFilledTemplate();
 
+    virtual void buildWidget() = 0;
     void handleUnresolvedVariable(const string &varName, const vector<WString> &args, ostream &result);
 protected:
 private:

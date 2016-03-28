@@ -14,6 +14,8 @@ public:
     W404(GUI &gui, Persistence &persistence, WContainerWidget *parent = NULL);
     W404(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     virtual ~W404();
+
+    void buildWidget();
 protected:
     GUI &gui;
     Persistence &persistence;

@@ -5,6 +5,7 @@ GUIWt::GUIWt(PRINT_LEVEL msglevel) : GUINull(msglevel), persistence(NULL) {
 }
 
 GUIWt::~GUIWt() {
+    SAFE_DELETE(persistence);
 }
 
 void GUIWt::setServer(WServer &server) {
@@ -20,11 +21,16 @@ void GUIWt::setServer(WServer &server) {
 
 void GUIWt::onPersistenceChange(const string &key) {
     try {
-        // Try to retrieve as hitje
-        const Hitje &hitje = persistence->getHitjeData().getVal(key);
-        // If successful, propagate changes to listeners
-        events().hitjeChangeSig(hitje);
-    } catch (...) {}
+        // Try to convert to integer
+        stoi(key);
+    } catch (std::invalid_argument e) {
+        // Couldn't convert, just ignore
+        return;
+    }
+    // Try to retrieve as hitje
+    const Hitje &hitje = persistence->getHitjeData().getVal(key);
+    // If successful, propagate changes to listeners
+    events().hitjeChangeSig(hitje);
 }
 
 WApplication *GUIWt::createApplication(const WEnvironment& env) {
@@ -32,6 +38,7 @@ WApplication *GUIWt::createApplication(const WEnvironment& env) {
         throw "Persistence not created yet, first set server object";
     }
     AHitjesfoon *app = new AHitjesfoon(env, *this, *persistence);
+    app->buildWidget();
 
 //    app->setCssTheme("polished");
     WBootstrapTheme *bootstrapTheme = new WBootstrapTheme(app);

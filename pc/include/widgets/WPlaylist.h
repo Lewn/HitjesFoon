@@ -22,6 +22,7 @@ public:
     WPlaylist(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     virtual ~WPlaylist();
 
+    void buildWidget();
     void onPersistenceChange(const string &key);
 protected:
     GUI &gui;
@@ -30,8 +31,6 @@ protected:
     WText *currentlyTypingText;
     WText *currentlyPlayingText;
     WText *playlistText;
-
-    void buildWidget();
 
     void updatePlaylist();
 private:

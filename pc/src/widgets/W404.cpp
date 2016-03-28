@@ -12,3 +12,7 @@ W404::W404(GUI &gui, Persistence &persistence, const WString &text, WContainerWi
 W404::~W404() {
 
 }
+
+
+void W404::buildWidget() {
+}

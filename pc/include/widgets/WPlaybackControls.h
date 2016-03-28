@@ -22,6 +22,7 @@ public:
     WPlaybackControls(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     virtual ~WPlaybackControls();
 
+    void buildWidget();
     void updatePlayPause();
 
     void onPersistenceChange(const string &key);
@@ -39,7 +40,6 @@ protected:
     WPushButton *playBtn;
     WPushButton *pauseBtn;
 
-    void buildWidget();
 private:
 };
 

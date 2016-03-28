@@ -23,6 +23,7 @@ Config::Config(GUI &gui, const char *configPath) : gui(gui) {
         gui.printlevel(LDEBUG, "No msglevel found, using default (%d)\n\n", gui.getMsglevel());
     } else {
         gui.setMsglevel((PRINT_LEVEL)msglevelMember->value.GetInt());
+        gui.printlevel(LINFO, "Using message level %d\n", gui.getMsglevel());
     }
 }
 

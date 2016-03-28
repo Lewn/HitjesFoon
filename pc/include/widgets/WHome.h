@@ -28,6 +28,7 @@ public:
     WHome(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     virtual ~WHome();
 
+    void buildWidget();
     void onPersistenceChange(const string &key);
 
 protected:
@@ -40,7 +41,6 @@ protected:
     WContainerWidget *logContainer;
     WSound *logUpdate;
 
-    void buildWidget();
     void updateLog();
 private:
 };

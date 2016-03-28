@@ -24,6 +24,7 @@ public:
     WHitSearch(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent = NULL);
     ~WHitSearch();
 
+    void buildWidget();
     void onPersistenceChange(const string &key);
     void processSearchInput();
 
@@ -34,8 +35,6 @@ protected:
     WLineEdit *searchInputText;
     WText *searchHelpText;
     WSuggestionPopup *searchSP;
-
-    void buildWidget();
 
     void initSearchSuggestions();
     void addSuggestions();

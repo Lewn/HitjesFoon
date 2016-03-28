@@ -15,12 +15,6 @@
 #include <algorithm>
 #include <memory>
 
-//#ifdef __WIN32
-//#include <windows.h>
-//#else
-//#include <cstdio>
-//#endif
-
 using namespace std;
 
 char *trimLeft(char *toTrim);
@@ -36,6 +30,6 @@ char *getAbsolutePath(const char *listFilePath, int pathLen, const char *filenam
 void filesystemSafe(char *str);
 void filesystemSafe(string &str);
 
-std::shared_ptr<FILE> cmdasync(string cmd);
+std::shared_ptr<FILE> cmdasync(const string &cmd);
 
 #endif // TOOLS_H

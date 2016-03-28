@@ -3,7 +3,6 @@
 WHitjesList::WHitjesList(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WHitjesList(gui, persistence, WString::tr("template-hitjesfoon-hitjeslist"), parent) {}
 
 WHitjesList::WHitjesList(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
-    buildWidget();
 }
 
 WHitjesList::~WHitjesList() {
@@ -15,7 +14,9 @@ void WHitjesList::buildWidget() {
     hitjesContainer = new WContainerWidget();
     bindWidget("hitjeslist", hitjesContainer);
     for (unsigned int i = 1; i < 1000; i++) {
-        hitjesContainer->addWidget(new WHitje(gui, persistence, i));
+        WHitje *whitje = new WHitje(gui, persistence, i);
+        whitje->buildWidget();
+        hitjesContainer->addWidget(whitje);
     }
 
     // Listen to all persistence changes

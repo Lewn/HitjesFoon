@@ -23,17 +23,18 @@ public:
     AHitjesfoon(const WEnvironment& env, GUI &gui, Persistence &persistence);
     virtual ~AHitjesfoon();
 
+    void buildWidget();
     void onPathChange();
 protected:
     GUI &gui;
     Persistence &persistence;
 
-    WHome *home;
-    WHitjesList *hitjesList;
-    W404 *w404;
-    WMenu *menu;
-    WMenuItem *homeItem;
-    WMenuItem *hitjesListItem;
+    WHome *home = NULL;
+    WHitjesList *hitjesList = NULL;
+    W404 *w404 = NULL;
+    WMenu *menu = NULL;
+    WMenuItem *homeItem = NULL;
+    WMenuItem *hitjesListItem = NULL;
 private:
 };
 

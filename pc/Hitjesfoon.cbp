@@ -17,6 +17,7 @@
 					<Add option="-g" />
 					<Add directory="include" />
 					<Add directory="include/persistence" />
+					<Add directory="include/widgets" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -28,6 +29,7 @@
 					<Add option="-O2" />
 					<Add directory="include" />
 					<Add directory="include/persistence" />
+					<Add directory="include/widgets" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -51,7 +53,6 @@
 		<Linker>
 			<Add option="hidapi\windows\hid.o" />
 			<Add option="pdcurses\win32\pdcurses.a" />
-			<Add option="-static" />
 			<Add option="-llibvlc" />
 			<Add library="wt" />
 			<Add library="wthttp" />
@@ -63,16 +64,10 @@
 			<Add library="boost_system-mgw53-mt-1_60" />
 			<Add library="boost_thread-mgw53-mt-1_60" />
 			<Add library="boost_filesystem-mgw53-mt-1_60" />
-			<Add library="curl" />
-			<Add library="rtmp" />
 			<Add library="winmm" />
-			<Add library="ssh2" />
-			<Add library="ssl" />
-			<Add library="crypto" />
 			<Add library="gdi32" />
 			<Add library="crypt32" />
 			<Add library="z" />
-			<Add library="idn" />
 			<Add library="wldap32" />
 			<Add library="ws2_32" />
 			<Add library="mswsock" />

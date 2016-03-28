@@ -28,6 +28,7 @@ public:
     WHitje(GUI &gui, Persistence &persistence, const WString &text, int hitIndex, WContainerWidget *parent = NULL);
     virtual ~WHitje();
 
+    void buildWidget();
     void onPersistenceChange(const string &key);
     void showDialog(bool artist);
     void download(const WMouseEvent &e);
@@ -45,7 +46,6 @@ protected:
     WPushButton *downloadBtn;
     WProgressBar *pgBar;
 
-    void buildWidget();
     void updateHitje();
 private:
 };

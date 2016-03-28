@@ -1,12 +1,13 @@
 #ifndef PERSISTENCEDATA_H
 #define PERSISTENCEDATA_H
 
-#include "Hitje.h"
-
+#include <iostream>
 #include <mutex>
 #include <unordered_map>
 
 #include <boost/signals2.hpp>
+
+#include "Hitje.h"
 
 using namespace std;
 using namespace boost;

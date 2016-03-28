@@ -3,14 +3,9 @@
 WHome::WHome(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WHome(gui, persistence, WString::tr("template-hitjesfoon-home"), parent) {}
 
 WHome::WHome(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
-    buildWidget();
 }
 
 WHome::~WHome() {
-    SAFE_DELETE(playbackControls);
-    SAFE_DELETE(playlist);
-    SAFE_DELETE(hitSearch);
-    SAFE_DELETE(logUpdate);
 }
 
 
@@ -21,13 +16,16 @@ void WHome::buildWidget() {
     bindWidget("log", logContainer);
 
     hitSearch = new WHitSearch(gui, persistence);
+    hitSearch->buildWidget();
     playlist = new WPlaylist(gui, persistence);
+    playlist->buildWidget();
     playbackControls = new WPlaybackControls(gui, persistence);
+    playbackControls->buildWidget();
     bindWidget("template-hitjesfoon-home-input", hitSearch);
     bindWidget("template-hitjesfoon-home-playing", playlist);
     bindWidget("template-hitjesfoon-home-playback-controls", playbackControls);
 
-    logUpdate = new WSound("resources/sounds/logUpdate.mp3");
+    logUpdate = new WSound("resources/sounds/logUpdate.mp3", this);
 
     // Listen to all persistence changes
     persistence.onChangeCallback(boost::bind(&WHome::onPersistenceChange, this, _1));
@@ -40,8 +38,7 @@ void WHome::onPersistenceChange(const string &key) {
 //        logUpdate->play();
     } else if (key == "logv") {
         updateLog();
-        WApplication *app = WApplication::instance();
-        app->triggerUpdate();
+        WApplication::instance()->triggerUpdate();
     } else {
 //        printf("Persistence change key %s\n", key.c_str());
     }
@@ -52,7 +49,9 @@ void WHome::updateLog() {
     unsigned int logcount = logContainer->count();
     if (logcount != 0) {
         // Two widgets might have changed, force update on both
-        logContainer->removeWidget(logContainer->widget(0));
+        WWidget *headWidget = logContainer->widget(0);
+        logContainer->removeWidget(headWidget);
+        SAFE_DELETE(headWidget);
         logcount--;
     }
     for (unsigned int i = logcount; i < logv.size(); i++) {

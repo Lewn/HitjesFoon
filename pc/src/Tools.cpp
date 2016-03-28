@@ -69,7 +69,7 @@ void filesystemSafe(string &str) {
     }
 }
 
-std::shared_ptr<FILE> cmdasync(string cmd) {
+std::shared_ptr<FILE> cmdasync(const string &cmd) {
 #ifdef __WIN32
     shared_ptr<FILE> cmdptr(_popen(cmd.c_str(), "r"), _pclose);
 #else

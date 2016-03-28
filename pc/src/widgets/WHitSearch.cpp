@@ -1,11 +1,8 @@
 #include "widgets/WHitSearch.h"
 
-WHitSearch::WHitSearch(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home-input"), parent), gui(gui), persistence(persistence), searchSP(NULL) {
-    buildWidget();
-}
+WHitSearch::WHitSearch(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WHitSearch(gui, persistence, WString::tr("template-hitjesfoon-home-input"), parent) {}
 
 WHitSearch::WHitSearch(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence), searchSP(NULL) {
-    buildWidget();
 }
 
 WHitSearch::~WHitSearch() {
@@ -40,13 +37,20 @@ void WHitSearch::buildWidget() {
 
 void WHitSearch::onPersistenceChange(const string &key) {
     try {
+        // Try to convert to integer
+        stoi(key);
+        // Try to retrieve as hitje
         persistence.getHitjeData().getVal(key);
-        // TODO can do this without clearing? (Maybe extend class)
-        searchSP->clearSuggestions();
-        addSuggestions();
+    } catch (std::invalid_argument e) {
+        // Couldn't convert, just ignore
+        return;
     } catch (const char *e) {
         // Wasn't a hitje, ignore
+        return;
     }
+    // TODO can do this without clearing? (Maybe extend class)
+    searchSP->clearSuggestions();
+    addSuggestions();
 }
 
 
@@ -77,7 +81,7 @@ void WHitSearch::initSearchSuggestions() {
         searchOptions.highlightEndTag = "</span>";
         searchOptions.whitespace = " \\n";
         searchOptions.wordSeparators = "-., \"@\\n;";
-        searchOptions.listSeparator = NULL;
+        searchOptions.listSeparator = 0;
 
         searchSP = new WSuggestionPopup(
             WSuggestionPopup::generateMatcherJS(searchOptions),

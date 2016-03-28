@@ -1,11 +1,8 @@
 #include "widgets/WPlaybackControls.h"
 
-WPlaybackControls::WPlaybackControls(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home-playback-controls"), parent), gui(gui), persistence(persistence) {
-    buildWidget();
-}
+WPlaybackControls::WPlaybackControls(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WPlaybackControls(gui, persistence, WString::tr("template-hitjesfoon-home-playback-controls"), parent) {}
 
 WPlaybackControls::WPlaybackControls(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
-    buildWidget();
 }
 
 WPlaybackControls::~WPlaybackControls() {

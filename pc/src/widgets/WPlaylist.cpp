@@ -1,15 +1,11 @@
 #include "widgets/WPlaylist.h"
 
-WPlaylist::WPlaylist(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WFilledTemplate(WString::tr("template-hitjesfoon-home-playing"), parent), gui(gui), persistence(persistence) {
-    buildWidget();
-}
+WPlaylist::WPlaylist(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WPlaylist(gui, persistence, WString::tr("template-hitjesfoon-home-playing"), parent) {}
 
 WPlaylist::WPlaylist(GUI &gui, Persistence &persistence, const WString &text, WContainerWidget *parent) : WFilledTemplate(text, parent), gui(gui), persistence(persistence) {
-    buildWidget();
 }
 
 WPlaylist::~WPlaylist() {
-
 }
 
 void WPlaylist::buildWidget() {
