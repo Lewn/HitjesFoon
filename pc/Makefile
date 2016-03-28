@@ -9,12 +9,12 @@ AR = ar
 LD = g++
 MAKE = make
 
-INC = -Ivlc/include -Ihidapi -Iinclude -Icurl/include -Irapidjson/include -Ihidapi/hidapi -Iwt/include
-CFLAGS = -std=c++11 -Wall -fexceptions -DCURL_STATICLIB
+INC = -Ivlc/include -Ihidapi -Iinclude -Irapidjson/include -Ihidapi/hidapi -Iwt/include
+CFLAGS = -std=c++11 -Wall -fexceptions
 RESINC = 
 LIBDIR = 
-LIB = -lwt -lwthttp -lboost_date_time -lboost_regex -lboost_program_options -lboost_signals -lboost_random -lboost_system -lboost_thread -lboost_filesystem -lvlc -lcurl -lpthread hidapi/linux/hid.o -ludev -lcurses
-LDFLAGS = -L"curl/lib" -L"vlc/lib" -L"hidapi/linux"
+LIB = -lwt -lwthttp -lboost_date_time -lboost_regex -lboost_program_options -lboost_signals -lboost_random -lboost_system -lboost_thread -lboost_filesystem -lvlc -lpthread hidapi/linux/hid.o -ludev -lcurses
+LDFLAGS = -L"vlc/lib" -L"hidapi/linux"
 
 INC_DEBUG = $(INC)
 CFLAGS_DEBUG = $(CFLAGS) -g
