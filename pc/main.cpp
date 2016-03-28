@@ -1,5 +1,4 @@
 
-
 //#define GUI_CURSES
 #define GUI_WT
 
@@ -12,6 +11,7 @@
 #include "Tools.h"
 #include "gui/GUI.h"
 #include "retrieve/Retriever.h"
+#include "retrieve/HTTPTransfer.h"
 
 #ifdef GUI_CURSES
 #include "gui/GUICurses.h"
@@ -26,7 +26,22 @@
 using namespace std;
 
 Wt::WApplication *createApplication(const Wt::WEnvironment &env, GUIWt &gui) {
-    return gui.createApplication(env);
+    try {
+        return gui.createApplication(env);
+    } catch (Wt::WException e) {
+        gui.printlevel(LERROR, "WException caught: %s\n", e.what());
+    } catch (const std::ios_base::failure &e) {
+        gui.printlevel(LERROR, "IOS base error caught: %s\n", e.what());
+    } catch (const std::logic_error &e) {
+        gui.printlevel(LERROR, "Logic error caught: %s\n", e.what());
+    } catch (const std::runtime_error &e) {
+        gui.printlevel(LERROR, "Runtime error caught: %s\n", e.what());
+    } catch (const std::exception &e) {
+        gui.printlevel(LERROR, "Exception caught: %s\n", e.what());
+    } catch (const char *e) {
+        gui.printlevel(LERROR, "Unknown exception: %s\n", e);
+    }
+    return NULL;
 }
 
 #else
@@ -46,8 +61,10 @@ int main(int argc, char **argv) {
         try {
 #if defined(GUI_WT)
             // For a Witty gui, all should be handled by signals
-            Wt::WServer server(argv[0]);
-            server.setServerConfiguration(argc, argv, WTHTTP_CONFIGURATION);
+            // First start the server
+            // TODO memory errors in boost::configuration and boost::random here
+            // TODO memory errors in Wt Logger (WLogEntry) everywhere...
+            Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
             gui.setServer(server);
 
             server.addEntryPoint(Wt::Application, boost::bind(createApplication, _1, boost::ref(gui)));
@@ -57,10 +74,10 @@ int main(int argc, char **argv) {
 
             Config config(gui, "config.txt");
             gui.printlevel(LDEBUG, "Read config file\n");
-
+//
             VLC::setConfig(&config);
-
-            // instantiate usb and vlc, cause we will need them
+//
+//            // instantiate usb and vlc, cause we will need them
             USBConnection connection(gui);
             gui.printlevel(LDEBUG, "Instantiated usb connection\n");
             VLC::setGUI(&gui);
@@ -70,8 +87,6 @@ int main(int argc, char **argv) {
             // create an input processor for processing keyboard and usb input
             InputProcessor processor(gui, config);
 
-            // For a Witty gui, all should be handled by signals
-            // First start the server
 #if defined(GUI_WT)
             if (server.start()) {
 #endif

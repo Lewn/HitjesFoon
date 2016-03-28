@@ -1,269 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="src\AudioMenuItem.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\persistence\PersistenceData.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="369" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\persistence\Persistence.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="22" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\Hitje.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="746" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WHitjesList.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="214" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\WHitje.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="586" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\gui\GUICurses.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="95" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\JsonParser.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="70" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\AudioMenuItem.h" open="0" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="86" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\AudioPlayerEventListener.h" open="0" top="0" tabpos="23" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="118" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\gui\GUIWt.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="528" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\USBConnection.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="62" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\persistence\PersistenceData.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="181" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\VLC.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1726" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\gui\GUIEvent.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="752" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\gui\GUICurses.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2920" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\gui\GUINull.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1042" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\retrieve\scraper\YoutubeAPIScraper.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="214" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\retrieve\downloader\YoutubeDL.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2290" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\gui\GUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="24" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\Tools.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="602" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\AHitjesfoon.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="328" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\persistence\Persistence.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1259" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\gui\GUIEvent.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="706" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\retrieve\Retriever.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1285" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\VLC.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="142" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\retrieve\downloader\YoutubeManualDownloader.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="102" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\AHitjesfoon.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="546" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\retrieve\Retriever.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="546" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="include\Config.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="72" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Tools.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="455" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\W404.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="116" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\persistence\PersistenceData.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="22" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WHitSearch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="289" topLine="4" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WHitje.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="320" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\WHitSearch.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3545" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\AudioPlayer.h" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="959" topLine="4" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WHome.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="391" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\WHitjesList.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="534" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\InputProcessor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="580" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WPlaylist.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="235" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\WHome.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="738" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\Structs.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="5" />
-		</Cursor>
-	</File>
-	<File name="include\USBConnection.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="68" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\AudioPlayer.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5905" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\widgets\WPlaylist.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="936" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\AudioMenu.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="150" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\Config.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="740" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\retrieve\HTTPTransfer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="86" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\widgets\WPlaybackControls.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="289" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\retrieve\downloader\YoutubeManualDownloader.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="392" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\retrieve\downloader\YoutubeDL.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="125" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\AudioList.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1158" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\retrieve\scraper\YoutubeAPIScraper.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1135" topLine="0" />
+			<Cursor1 position="111" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="include\ConfigAudioMenu.h" open="0" top="0" tabpos="17" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -271,44 +11,29 @@
 			<Cursor1 position="102" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\Hitje.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include\gui\GUICurses.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="854" topLine="0" />
+			<Cursor1 position="95" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include\AudioList.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\widgets\WHitjesList.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="857" topLine="2" />
+			<Cursor1 position="656" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\InputProcessor.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include\Structs.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="9657" topLine="0" />
+			<Cursor1 position="0" topLine="5" />
 		</Cursor>
 	</File>
-	<File name="src\gui\GUIWt.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="include\AudioMenu.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="377" topLine="0" />
+			<Cursor1 position="150" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include\JsonParser.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\widgets\WFilledTemplate.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="113" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\AudioMenu.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2710" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="include\gui\GUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1394" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="main.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="274" topLine="0" />
+			<Cursor1 position="625" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="include\gui\GUINull.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -316,14 +41,314 @@
 			<Cursor1 position="376" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="src\Config.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="236" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\persistence\Persistence.h" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="864" topLine="13" />
+		</Cursor>
+	</File>
+	<File name="src\Hitje.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="854" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\WPlaylist.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1492" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="src\InputProcessor.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9657" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\persistence\Persistence.cpp" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="523" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\VLC.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="142" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\gui\GUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="24" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\persistence\PersistenceData.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="564" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WHome.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="811" topLine="7" />
+		</Cursor>
+	</File>
+	<File name="src\gui\GUICurses.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2920" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\AudioPlayerEventListener.h" open="0" top="0" tabpos="23" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="118" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\AudioPlayer.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1140" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\WHitSearch.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1568" topLine="17" />
+		</Cursor>
+	</File>
+	<File name="include\Hitje.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="34" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="src\ConfigAudioMenu.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="114" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="src\VLC.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4240" topLine="152" />
+		</Cursor>
+	</File>
+	<File name="include\retrieve\Retriever.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="557" topLine="3" />
+		</Cursor>
+	</File>
 	<File name="src\retrieve\HTTPTransfer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="664" topLine="0" />
+			<Cursor1 position="36" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\AHitjesfoon.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="601" topLine="1" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WHitje.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="790" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\W404.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="454" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\JsonParser.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="70" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\gui\GUINull.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="679" topLine="13" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WFilledTemplate.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="503" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\AudioList.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1228" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\WHome.cpp" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1058" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\AudioMenuItem.h" open="0" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="86" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WHitjesList.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="605" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\JsonParser.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="113" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WPlaybackControls.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="668" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="include\retrieve\HTTPTransfer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="284" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4397" topLine="95" />
+		</Cursor>
+	</File>
+	<File name="src\retrieve\Retriever.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2625" topLine="71" />
+		</Cursor>
+	</File>
+	<File name="include\gui\GUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1394" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\AudioMenu.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2710" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\Tools.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2113" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="include\retrieve\downloader\YoutubeDL.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="61" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\AudioMenuItem.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="369" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\retrieve\downloader\YoutubeDL.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1807" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="include\retrieve\scraper\YoutubeAPIScraper.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="214" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WPlaylist.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="825" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\retrieve\scraper\YoutubeAPIScraper.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1531" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="include\widgets\WHitSearch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="939" topLine="4" />
+		</Cursor>
+	</File>
+	<File name="include\gui\GUIEvent.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="706" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\WHitje.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3969" topLine="83" />
+		</Cursor>
+	</File>
+	<File name="include\Tools.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="757" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\W404.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="445" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\USBConnection.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3090" topLine="72" />
+		</Cursor>
+	</File>
+	<File name="include\retrieve\downloader\YoutubeManualDownloader.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="102" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\gui\GUIEvent.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="752" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\retrieve\downloader\YoutubeManualDownloader.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="392" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\AudioList.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="857" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="src\retrieve\scraper\Scraper.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="132" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\gui\GUIWt.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3651" topLine="90" />
+		</Cursor>
+	</File>
+	<File name="include\gui\GUIWt.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1297" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\AHitjesfoon.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="46" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\Config.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="72" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include\InputProcessor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="580" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\widgets\WPlaybackControls.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="917" topLine="36" />
+		</Cursor>
+	</File>
+	<File name="include\AudioPlayer.h" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="959" topLine="4" />
+		</Cursor>
+	</File>
+	<File name="include\USBConnection.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="68" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
