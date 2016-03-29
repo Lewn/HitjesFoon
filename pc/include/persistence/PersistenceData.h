@@ -34,10 +34,14 @@ public:
     void manipulateVal(const string &key, const Callback &callback);
 
 protected:
-    std::mutex typeMutex;
+    // Mutex controlling access over individual mutexes
+    mutex superMutex;
     changeSignal sig;
 
+    unordered_map<string, std::mutex> mutexes;
     unordered_map<string, Type> vals;
+
+    mutex &findMutex(const string &key, bool create = false);
 private:
 };
 
