@@ -6,6 +6,9 @@
 
 #ifdef __WIN32__
 #include <conio.h>
+#else
+#include <unistd.h>
+#include <termios.h>
 #endif
 #include <vector>
 #include <iostream>
@@ -65,6 +68,8 @@ protected:
 
     virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args);
 private:
+    int input = EOF;
+    void inputLoop();
 };
 
 #endif // GUIWT_H
