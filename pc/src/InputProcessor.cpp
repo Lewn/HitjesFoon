@@ -385,6 +385,7 @@ void InputProcessor::toggleOutput() {
 
 thread *updateThread = NULL;
 void InputProcessor::doUpdate() {
+    // TODO use retriever to get a single hitje, instead of updating the whole list
     try {
         do {
             gui.printlevel(LINFO, "\nDownloading one more hitje");

@@ -2,7 +2,7 @@
 <messages>
 <message id="template-hitjesfoon-hitjeslist">
 	<div style="padding:10px;max-width:1200px;margin:0 auto;">
-		<legend>${strings-hitjeslist-title}</legend>
+		<legend>${strings-hitjeslist-title}</legend><span>${downloadall}</span>
 		<div>
 			${hitjeslist}
 		</div>

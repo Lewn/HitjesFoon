@@ -1,6 +1,8 @@
 #ifndef WHITJESLIST_H
 #define WHITJESLIST_H
 
+#include <thread>
+
 #include <Wt/WContainerWidget>
 #include <Wt/WText>
 
@@ -21,6 +23,7 @@ public:
 
     void buildWidget();
     void onPersistenceChange(const string &key);
+    void downloadAll();
 protected:
     GUI &gui;
     Persistence &persistence;

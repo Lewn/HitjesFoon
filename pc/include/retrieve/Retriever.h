@@ -1,12 +1,17 @@
 #ifndef RETRIEVER_H
 #define RETRIEVER_H
 
+#define MAX_RETRIEVE_SESSIONS   10
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <thread>
+#include <chrono>
+#include <atomic>
 
 #include "gui/GUI.h"
 #include "Hitje.h"
@@ -38,6 +43,10 @@ protected:
     void buildScraperChain();
     void buildDownloaderChain();
 private:
+    static atomic<int> retrieveCnt;
+
+    static bool blockRetrieve(Hitje &hitje);
+    static void endRetrieve(Hitje &hitje);
 };
 
 #endif // RETRIEVER_H

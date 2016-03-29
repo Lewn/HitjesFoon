@@ -20,7 +20,7 @@ void WHitje::buildWidget() {
     titleText->clicked().connect(std::bind(&WHitje::showDialog, this, false));
     infoText = new WText();
     downloadBtn = new WPushButton("Download");
-    downloadBtn->clicked().connect(this, &WHitje::download);
+    downloadBtn->clicked().connect(std::bind(&WHitje::download, this));
     pgBar = new WProgressBar();
     pgBar->setRange(0, 100);
 
@@ -86,29 +86,26 @@ void WHitje::showDialog(bool artist) {
     editDialog->show();
 }
 
-void WHitje::download(const WMouseEvent &e) {
+bool WHitje::download() {
+    // Check whether download is even necessary
+    const Hitje &hitjeCheck = persistence.getHitjeData().getVal(to_string(hitIndex));
+    if (hitjeCheck || hitjeCheck.downloadState.downloading || hitjeCheck.artist.empty() || hitjeCheck.title.empty()) {
+        // Don't need download for whatever reason
+        return false;
+    }
+
     // Perform threaded, as downloading may take a very long time
     // As not to block the UI
-    thread([&]() {
-        bool doDownload = false;
-        persistence.getHitjeData().manipulateVal(to_string(hitIndex), [&](Hitje & hitje) {
-            if (hitje || hitje.downloadState.downloading) {
-                gui.printlevel(LERROR, "Hitje busy, aborting download\n");
-                return;
-            }
-            doDownload = true;
-            // prematurely signal downloading, to make sure we are thread-safe
-            hitje.downloadState.downloading = true;
-        });
-        if (doDownload) {
-            Hitje hitje = persistence.getHitjeData().getVal(to_string(hitIndex));
+    persistence.getHitjeData().manipulateVal(to_string(hitIndex), [&](Hitje & hitje) {
+        thread([&]() {
             // Create a new retriever
-            // TODO limit amount of retrievers, block until available
             Retriever retriever(gui);
             // And download this hitje
+            // TODO dirty to keep this reference?
             retriever.retrieve(hitje);
-        }
-    }).detach();
+        }).detach();
+    });
+    return true;
 }
 
 void WHitje::updateHitje() {

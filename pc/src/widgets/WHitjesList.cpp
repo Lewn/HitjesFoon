@@ -19,10 +19,27 @@ void WHitjesList::buildWidget() {
         hitjesContainer->addWidget(whitje);
     }
 
+    WPushButton *downloadAllBtn = new WPushButton(WString::tr("strings-hitjeslist-downloadall"));
+    bindWidget("downloadall", downloadAllBtn);
+
+    downloadAllBtn->clicked().connect(this, &WHitjesList::downloadAll);
+
     // Listen to all persistence changes
     persistence.onChangeCallback(boost::bind(&WHitjesList::onPersistenceChange, this, _1));
 }
 
 
 void WHitjesList::onPersistenceChange(const string &key) {
+}
+
+void WHitjesList::downloadAll() {
+    // Perform threaded, as downloading may take a very long time
+    // As not to block the UI
+    thread([&]() {
+        for (WObject *child : hitjesContainer->children()) {
+            // All children are in fact whitje
+            WHitje *whitje = (WHitje *)child;
+            whitje->download();
+        }
+    }).detach();
 }

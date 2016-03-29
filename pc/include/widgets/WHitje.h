@@ -31,7 +31,7 @@ public:
     void buildWidget();
     void onPersistenceChange(const string &key);
     void showDialog(bool artist);
-    void download(const WMouseEvent &e);
+    bool download();
 protected:
     GUI &gui;
     Persistence &persistence;

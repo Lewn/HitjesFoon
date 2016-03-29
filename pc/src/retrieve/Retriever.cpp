@@ -10,36 +10,56 @@ Retriever::~Retriever() {
 }
 
 
-bool Retriever::retrieve(Hitje &hitje) {
-    gui.printlevel(LDEBUG, "Retrieving hitje %s\n", hitje.toString().c_str());
-    bool downloaded = false;
-    // Signal start of download to gui
-    hitje.downloadState.downloading = true;
-    gui.setHitje(hitje);
-    ScraperData data;
-    data.query = hitje.artist + ' ' + hitje.title;
-    for (auto &scraper : scraperChain) {
-        // TODO try to weigh in best location to download from
-        // maybe add configuration option to specify preferred download location
-        // or generate a score depending on found video and only download thresh/highest score
-        // First try to download from youtube
-        if (retrieveYoutube(scraper.get(), data, hitje)) {
-            downloaded = true;
-            break;
-        }
-        // Else try to download from soundcloud
-        if (retrieveSoundcloud(scraper.get(), data, hitje)) {
-            downloaded = true;
-            break;
-        }
-        // Try next scraper instead
+bool Retriever::retrieve(Hitje &mainHitje) {
+    // Limit the amount of active retrieve sessions
+    if (!Retriever::blockRetrieve(mainHitje)) {
+        // Couldn't acquire download session, thus couldn't download
+        return false;
     }
-    // Generate media file, attach it to hitje
-    downloaded &= createMediaFile(hitje);
-    // Signal end of downloading to gui
-    hitje.downloadState.downloading = false;
-    gui.setHitje(hitje);
-    return downloaded;
+    // Make sure we are working with a copy for the remainder
+    Hitje hitje(mainHitje);
+
+    try {
+        // Signal start of download to gui
+        gui.setHitje(hitje);
+        gui.printlevel(LDEBUG, "Retrieving hitje %s\n", hitje.toString().c_str());
+        bool downloaded = false;
+
+        // Collect necessary data about hitje
+        ScraperData data;
+        data.query = hitje.artist + ' ' + hitje.title;
+        for (auto &scraper : scraperChain) {
+            // TODO try to weigh in best location to download from
+            // maybe add configuration option to specify preferred download location
+            // or generate a score depending on found video and only download thresh/highest score
+            // First try to download from youtube
+            if (retrieveYoutube(scraper.get(), data, hitje)) {
+                downloaded = true;
+                break;
+            }
+            // Else try to download from soundcloud
+            if (retrieveSoundcloud(scraper.get(), data, hitje)) {
+                downloaded = true;
+                break;
+            }
+            // Try next scraper instead
+        }
+        // Generate media file, attach it to hitje
+        downloaded &= createMediaFile(hitje);
+        // Release retrieve session
+        Retriever::endRetrieve(hitje);
+        // Signal end of downloading to gui
+        gui.printlevel(LINFO, "Successfully downloaded hitje %d\n", hitje.hitIndex);
+        gui.setHitje(hitje);
+        return downloaded;
+    } catch (...) {
+        // Make sure we end our session
+        Retriever::endRetrieve(hitje);
+        // Signal end of downloading to gui
+        gui.setHitje(hitje);
+        gui.printlevel(LERROR, "Something went terribly wrong while retrieving\n");
+    }
+    return false;
 }
 
 bool Retriever::retrieveYoutube(Scraper *scraper, ScraperData data, Hitje &hitje) {
@@ -117,4 +137,37 @@ bool Retriever::createMediaFile(Hitje &hitje) {
     // Release the data (decrease refcount, hitje keeps its own)
     VLC::release(mediaData);
     return true;
+}
+
+
+atomic<int> Retriever::retrieveCnt = ATOMIC_VAR_INIT(MAX_RETRIEVE_SESSIONS);
+
+bool Retriever::blockRetrieve(Hitje &hitje) {
+    // Try to acquire a session
+    while (atomic_fetch_sub(&retrieveCnt, 1) <= 0) {
+        atomic_fetch_add(&retrieveCnt, 1);
+        // Sleep to give other threads a chance to do work
+        this_thread::sleep_for(chrono::seconds(1));
+    }
+
+    if (hitje || hitje.downloadState.downloading) {
+        // Already downloaded or started downloading, cancel
+        atomic_fetch_add(&retrieveCnt, 1);;
+        return false;
+    }
+    if (hitje.artist.empty() || hitje.title.empty()) {
+        // It is not actually possible to download hitje in this state, abort
+        atomic_fetch_add(&retrieveCnt, 1);;
+        return false;
+    }
+    // Mark as downloading active
+    hitje.downloadState.downloading = true;
+    return true;
+}
+
+void Retriever::endRetrieve(Hitje &hitje) {
+    // Simply reduce amount of active sessions
+    atomic_fetch_add(&retrieveCnt, 1);;
+    // Mark hitje as not downloading anymore
+    hitje.downloadState.downloading = false;
 }

@@ -74,10 +74,10 @@ int main(int argc, char **argv) {
 
             Config config(gui, "config.txt");
             gui.printlevel(LDEBUG, "Read config file\n");
-//
+
             VLC::setConfig(&config);
-//
-//            // instantiate usb and vlc, cause we will need them
+
+            // instantiate usb and vlc, cause we will need them
             USBConnection connection(gui);
             gui.printlevel(LDEBUG, "Instantiated usb connection\n");
             VLC::setGUI(&gui);
@@ -123,8 +123,7 @@ int main(int argc, char **argv) {
         } catch (const std::exception &e) {
             gui.printlevel(LERROR, "Exception caught: %s\n", e.what());
         } catch (const char *ex) {
-            printf("%s\n", ex);
-            //gui.confirm(LERROR, "%s\n", ex);
+            gui.printlevel(LERROR, "%s\n", ex);
         }
     } catch (...) {
         printf("Something went terribly wrong...\n");

@@ -11,7 +11,12 @@ string HTTPTransfer::get(const char *url) {
     char buf[1024];
     string cmd = "curl \"";
     cmd += url;
-    cmd += '"';
+    // Pipe progress away
+#ifdef __WIN32
+    cmd += "\" 2> nul";
+#else
+    cmd += "\" 2> /dev/null";
+#endif // __WIN32
     auto cmdptr = cmdasync(cmd);
     while (!feof(cmdptr.get())) {
         if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
@@ -26,8 +31,13 @@ void HTTPTransfer::get(const char *url, const char *filename) {
     char buf[1024];
     string cmd = "curl -o ";
     cmd += filename;
-    cmd += " ";
+    cmd += " \"";
     cmd += url;
+#ifdef __WIN32
+    cmd += "\" 2> nul";
+#else
+    cmd += "\" 2> /dev/null";
+#endif // __WIN32
     auto cmdptr = cmdasync(cmd);
     while (!feof(cmdptr.get())) {
         if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
