@@ -61,7 +61,7 @@ const Hitje &AudioList::getHitje(int hitjeIndex) {
 void AudioList::hitjeUpdate(const Hitje &hitje) {
     // Propagate external hitje changes back to list
     if (hitjes[hitje.hitIndex] != hitje) {
-        const Hitje &oldHitje = hitjes[hitje.hitIndex];
+        Hitje oldHitje = Hitje(hitjes[hitje.hitIndex]);
         hitjes[hitje.hitIndex] = hitje;
         // Write the changes to the file
         if (oldHitje.hitIndex != hitje.hitIndex || oldHitje.title != hitje.title || oldHitje.artist != hitje.artist) {

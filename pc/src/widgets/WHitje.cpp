@@ -73,15 +73,16 @@ void WHitje::showDialog(bool artist) {
         }));
     }
     const Hitje &hitje = persistence.getHitjeData().getVal(to_string(hitIndex));
+    WLineEdit *edit = (WLineEdit *)editDialog->contents()->widget(0);
     if (artist) {
         editDialog->setWindowTitle("Editing artist");
-        WLineEdit *edit = (WLineEdit *)editDialog->contents()->widget(0);
         edit->setText(hitje.artist);
     } else {
         editDialog->setWindowTitle("Editing title");
-        WLineEdit *edit = (WLineEdit *)editDialog->contents()->widget(0);
         edit->setText(hitje.title);
     }
+    // Directly request focus to this field
+    edit->setFocus();
     editingArtist = artist;
     editDialog->show();
 }
