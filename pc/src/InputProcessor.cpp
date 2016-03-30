@@ -103,6 +103,8 @@ void InputProcessor::process(int input) {
             // shuffle a random number in the player
 
         }
+    } else {
+        this_thread::sleep_for(chrono::microseconds(200));
     }
 }
 
