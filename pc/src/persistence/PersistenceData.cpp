@@ -18,7 +18,9 @@ template <typename Type> mutex &PersistenceData<Type>::findMutex(const string &k
     if (keymutex == mutexes.end()) {
         // Couldn't find
         if (!create) {
-            throw "PersistenceData key not found";
+            string mesg = "PersistenceData key not found, ";
+            mesg += key;
+            throw mesg.c_str();
         }
         // Create a new mutex and return it
         return mutexes[key];

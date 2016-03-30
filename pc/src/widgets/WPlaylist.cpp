@@ -19,6 +19,9 @@ void WPlaylist::buildWidget() {
 
     // Listen to all persistence changes
     persistence.onChangeCallback(boost::bind(&WPlaylist::onPersistenceChange, this, _1));
+    // And set initial values
+    updatePlaylist();
+    currentlyTypingText->setText(to_string(persistence.getIntData().getVal("phone-num")));
 }
 
 

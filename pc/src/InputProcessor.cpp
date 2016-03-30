@@ -15,7 +15,9 @@ InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(
     //speakerAudioPlayer->attachEventListener(this);
 
 
+    // Send initial values
     gui.setSpeakerVolume(speakerAudioPlayer->getVolume());
+    sendHitjesQueue(0);
 
     // listen to gui events such that it can change audio values
     gui.events().phoneNum(boost::bind(&InputProcessor::inputNum, this, _1));

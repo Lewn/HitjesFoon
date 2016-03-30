@@ -37,6 +37,8 @@ void WPlaybackControls::buildWidget() {
 
     // Listen to all persistence changes
     persistence.onChangeCallback(boost::bind(&WPlaybackControls::onPersistenceChange, this, _1));
+    // Set initial value
+    volumeSlider->setValue(persistence.getIntData().getVal("volume-speaker"));
 }
 
 void WPlaybackControls::updatePlayPause() {

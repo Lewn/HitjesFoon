@@ -65,8 +65,6 @@ int main(int argc, char **argv) {
 #if defined(GUI_WT)
             // For a Witty gui, all should be handled by signals
             // First start the server
-            // TODO memory errors in boost::configuration and boost::random here
-            // TODO memory errors in Wt Logger (WLogEntry) everywhere...
             Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
             gui.setServer(server);
 
