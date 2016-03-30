@@ -94,6 +94,7 @@ int USBConnection::isEarthDown() {
 
 
 void USBConnection::printUSB() {
+    // TODO memory leak here?
     struct hid_device_info *devs, *cur_dev;
 
     devs = hid_enumerate(0x0, 0x0);

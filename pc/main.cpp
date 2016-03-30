@@ -39,7 +39,9 @@ Wt::WApplication *createApplication(const Wt::WEnvironment &env, GUIWt &gui) {
     } catch (const std::exception &e) {
         gui.printlevel(LERROR, "Exception caught: %s\n", e.what());
     } catch (const char *e) {
-        gui.printlevel(LERROR, "Unknown exception: %s\n", e);
+        gui.printlevel(LERROR, "%s\n", e);
+    } catch (...) {
+        gui.printlevel(LERROR, "Unknown exception\n");
     }
     return NULL;
 }
@@ -52,6 +54,7 @@ Wt::WApplication *createApplication(const Wt::WEnvironment &env, GUIWt &gui) {
 
 
 int main(int argc, char **argv) {
+    toolsInit();
     try {
 #ifdef GUI_CURSES
         GUICurses gui(LINFO);
@@ -128,6 +131,7 @@ int main(int argc, char **argv) {
     } catch (...) {
         printf("Something went terribly wrong...\n");
     }
+    toolsDeinit();
     VLC::deleteInstance();
     return 0;
 }

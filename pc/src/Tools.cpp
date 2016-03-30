@@ -80,3 +80,65 @@ std::shared_ptr<FILE> cmdasync(const string &cmd) {
     }
     return cmdptr;
 }
+
+
+
+#ifndef __WIN32__
+struct termios orig_termios;
+
+void reset_terminal_mode() {
+    tcsetattr(0, TCSANOW, &orig_termios);
+}
+
+void set_conio_terminal_mode() {
+    struct termios new_termios;
+
+    /* take two copies - one for now, one for later */
+    tcgetattr(0, &orig_termios);
+    memcpy(&new_termios, &orig_termios, sizeof(new_termios));
+
+    // Register cleanup handlers
+    atexit(reset_terminal_mode);
+    set_terminate(reset_terminal_mode);
+
+    // Actually set the terminal mode
+    cfmakeraw(&new_termios);
+    new_termios.c_lflag &= (~ICANON);
+    tcsetattr(0, TCSANOW, &new_termios);
+}
+
+
+int getch() {
+    int r;
+    unsigned char c;
+    if ((r = read(0, &c, sizeof(c))) < 0) {
+        c = 0;
+    }
+    return c;
+}
+
+int kbhit() {
+    struct timeval tv = { 0L, 0L };
+    fd_set fds;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+    return FD_ISSET(0, &fds);
+}
+#endif // __WIN32__
+
+
+
+void toolsInit() {
+#ifndef __WIN32__
+    set_conio_terminal_mode();
+#endif // __WIN32__
+}
+
+void toolsDeinit() {
+#ifndef __WIN32__
+    reset_terminal_mode():
+#endif // __WIN32__
+    }

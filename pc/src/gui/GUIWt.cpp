@@ -159,44 +159,15 @@ void GUIWt::logHTML(vector<string> &logv, const string &el, bool nlfirst, bool n
     }
 }
 
-
-#ifndef __WIN32__
-char getch() {
-    char buf = 0;
-    struct termios old = {0};
-    if (tcgetattr(0, &old) < 0) {
-        throw "tcsetattr()";
-    }
-    old.c_lflag &= ~ICANON;
-    old.c_cc[VMIN] = 1;
-    old.c_cc[VTIME] = 0;
-    if (tcsetattr(0, TCSANOW, &old) < 0) {
-        throw "tcsetattr ICANON";
-    }
-    if (read(0, &buf, 1) < 0) {
-        throw "read()";
-    }
-    old.c_lflag |= ICANON;
-    if (tcsetattr(0, TCSADRAIN, &old) < 0) {
-        throw "tcsetattr ~ICANON";
-    }
-    return buf;
-}
-#endif // __WIN32__
-
 int GUIWt::getInput() {
     WApplication *app = WApplication::instance();
     int c = 0;
     if (app == NULL) {
         // No user input, get from terminal
         // Still require a reliable cross platform solution
-#ifdef __WIN32__
         if (kbhit()) {
             c = getch();
         }
-#else
-        c = getch();
-#endif // __WIN32__
     } else {
         // Get input from the users browser and process
         printlevel(LWARNING, "function getInput not implemented yet\n");

@@ -6,12 +6,18 @@
 #define SAFE_DELETE_ARRAY(x) delete[](x); x = NULL
 #define SAFE_CLOSE(x) if (x != NULL) {fclose(x); x = NULL;}
 
+#ifdef __WIN32__
+#include <conio.h>
+#else
+#include <unistd.h>
+#include <termios.h>
+#include <sys/time.h>
+#endif
 #include <vector>
 #include <string>
 #include <cstring>
 #include <ctype.h>
 #include <stdio.h>
-#include <time.h>
 #include <algorithm>
 #include <memory>
 
@@ -31,5 +37,15 @@ void filesystemSafe(char *str);
 void filesystemSafe(string &str);
 
 std::shared_ptr<FILE> cmdasync(const string &cmd);
+
+
+#ifndef __WIN32__
+// Define windows defaults
+int getch();
+int kbhit();
+#endif // __WIN32__
+
+void toolsInit();
+void toolsDeinit();
 
 #endif // TOOLS_H

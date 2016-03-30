@@ -4,12 +4,6 @@
 #include "Structs.h"
 #include "Tools.h"
 
-#ifdef __WIN32__
-#include <conio.h>
-#else
-#include <unistd.h>
-#include <termios.h>
-#endif
 #include <vector>
 #include <iostream>
 #include <memory>
