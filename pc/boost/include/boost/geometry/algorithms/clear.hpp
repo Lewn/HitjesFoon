@@ -162,7 +162,7 @@ struct clear<variant<BOOST_VARIANT_ENUM_PARAMS(T)> >
 
     static inline void apply(variant<BOOST_VARIANT_ENUM_PARAMS(T)>& geometry)
     {
-        boost::apply_visitor(visitor(), geometry);
+        apply_visitor(visitor(), geometry);
     }
 };
 

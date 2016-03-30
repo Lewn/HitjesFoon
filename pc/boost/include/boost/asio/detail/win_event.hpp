@@ -102,11 +102,7 @@ public:
     {
       state_ += 2;
       lock.unlock();
-#if defined(BOOST_ASIO_WINDOWS_APP)
-      ::WaitForMultipleObjectsEx(2, events_, false, INFINITE, false);
-#else // defined(BOOST_ASIO_WINDOWS_APP)
       ::WaitForMultipleObjects(2, events_, false, INFINITE);
-#endif // defined(BOOST_ASIO_WINDOWS_APP)
       lock.lock();
       state_ -= 2;
     }

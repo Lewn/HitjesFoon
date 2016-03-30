@@ -1,13 +1,11 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2007-2015 Barend Gehrels, Amsterdam, the Netherlands.
-// Copyright (c) 2008-2015 Bruno Lalande, Paris, France.
-// Copyright (c) 2009-2015 Mateusz Loskot, London, UK.
+// Copyright (c) 2007-2012 Barend Gehrels, Amsterdam, the Netherlands.
+// Copyright (c) 2008-2012 Bruno Lalande, Paris, France.
+// Copyright (c) 2009-2012 Mateusz Loskot, London, UK.
 
-// This file was modified by Oracle on 2014, 2015.
-// Modifications copyright (c) 2014-2015 Oracle and/or its affiliates.
-
-// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+// This file was modified by Oracle on 2014.
+// Modifications copyright (c) 2014 Oracle and/or its affiliates.
 
 // Parts of Boost.Geometry are redesigned from Geodan's Geographic Library
 // (geolib/GGL), copyright (c) 1995-2010 Geodan, Amsterdam, the Netherlands.
@@ -15,6 +13,8 @@
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
+
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 #ifndef BOOST_GEOMETRY_ALGORITHMS_OVERLAPS_HPP
 #define BOOST_GEOMETRY_ALGORITHMS_OVERLAPS_HPP
@@ -28,9 +28,7 @@
 
 #include <boost/geometry/geometries/concepts/check.hpp>
 
-#include <boost/geometry/algorithms/relate.hpp>
-#include <boost/geometry/algorithms/detail/relate/relate_impl.hpp>
-
+#include <boost/geometry/algorithms/detail/relate/relate.hpp>
 
 namespace boost { namespace geometry
 {
@@ -84,7 +82,6 @@ struct box_box_loop
         {
             one_in_two = false;
         }
-
         // Same other way round
         if (min2 < min1 || max2 > max1)
         {
@@ -152,9 +149,9 @@ template
     typename Tag2 = typename tag<Geometry2>::type
 >
 struct overlaps
-    : detail::relate::relate_impl
+    : detail::relate::relate_base
         <
-            detail::de9im::static_mask_overlaps_type,
+            detail::relate::static_mask_overlaps_type,
             Geometry1,
             Geometry2
         >

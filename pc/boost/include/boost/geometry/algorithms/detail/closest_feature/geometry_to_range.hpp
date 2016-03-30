@@ -12,7 +12,8 @@
 
 #include <iterator>
 
-#include <boost/geometry/core/assert.hpp>
+#include <boost/assert.hpp>
+
 #include <boost/geometry/core/point_type.hpp>
 #include <boost/geometry/strategies/distance.hpp>
 #include <boost/geometry/util/math.hpp>
@@ -48,7 +49,7 @@ private:
                              RangeIterator& it_min,
                              Distance& dist_min)
     {
-        BOOST_GEOMETRY_ASSERT( first != last );
+        BOOST_ASSERT( first != last );
 
         Distance const zero = Distance(0);
 

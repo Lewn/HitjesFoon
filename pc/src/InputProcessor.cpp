@@ -103,9 +103,9 @@ void InputProcessor::process(int input) {
             // shuffle a random number in the player
 
         }
-    } else {
-        this_thread::sleep_for(chrono::microseconds(200));
     }
+    // Sleep to not continuously hog processor
+    this_thread::sleep_for(chrono::microseconds(200));
 }
 
 void InputProcessor::processAudioMenu(int input) {

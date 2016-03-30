@@ -12,7 +12,6 @@
 
 #include <boost/array.hpp>
 
-#include <boost/geometry/core/coordinate_type.hpp>
 #include <boost/geometry/algorithms/detail/overlay/segment_identifier.hpp>
 
 namespace boost { namespace geometry
@@ -55,19 +54,15 @@ enum method_type
         The class is to be included in the turn_info class, either direct
         or a derived or similar class with more (e.g. enrichment) information.
  */
-template <typename Point, typename SegmentRatio>
+template <typename SegmentRatio>
 struct turn_operation
 {
     operation_type operation;
     segment_identifier seg_id;
     SegmentRatio fraction;
 
-    typedef typename coordinate_type<Point>::type comparable_distance_type;
-    comparable_distance_type remaining_distance;
-
     inline turn_operation()
         : operation(operation_none)
-        , remaining_distance(0)
     {}
 };
 
@@ -85,7 +80,7 @@ template
 <
     typename Point,
     typename SegmentRatio,
-    typename Operation = turn_operation<Point, SegmentRatio>,
+    typename Operation = turn_operation<SegmentRatio>,
     typename Container = boost::array<Operation, 2>
 >
 struct turn_info
@@ -98,7 +93,6 @@ struct turn_info
     method_type method;
     bool discarded;
     bool selectable_start; // Can be used as starting-turn in traverse
-    bool colocated;
 
 
     Container operations;
@@ -107,7 +101,6 @@ struct turn_info
         : method(method_none)
         , discarded(false)
         , selectable_start(true)
-        , colocated(false)
     {}
 
     inline bool both(operation_type type) const

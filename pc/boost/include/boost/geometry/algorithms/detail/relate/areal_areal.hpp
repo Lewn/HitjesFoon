@@ -88,7 +88,7 @@ public:
         // TODO: This is O(N)
         // Run in a loop O(NM) - optimize!
         int const pig = detail::within::point_in_geometry(pt, m_other_areal);
-        //BOOST_GEOMETRY_ASSERT( pig != 0 );
+        //BOOST_ASSERT( pig != 0 );
         
         // inside
         if ( pig > 0 )
@@ -104,9 +104,9 @@ public:
 
             // Check if any interior ring is outside
             ring_identifier ring_id(0, -1, 0);
-            std::size_t const irings_count = geometry::num_interior_rings(areal);
-            for ( ; static_cast<std::size_t>(ring_id.ring_index) < irings_count ;
-                    ++ring_id.ring_index )
+            int const irings_count = boost::numeric_cast<int>(
+                                        geometry::num_interior_rings(areal) );
+            for ( ; ring_id.ring_index < irings_count ; ++ring_id.ring_index )
             {
                 typename detail::sub_range_return_type<Areal const>::type
                     range_ref = detail::sub_range(areal, ring_id);
@@ -140,9 +140,9 @@ public:
 
             // Check if any interior ring is inside
             ring_identifier ring_id(0, -1, 0);
-            std::size_t const irings_count = geometry::num_interior_rings(areal);
-            for ( ; static_cast<std::size_t>(ring_id.ring_index) < irings_count ;
-                    ++ring_id.ring_index )
+            int const irings_count = boost::numeric_cast<int>(
+                                        geometry::num_interior_rings(areal) );
+            for ( ; ring_id.ring_index < irings_count ; ++ring_id.ring_index )
             {
                 typename detail::sub_range_return_type<Areal const>::type
                     range_ref = detail::sub_range(areal, ring_id);
@@ -338,7 +338,7 @@ struct areal_areal
         template <std::size_t OpId, typename Turn>
         inline void per_turn(Turn const& turn)
         {
-            //static const std::size_t other_op_id = (OpId + 1) % 2;
+            static const std::size_t other_op_id = (OpId + 1) % 2;
             static const bool transpose_result = OpId != 0;
 
             overlay::operation_type const op = turn.operations[OpId].operation;
@@ -357,14 +357,11 @@ struct areal_areal
             else if ( op == overlay::operation_intersection )
             {
                 // ignore i/i
-                /*if ( turn.operations[other_op_id].operation != overlay::operation_intersection )
+                if ( turn.operations[other_op_id].operation != overlay::operation_intersection )
                 {
-                    // not correct e.g. for G1 touching G2 in a point where a hole is touching the exterior ring
-                    // in this case 2 turns i/... and u/u will be generated for this IP
-                    //update<interior, interior, '2', transpose_result>(m_result);
-
+                    update<interior, interior, '2', transpose_result>(m_result);
                     //update<boundary, interior, '1', transpose_result>(m_result);
-                }*/
+                }
 
                 update<boundary, boundary, '0', transpose_result>(m_result);
             }
@@ -408,7 +405,7 @@ struct areal_areal
                   typename TurnIt>
         void apply(Result & result, TurnIt it)
         {
-            //BOOST_GEOMETRY_ASSERT( it != last );
+            //BOOST_ASSERT( it != last );
 
             overlay::operation_type const op = it->operations[op_id].operation;
 
@@ -476,11 +473,8 @@ struct areal_areal
                 // ignore i/i
                 if ( it->operations[other_op_id].operation != overlay::operation_intersection )
                 {
-                    // this was set in the interrupt policy but it was wrong
-                    // also here it's wrong since it may be a fake entry point
-                    //update<interior, interior, '2', transpose_result>(result);
-
                     // already set in interrupt policy
+                    //update<interior, interior, '2', transpose_result>(result);
                     //update<boundary, boundary, '0', transpose_result>(result);
                     m_enter_detected = true;
                 }
@@ -504,7 +498,7 @@ struct areal_areal
         template <typename Result>
         void apply(Result & result)
         {
-            //BOOST_GEOMETRY_ASSERT( first != last );
+            //BOOST_ASSERT( first != last );
 
             if ( m_exit_detected /*m_previous_operation == overlay::operation_union*/ )
             {
@@ -529,7 +523,6 @@ struct areal_areal
         template <typename Result>
         static inline void update_enter(Result & result)
         {
-            update<interior, interior, '2', transpose_result>(result);
             update<boundary, interior, '1', transpose_result>(result);
             update<exterior, interior, '2', transpose_result>(result);
         }
@@ -581,7 +574,6 @@ struct areal_areal
             , m_flags(0)
         {
             // check which relations must be analysed
-            // NOTE: 1 and 4 could probably be connected
 
             if ( ! may_update<interior, interior, '2', transpose_result>(m_result) )
             {
@@ -626,7 +618,7 @@ struct areal_areal
             // O(N) - running it in a loop gives O(NM)
             int const pig = detail::within::point_in_geometry(range::front(range_ref), other_geometry);
 
-            //BOOST_GEOMETRY_ASSERT(pig != 0);
+            //BOOST_ASSERT(pig != 0);
             if ( pig > 0 )
             {
                 update<interior, interior, '2', transpose_result>(m_result);
@@ -670,12 +662,21 @@ struct areal_areal
                 if ( it->operations[0].operation == overlay::operation_intersection 
                   && it->operations[1].operation == overlay::operation_intersection )
                 {
-                    found_ii = true;
+                    // ignore exterior ring
+                    if ( it->operations[OpId].seg_id.ring_index >= 0 )
+                    {
+                        found_ii = true;
+                    }
                 }
                 else if ( it->operations[0].operation == overlay::operation_union 
                        && it->operations[1].operation == overlay::operation_union )
                 {
-                    found_uu = true;
+                    // ignore if u/u is for holes
+                    //if ( it->operations[OpId].seg_id.ring_index >= 0
+                    //  && it->operations[other_id].seg_id.ring_index >= 0 )
+                    {
+                        found_uu = true;
+                    }
                 }
                 else // ignore
                 {
@@ -686,11 +687,8 @@ struct areal_areal
             // only i/i was generated for this ring
             if ( found_ii )
             {
-                update<interior, interior, '2', transpose_result>(m_result);
-                m_flags |= 1;
-
-                //update<boundary, boundary, '0', transpose_result>(m_result);                
-
+                //update<interior, interior, '0', transpose_result>(m_result);
+                //update<boundary, boundary, '0', transpose_result>(m_result);
                 update<boundary, interior, '1', transpose_result>(m_result);
                 update<exterior, interior, '2', transpose_result>(m_result);
                 m_flags |= 4;
@@ -795,8 +793,8 @@ struct areal_areal
         {
             segment_identifier const& seg_id = turn.operations[OpId].seg_id;
 
-            signed_size_type
-                count = boost::numeric_cast<signed_size_type>(
+            signed_index_type
+                count = boost::numeric_cast<signed_index_type>(
                             geometry::num_interior_rings(
                                 detail::single_geometry(analyser.geometry, seg_id)));
             
@@ -806,8 +804,8 @@ struct areal_areal
         template <typename Analyser, typename Turn>
         static inline void for_no_turns_rings(Analyser & analyser,
                                               Turn const& turn,
-                                              signed_size_type first,
-                                              signed_size_type last)
+                                              signed_index_type first,
+                                              signed_index_type last)
         {
             segment_identifier seg_id = turn.operations[OpId].seg_id;
 

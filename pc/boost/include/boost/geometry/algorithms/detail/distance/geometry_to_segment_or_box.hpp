@@ -185,10 +185,10 @@ public:
                 Geometry const
             > segment_iterator_type;
 
-        typedef typename boost::range_const_iterator
+        typedef typename std::vector
             <
-                std::vector<segment_or_box_point>
-            >::type seg_or_box_const_iterator;
+                segment_or_box_point
+            >::const_iterator seg_or_box_iterator_type;
 
         typedef assign_new_min_iterator<SegmentOrBox> assign_new_value;
 
@@ -219,9 +219,8 @@ public:
         // segment or box
         comparable_return_type cd_min1(0);
         point_iterator_type pit_min;
-        seg_or_box_const_iterator it_min1 = boost::const_begin(seg_or_box_points);
-        seg_or_box_const_iterator it_min2 = it_min1;
-        ++it_min2;
+        seg_or_box_iterator_type it_min1 = seg_or_box_points.begin();
+        seg_or_box_iterator_type it_min2 = ++seg_or_box_points.begin();
         bool first = true;
 
         for (point_iterator_type pit = points_begin(geometry);
@@ -230,11 +229,11 @@ public:
             comparable_return_type cd;
             std::pair
                 <
-                    seg_or_box_const_iterator, seg_or_box_const_iterator
+                    seg_or_box_iterator_type, seg_or_box_iterator_type
                 > it_pair
                 = point_to_point_range::apply(*pit,
-                                              boost::const_begin(seg_or_box_points),
-                                              boost::const_end(seg_or_box_points),
+                                              seg_or_box_points.begin(),
+                                              seg_or_box_points.end(),
                                               cstrategy,
                                               cd);
 
@@ -251,11 +250,12 @@ public:
         // segments of the geometry
         comparable_return_type cd_min2(0);
         segment_iterator_type sit_min;
-        seg_or_box_const_iterator it_min;
+        typename std::vector<segment_or_box_point>::const_iterator it_min;
 
         first = true;
-        for (seg_or_box_const_iterator it = boost::const_begin(seg_or_box_points);
-             it != boost::const_end(seg_or_box_points); ++it, first = false)
+        for (typename std::vector<segment_or_box_point>::const_iterator it
+                 = seg_or_box_points.begin();
+             it != seg_or_box_points.end(); ++it, first = false)
         {
             comparable_return_type cd;
             segment_iterator_type sit

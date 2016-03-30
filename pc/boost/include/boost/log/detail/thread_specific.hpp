@@ -38,11 +38,11 @@ namespace aux {
 class thread_specific_base
 {
 private:
-#if defined(BOOST_THREAD_PLATFORM_WIN32)
-    typedef unsigned long key_storage;
-#else
-    typedef void* key_storage;
-#endif
+    union key_storage
+    {
+        void* as_pointer;
+        unsigned int as_dword;
+    };
 
     key_storage m_Key;
 

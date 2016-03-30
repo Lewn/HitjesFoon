@@ -66,8 +66,7 @@ enum piece_type
     buffered_round_end,
     buffered_flat_end,
     buffered_point,
-    buffered_concave,   // always on the inside
-    piece_type_unknown
+    buffered_concave   // always on the inside
 };
 
 
@@ -81,17 +80,6 @@ enum join_selector
     join_concave,
     join_continue, // collinear, next segment touches previous segment
     join_spike     // collinear, with overlap, next segment goes back
-};
-
-/*!
-\brief Enumerates types of result codes from buffer strategies
-\ingroup enum
-*/
-enum result_code
-{
-    result_normal,
-    result_error_numerical,
-    result_no_output
 };
 
 

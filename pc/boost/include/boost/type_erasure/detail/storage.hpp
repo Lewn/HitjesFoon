@@ -37,11 +37,11 @@ struct storage
     storage(storage&& other) : data(other.data) {}
     storage& operator=(const storage& other) { data = other.data; return *this; }
     template<class T>
-    explicit storage(T&& arg) : data(new typename remove_cv<
+    storage(T&& arg) : data(new typename remove_cv<
         typename remove_reference<T>::type>::type(std::forward<T>(arg))) {}
 #else
     template<class T>
-    explicit storage(const T& arg) : data(new T(arg)) {}
+    storage(const T& arg) : data(new T(arg)) {}
 #endif
     void* data;
 };

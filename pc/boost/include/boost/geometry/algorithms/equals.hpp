@@ -51,8 +51,7 @@
 #include <boost/geometry/util/select_most_precise.hpp>
 
 #include <boost/geometry/algorithms/detail/equals/collect_vectors.hpp>
-#include <boost/geometry/algorithms/relate.hpp>
-#include <boost/geometry/algorithms/detail/relate/relate_impl.hpp>
+#include <boost/geometry/algorithms/detail/relate/relate.hpp>
 
 #include <boost/geometry/views/detail/indexed_point_view.hpp>
 
@@ -182,9 +181,9 @@ struct equals_by_collection
 
 template<typename Geometry1, typename Geometry2>
 struct equals_by_relate
-    : detail::relate::relate_impl
+    : detail::relate::relate_base
         <
-            detail::de9im::static_mask_equals_type,
+            detail::relate::static_mask_equals_type,
             Geometry1,
             Geometry2
         >
@@ -372,7 +371,7 @@ struct equals<boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)>, Geometry2>
         Geometry2 const& geometry2
     )
     {
-        return boost::apply_visitor(visitor(geometry2), geometry1);
+        return apply_visitor(visitor(geometry2), geometry1);
     }
 };
 
@@ -401,7 +400,7 @@ struct equals<Geometry1, boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)> >
         boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)> const& geometry2
     )
     {
-        return boost::apply_visitor(visitor(geometry1), geometry2);
+        return apply_visitor(visitor(geometry1), geometry2);
     }
 };
 
@@ -431,7 +430,7 @@ struct equals<
         boost::variant<BOOST_VARIANT_ENUM_PARAMS(T2)> const& geometry2
     )
     {
-        return boost::apply_visitor(visitor(), geometry1, geometry2);
+        return apply_visitor(visitor(), geometry1, geometry2);
     }
 };
 

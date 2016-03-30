@@ -59,15 +59,10 @@ namespace detail{
 template <unsigned digits10>
 struct gmp_float_imp
 {
-#ifdef BOOST_HAS_LONG_LONG
-   typedef mpl::list<long, boost::long_long_type>                     signed_types;
-   typedef mpl::list<unsigned long, boost::ulong_long_type>   unsigned_types;
-#else
-   typedef mpl::list<long>                                signed_types;
-   typedef mpl::list<unsigned long>                       unsigned_types;
-#endif
-   typedef mpl::list<double, long double>                 float_types;
-   typedef long                                           exponent_type;
+   typedef mpl::list<long, long long>                 signed_types;
+   typedef mpl::list<unsigned long, unsigned long long>   unsigned_types;
+   typedef mpl::list<double, long double>            float_types;
+   typedef long                                      exponent_type;
 
    gmp_float_imp() BOOST_NOEXCEPT {}
 
@@ -105,48 +100,37 @@ struct gmp_float_imp
       return *this;
    }
 #endif
-
-#ifdef BOOST_HAS_LONG_LONG
-#if defined(ULLONG_MAX) && (ULLONG_MAX == ULONG_MAX)
-   gmp_float_imp& operator = (boost::ulong_long_type i)
-   {
-      *this = static_cast<unsigned long>(i);
-      return *this;
-   }
-#else
-   gmp_float_imp& operator = (boost::ulong_long_type i)
+   gmp_float_imp& operator = (unsigned long long i)
    {
       if(m_data[0]._mp_d == 0)
          mpf_init2(m_data, multiprecision::detail::digits10_2_2(digits10 ? digits10 : get_default_precision()));
-      boost::ulong_long_type mask = ((((1uLL << (std::numeric_limits<unsigned long>::digits - 1)) - 1) << 1) | 1uLL);
+      unsigned long long mask = ((1uLL << std::numeric_limits<unsigned>::digits) - 1);
       unsigned shift = 0;
       mpf_t t;
       mpf_init2(t, multiprecision::detail::digits10_2_2(digits10 ? digits10 : get_default_precision()));
       mpf_set_ui(m_data, 0);
       while(i)
       {
-         mpf_set_ui(t, static_cast<unsigned long>(i & mask));
+         mpf_set_ui(t, static_cast<unsigned>(i & mask));
          if(shift)
             mpf_mul_2exp(t, t, shift);
          mpf_add(m_data, m_data, t);
-         shift += std::numeric_limits<unsigned long>::digits;
-         i >>= std::numeric_limits<unsigned long>::digits;
+         shift += std::numeric_limits<unsigned>::digits;
+         i >>= std::numeric_limits<unsigned>::digits;
       }
       mpf_clear(t);
       return *this;
    }
-#endif
-   gmp_float_imp& operator = (boost::long_long_type i)
+   gmp_float_imp& operator = (long long i)
    {
       if(m_data[0]._mp_d == 0)
          mpf_init2(m_data, multiprecision::detail::digits10_2_2(digits10 ? digits10 : get_default_precision()));
       bool neg = i < 0;
-      *this = static_cast<boost::ulong_long_type>(boost::multiprecision::detail::unsigned_abs(i));
+      *this = static_cast<unsigned long long>(boost::multiprecision::detail::unsigned_abs(i));
       if(neg)
          mpf_neg(m_data, m_data);
       return *this;
    }
-#endif
    gmp_float_imp& operator = (unsigned long i)
    {
       if(m_data[0]._mp_d == 0)
@@ -643,7 +627,7 @@ inline void eval_add(gmp_float<digits10>& result, long i)
    if(i > 0)
       mpf_add_ui(result.data(), result.data(), i);
    else
-      mpf_sub_ui(result.data(), result.data(), boost::multiprecision::detail::unsigned_abs(i));
+      mpf_sub_ui(result.data(), result.data(), std::abs(i));
 }
 template <unsigned digits10>
 inline void eval_subtract(gmp_float<digits10>& result, long i)
@@ -651,12 +635,12 @@ inline void eval_subtract(gmp_float<digits10>& result, long i)
    if(i > 0)
       mpf_sub_ui(result.data(), result.data(), i);
    else
-      mpf_add_ui(result.data(), result.data(), boost::multiprecision::detail::unsigned_abs(i));
+      mpf_add_ui(result.data(), result.data(), std::abs(i));
 }
 template <unsigned digits10>
 inline void eval_multiply(gmp_float<digits10>& result, long i)
 {
-   mpf_mul_ui(result.data(), result.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpf_mul_ui(result.data(), result.data(), std::abs(i));
    if(i < 0)
       mpf_neg(result.data(), result.data());
 }
@@ -665,7 +649,7 @@ inline void eval_divide(gmp_float<digits10>& result, long i)
 {
    if(i == 0)
       BOOST_THROW_EXCEPTION(std::overflow_error("Division by zero."));
-   mpf_div_ui(result.data(), result.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpf_div_ui(result.data(), result.data(), std::abs(i));
    if(i < 0)
       mpf_neg(result.data(), result.data());
 }
@@ -859,13 +843,13 @@ inline void eval_convert_to(double* result, const gmp_float<digits10>& val) BOOS
 }
 #ifdef BOOST_HAS_LONG_LONG
 template <unsigned digits10>
-inline void eval_convert_to(boost::long_long_type* result, const gmp_float<digits10>& val)
+inline void eval_convert_to(long long* result, const gmp_float<digits10>& val)
 {
    gmp_float<digits10> t(val);
    if(eval_get_sign(t) < 0)
       t.negate();
 
-   long digits = std::numeric_limits<boost::long_long_type>::digits - std::numeric_limits<long>::digits;
+   long digits = std::numeric_limits<long long>::digits - std::numeric_limits<long>::digits;
 
    if(digits > 0)
       mpf_div_2exp(t.data(), t.data(), digits);
@@ -873,9 +857,9 @@ inline void eval_convert_to(boost::long_long_type* result, const gmp_float<digit
    if(!mpf_fits_slong_p(t.data()))
    {
       if(eval_get_sign(val) < 0)
-         *result = (std::numeric_limits<boost::long_long_type>::min)();
+         *result = (std::numeric_limits<long long>::min)();
       else
-         *result = (std::numeric_limits<boost::long_long_type>::max)();
+         *result = (std::numeric_limits<long long>::max)();
       return;
    };
 
@@ -894,18 +878,18 @@ inline void eval_convert_to(boost::long_long_type* result, const gmp_float<digit
       *result = -*result;
 }
 template <unsigned digits10>
-inline void eval_convert_to(boost::ulong_long_type* result, const gmp_float<digits10>& val)
+inline void eval_convert_to(unsigned long long* result, const gmp_float<digits10>& val)
 {
    gmp_float<digits10> t(val);
 
-   long digits = std::numeric_limits<boost::long_long_type>::digits - std::numeric_limits<long>::digits;
+   long digits = std::numeric_limits<long long>::digits - std::numeric_limits<long>::digits;
 
    if(digits > 0)
       mpf_div_2exp(t.data(), t.data(), digits);
 
    if(!mpf_fits_ulong_p(t.data()))
    {
-      *result = (std::numeric_limits<boost::long_long_type>::max)();
+      *result = (std::numeric_limits<long long>::max)();
       return;
    }
 
@@ -985,13 +969,8 @@ inline void eval_frexp(gmp_float<Digits10>& result, const gmp_float<Digits10>& v
 
 struct gmp_int
 {
-#ifdef BOOST_HAS_LONG_LONG
-   typedef mpl::list<long, boost::long_long_type>                     signed_types;
-   typedef mpl::list<unsigned long, boost::ulong_long_type>   unsigned_types;
-#else
-   typedef mpl::list<long>                                signed_types;
-   typedef mpl::list<unsigned long>                       unsigned_types;
-#endif
+   typedef mpl::list<long, long long>                     signed_types;
+   typedef mpl::list<unsigned long, unsigned long long>   unsigned_types;
    typedef mpl::list<double, long double>                 float_types;
 
    gmp_int()
@@ -1047,37 +1026,28 @@ struct gmp_int
       return *this;
    }
 #endif
-#ifdef BOOST_HAS_LONG_LONG
-#if defined(ULLONG_MAX) && (ULLONG_MAX == ULONG_MAX)
-   gmp_int& operator = (boost::ulong_long_type i)
-   {
-      *this = static_cast<unsigned long>(i);
-      return *this;
-   }
-#else
-   gmp_int& operator = (boost::ulong_long_type i)
+   gmp_int& operator = (unsigned long long i)
    {
       if(m_data[0]._mp_d == 0)
          mpz_init(this->m_data);
-      boost::ulong_long_type mask = ((((1uLL << (std::numeric_limits<unsigned long>::digits - 1)) - 1) << 1) | 1uLL);
+      unsigned long long mask = ((1uLL << std::numeric_limits<unsigned>::digits) - 1);
       unsigned shift = 0;
       mpz_t t;
       mpz_set_ui(m_data, 0);
       mpz_init_set_ui(t, 0);
       while(i)
       {
-         mpz_set_ui(t, static_cast<unsigned long>(i & mask));
+         mpz_set_ui(t, static_cast<unsigned>(i & mask));
          if(shift)
             mpz_mul_2exp(t, t, shift);
          mpz_add(m_data, m_data, t);
-         shift += std::numeric_limits<unsigned long>::digits;
-         i >>= std::numeric_limits<unsigned long>::digits;
+         shift += std::numeric_limits<unsigned>::digits;
+         i >>= std::numeric_limits<unsigned>::digits;
       }
       mpz_clear(t);
       return *this;
    }
-#endif
-   gmp_int& operator = (boost::long_long_type i)
+   gmp_int& operator = (long long i)
    {
       if(m_data[0]._mp_d == 0)
          mpz_init(this->m_data);
@@ -1087,7 +1057,6 @@ struct gmp_int
          mpz_neg(m_data, m_data);
       return *this;
    }
-#endif
    gmp_int& operator = (unsigned long i)
    {
       if(m_data[0]._mp_d == 0)
@@ -1410,19 +1379,19 @@ inline void eval_subtract(gmp_int& t, long i)
 }
 inline void eval_multiply(gmp_int& t, long i)
 {
-   mpz_mul_ui(t.data(), t.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_mul_ui(t.data(), t.data(), std::abs(i));
    if(i < 0)
       mpz_neg(t.data(), t.data());
 }
 inline void eval_modulus(gmp_int& t, long i)
 {
-   mpz_tdiv_r_ui(t.data(), t.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_tdiv_r_ui(t.data(), t.data(), std::abs(i));
 }
 inline void eval_divide(gmp_int& t, long i)
 {
    if(i == 0)
       BOOST_THROW_EXCEPTION(std::overflow_error("Division by zero."));
-   mpz_tdiv_q_ui(t.data(), t.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_tdiv_q_ui(t.data(), t.data(), std::abs(i));
    if(i < 0)
       mpz_neg(t.data(), t.data());
 }
@@ -1522,19 +1491,19 @@ inline void eval_subtract(gmp_int& t, const gmp_int& p, long i)
 }
 inline void eval_multiply(gmp_int& t, const gmp_int& p, long i)
 {
-   mpz_mul_ui(t.data(), p.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_mul_ui(t.data(), p.data(), std::abs(i));
    if(i < 0)
       mpz_neg(t.data(), t.data());
 }
 inline void eval_modulus(gmp_int& t, const gmp_int& p, long i)
 {
-   mpz_tdiv_r_ui(t.data(), p.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_tdiv_r_ui(t.data(), p.data(), std::abs(i));
 }
 inline void eval_divide(gmp_int& t, const gmp_int& p, long i)
 {
    if(i == 0)
       BOOST_THROW_EXCEPTION(std::overflow_error("Division by zero."));
-   mpz_tdiv_q_ui(t.data(), p.data(), boost::multiprecision::detail::unsigned_abs(i));
+   mpz_tdiv_q_ui(t.data(), p.data(), std::abs(i));
    if(i < 0)
       mpz_neg(t.data(), t.data());
 }
@@ -1613,12 +1582,12 @@ inline typename enable_if_c<(is_unsigned<I>::value && (sizeof(I) <= sizeof(unsig
 template <class I>
 inline typename enable_if_c<(is_signed<I>::value && (sizeof(I) <= sizeof(long)))>::type eval_gcd(gmp_int& result, const gmp_int& a, const I b)
 {
-   mpz_gcd_ui(result.data(), a.data(), boost::multiprecision::detail::unsigned_abs(b));
+   mpz_gcd_ui(result.data(), a.data(), std::abs(b));
 }
 template <class I>
 inline typename enable_if_c<is_signed<I>::value && ((sizeof(I) <= sizeof(long)))>::type eval_lcm(gmp_int& result, const gmp_int& a, const I b)
 {
-   mpz_lcm_ui(result.data(), a.data(), boost::multiprecision::detail::unsigned_abs(b));
+   mpz_lcm_ui(result.data(), a.data(), std::abs(b));
 }
 
 inline void eval_integer_sqrt(gmp_int& s, gmp_int& r, const gmp_int& x)
@@ -1695,7 +1664,8 @@ inline typename enable_if<is_unsigned<Integer>, Integer>::type eval_integer_modu
 template <class Integer>
 inline typename enable_if<is_signed<Integer>, Integer>::type eval_integer_modulus(const gmp_int& x, Integer val)
 {
-   return eval_integer_modulus(x, boost::multiprecision::detail::unsigned_abs(val));
+   typedef typename make_unsigned<Integer>::type unsigned_type;
+   return eval_integer_modulus(x, static_cast<unsigned_type>(std::abs(val)));
 }
 inline void eval_powm(gmp_int& result, const gmp_int& base, const gmp_int& p, const gmp_int& m)
 {
@@ -1736,14 +1706,9 @@ void eval_add(gmp_rational& t, const gmp_rational& o);
 
 struct gmp_rational
 {
-#ifdef BOOST_HAS_LONG_LONG
-   typedef mpl::list<long, boost::long_long_type>                     signed_types;
-   typedef mpl::list<unsigned long, boost::ulong_long_type>   unsigned_types;
-#else
-   typedef mpl::list<long>                                signed_types;
-   typedef mpl::list<unsigned long>                       unsigned_types;
-#endif
-   typedef mpl::list<double, long double>                 float_types;
+   typedef mpl::list<long, long long>                 signed_types;
+   typedef mpl::list<unsigned long, unsigned long long>   unsigned_types;
+   typedef mpl::list<double, long double>            float_types;
 
    gmp_rational()
    {
@@ -1792,24 +1757,28 @@ struct gmp_rational
       return *this;
    }
 #endif
-#ifdef BOOST_HAS_LONG_LONG
-#if defined(ULLONG_MAX) && (ULLONG_MAX == ULONG_MAX)
-   gmp_rational& operator = (boost::ulong_long_type i)
-   {
-      *this = static_cast<unsigned long>(i);
-      return *this;
-   }
-#else
-   gmp_rational& operator = (boost::ulong_long_type i)
+   gmp_rational& operator = (unsigned long long i)
    {
       if(m_data[0]._mp_den._mp_d == 0)
          mpq_init(m_data);
-      gmp_int zi;
-      zi = i;
-      mpq_set_z(m_data, zi.data());
+      unsigned long long mask = ((1uLL << std::numeric_limits<unsigned>::digits) - 1);
+      unsigned shift = 0;
+      mpq_t t;
+      mpq_set_ui(m_data, 0, 1);
+      mpq_init(t);
+      while(i)
+      {
+         mpq_set_ui(t, static_cast<unsigned>(i & mask), 1);
+         if(shift)
+            mpq_mul_2exp(t, t, shift);
+         mpq_add(m_data, m_data, t);
+         shift += std::numeric_limits<unsigned>::digits;
+         i >>= std::numeric_limits<unsigned>::digits;
+      }
+      mpq_clear(t);
       return *this;
    }
-   gmp_rational& operator = (boost::long_long_type i)
+   gmp_rational& operator = (long long i)
    {
       if(m_data[0]._mp_den._mp_d == 0)
          mpq_init(m_data);
@@ -1819,8 +1788,6 @@ struct gmp_rational
          mpq_neg(m_data, m_data);
       return *this;
    }
-#endif
-#endif
    gmp_rational& operator = (unsigned long i)
    {
       if(m_data[0]._mp_den._mp_d == 0)
@@ -2296,7 +2263,7 @@ public:
    BOOST_STATIC_CONSTEXPR int digits = static_cast<int>((Digits10 * 1000L) / 301L + ((Digits10 * 1000L) % 301L ? 2 : 1));
    BOOST_STATIC_CONSTEXPR int digits10 = Digits10;
    // Have to allow for a possible extra limb inside the gmp data structure:
-   BOOST_STATIC_CONSTEXPR int max_digits10 = Digits10 + 3 + ((GMP_LIMB_BITS * 301L) / 1000L);
+   BOOST_STATIC_CONSTEXPR int max_digits10 = Digits10 + 2 + ((GMP_LIMB_BITS * 301L) / 1000L);
    BOOST_STATIC_CONSTEXPR bool is_signed = true;
    BOOST_STATIC_CONSTEXPR bool is_integer = false;
    BOOST_STATIC_CONSTEXPR bool is_exact = false;
@@ -2522,7 +2489,7 @@ public:
    static number_type lowest() { return (min)(); }
    BOOST_STATIC_CONSTEXPR int digits = INT_MAX;
    BOOST_STATIC_CONSTEXPR int digits10 = (INT_MAX / 1000) * 301L;
-   BOOST_STATIC_CONSTEXPR int max_digits10 = digits10 + 3;
+   BOOST_STATIC_CONSTEXPR int max_digits10 = digits10 + 2;
    BOOST_STATIC_CONSTEXPR bool is_signed = true;
    BOOST_STATIC_CONSTEXPR bool is_integer = true;
    BOOST_STATIC_CONSTEXPR bool is_exact = true;
@@ -2621,7 +2588,7 @@ public:
    // Digits are unbounded, use zero for now:
    BOOST_STATIC_CONSTEXPR int digits = INT_MAX;
    BOOST_STATIC_CONSTEXPR int digits10 = (INT_MAX / 1000) * 301L;
-   BOOST_STATIC_CONSTEXPR int max_digits10 = digits10 + 3;
+   BOOST_STATIC_CONSTEXPR int max_digits10 = digits10 + 2;
    BOOST_STATIC_CONSTEXPR bool is_signed = true;
    BOOST_STATIC_CONSTEXPR bool is_integer = false;
    BOOST_STATIC_CONSTEXPR bool is_exact = true;

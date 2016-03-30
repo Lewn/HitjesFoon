@@ -16,14 +16,11 @@
 #include <boost/core/ignore_unused.hpp>
 #include <boost/range.hpp>
 
-#include <boost/geometry/core/assert.hpp>
 #include <boost/geometry/core/coordinate_type.hpp>
 #include <boost/geometry/core/point_type.hpp>
 
-#include <boost/geometry/algorithms/comparable_distance.hpp>
 #include <boost/geometry/algorithms/covered_by.hpp>
 #include <boost/geometry/algorithms/envelope.hpp>
-#include <boost/geometry/algorithms/is_convex.hpp>
 
 #include <boost/geometry/strategies/buffer.hpp>
 
@@ -129,11 +126,6 @@ struct buffered_piece_collection
     typedef geometry::model::ring<robust_point_type> robust_ring_type;
     typedef geometry::model::box<robust_point_type> robust_box_type;
 
-    typedef typename default_comparable_distance_result
-        <
-            robust_point_type
-        >::type robust_comparable_radius_type;
-
     typedef typename strategy::side::services::default_strategy
         <
             typename cs_tag<point_type>::type
@@ -167,7 +159,7 @@ struct buffered_piece_collection
 
     struct robust_turn
     {
-        std::size_t turn_index;
+        int turn_index;
         int operation_index;
         robust_point_type point;
         segment_identifier seg_id;
@@ -180,10 +172,10 @@ struct buffered_piece_collection
         typedef geometry::section<robust_box_type, 1> section_type;
 
         strategy::buffer::piece_type type;
-        signed_size_type index;
+        int index;
 
-        signed_size_type left_index; // points to previous piece of same ring
-        signed_size_type right_index; // points to next piece of same ring
+        int left_index; // points to previous piece of same ring
+        int right_index; // points to next piece of same ring
 
         // The next two members (1, 2) form together a complete clockwise ring
         // for each piece (with one dupped point)
@@ -191,20 +183,20 @@ struct buffered_piece_collection
 
         // 1: half, part of offsetted_rings
         segment_identifier first_seg_id;
-        signed_size_type last_segment_index; // no segment-identifier - it is the same as first_seg_id
-        signed_size_type offsetted_count; // part in robust_ring which is part of offsetted ring
+        int last_segment_index; // no segment-identifier - it is the same as first_seg_id
+        int offsetted_count; // part in robust_ring which is part of offsetted ring
 
 #if defined(BOOST_GEOMETRY_BUFFER_USE_HELPER_POINTS)
         // 2: half, not part of offsetted rings - part of robust ring
         std::vector<point_type> helper_points; // 4 points for side, 3 points for join - 0 points for flat-end
 #endif
 
-        bool is_convex;
         bool is_monotonic_increasing[2]; // 0=x, 1=y
         bool is_monotonic_decreasing[2]; // 0=x, 1=y
 
         // Monotonic sections of pieces around points
         std::vector<section_type> sections;
+
 
         // Robust representations
         // 3: complete ring
@@ -214,27 +206,6 @@ struct buffered_piece_collection
         robust_box_type robust_offsetted_envelope;
 
         std::vector<robust_turn> robust_turns; // Used only in insert_rescaled_piece_turns - we might use a map instead
-
-        robust_point_type robust_center;
-        robust_comparable_radius_type robust_min_comparable_radius;
-        robust_comparable_radius_type robust_max_comparable_radius;
-
-        piece()
-            : type(strategy::buffer::piece_type_unknown)
-            , index(-1)
-            , left_index(-1)
-            , right_index(-1)
-            , last_segment_index(-1)
-            , offsetted_count(-1)
-            , is_convex(false)
-            , robust_min_comparable_radius(0)
-            , robust_max_comparable_radius(0)
-        {
-            is_monotonic_increasing[0] = false;
-            is_monotonic_increasing[1] = false;
-            is_monotonic_decreasing[0] = false;
-            is_monotonic_decreasing[1] = false;
-        }
     };
 
     struct robust_original
@@ -273,7 +244,7 @@ struct buffered_piece_collection
 
     piece_vector_type m_pieces;
     turn_vector_type m_turns;
-    signed_size_type m_first_piece_index;
+    int m_first_piece_index;
 
     buffered_ring_collection<buffered_ring<Ring> > offsetted_rings; // indexed by multi_index
     std::vector<robust_original> robust_originals; // robust representation of the original(s)
@@ -473,7 +444,6 @@ struct buffered_piece_collection
             {
                 it->location = inside_buffer;
             }
-#if ! defined(BOOST_GEOMETRY_BUFFER_USE_SIDE_OF_INTERSECTION)
             if (it->count_within_near_offsetted > 0)
             {
                 // Within can have in rare cases a rounding issue. We don't discard this
@@ -481,7 +451,6 @@ struct buffered_piece_collection
                 // will never start a new ring from this type of points.
                 it->selectable_start = false;
             }
-#endif
         }
     }
 
@@ -546,7 +515,7 @@ struct buffered_piece_collection
     {
         // Add rescaled turn points to corresponding pieces
         // (after this, each turn occurs twice)
-        std::size_t index = 0;
+        int index = 0;
         for (typename boost::range_iterator<turn_vector_type>::type it =
             boost::begin(m_turns); it != boost::end(m_turns); ++it, ++index)
         {
@@ -575,16 +544,16 @@ struct buffered_piece_collection
             }
         }
 
-#if ! defined(BOOST_GEOMETRY_BUFFER_USE_SIDE_OF_INTERSECTION)
         // Insert all rescaled turn-points into these rings, to form a
         // reliable integer-based ring. All turns can be compared (inside) to this
         // rings to see if they are inside.
 
-        for (typename boost::range_iterator<piece_vector_type>::type
-                it = boost::begin(m_pieces); it != boost::end(m_pieces); ++it)
+        for (typename piece_vector_type::iterator it = boost::begin(m_pieces);
+            it != boost::end(m_pieces);
+            ++it)
         {
             piece& pc = *it;
-            signed_size_type piece_segment_index = pc.first_seg_id.segment_index;
+            int piece_segment_index = pc.first_seg_id.segment_index;
             if (! pc.robust_turns.empty())
             {
                 if (pc.robust_turns.size() > 1u)
@@ -592,14 +561,14 @@ struct buffered_piece_collection
                     std::sort(pc.robust_turns.begin(), pc.robust_turns.end(), buffer_operation_less());
                 }
                 // Walk through them, in reverse to insert at right index
-                signed_size_type index_offset = static_cast<signed_size_type>(pc.robust_turns.size()) - 1;
-                for (typename boost::range_reverse_iterator<const std::vector<robust_turn> >::type
-                        rit = boost::const_rbegin(pc.robust_turns);
-                    rit != boost::const_rend(pc.robust_turns);
+                int index_offset = pc.robust_turns.size() - 1;
+                for (typename std::vector<robust_turn>::const_reverse_iterator
+                        rit = pc.robust_turns.rbegin();
+                    rit != pc.robust_turns.rend();
                     ++rit, --index_offset)
                 {
-                    signed_size_type const index_in_vector = 1 + rit->seg_id.segment_index - piece_segment_index;
-                    BOOST_GEOMETRY_ASSERT
+                    int const index_in_vector = 1 + rit->seg_id.segment_index - piece_segment_index;
+                    BOOST_ASSERT
                     (
                         index_in_vector > 0
                         && index_in_vector < pc.offsetted_count
@@ -613,8 +582,7 @@ struct buffered_piece_collection
             }
         }
 
-        BOOST_GEOMETRY_ASSERT(assert_indices_in_robust_rings());
-#endif
+        BOOST_ASSERT(assert_indices_in_robust_rings());
     }
 
     template <std::size_t Dimension>
@@ -639,8 +607,6 @@ struct buffered_piece_collection
         pc.is_monotonic_decreasing[0] = true;
         pc.is_monotonic_decreasing[1] = true;
 
-        pc.is_convex = geometry::is_convex(pc.robust_ring);
-
         if (pc.offsetted_count < 2)
         {
             return;
@@ -649,13 +615,14 @@ struct buffered_piece_collection
         typename robust_ring_type::const_iterator current = pc.robust_ring.begin();
         typename robust_ring_type::const_iterator next = current + 1;
 
-        for (signed_size_type i = 1; i < pc.offsetted_count; i++)
+        for (int i = 1; i < pc.offsetted_count; i++)
         {
             determine_monotonicity<0>(pc, *current, *next);
             determine_monotonicity<1>(pc, *current, *next);
             current = next;
             ++next;
         }
+
     }
 
     void determine_properties()
@@ -692,31 +659,7 @@ struct buffered_piece_collection
         geometry::sectionalize<false, dimensions>(pc.robust_ring,
                 detail::no_rescale_policy(), pc.sections);
 
-        // Determine min/max radius
-        typedef geometry::model::referring_segment<robust_point_type const>
-            robust_segment_type;
-
-        typename robust_ring_type::const_iterator current = pc.robust_ring.begin();
-        typename robust_ring_type::const_iterator next = current + 1;
-
-        for (signed_size_type i = 1; i < pc.offsetted_count; i++)
-        {
-            robust_segment_type s(*current, *next);
-            robust_comparable_radius_type const d
-                = geometry::comparable_distance(pc.robust_center, s);
-
-            if (i == 1 || d < pc.robust_min_comparable_radius)
-            {
-                pc.robust_min_comparable_radius = d;
-            }
-            if (i == 1 || d > pc.robust_max_comparable_radius)
-            {
-                pc.robust_max_comparable_radius = d;
-            }
-
-            current = next;
-            ++next;
-        }
+        // TODO (next phase) determine min/max radius
     }
 
     inline void prepare_buffered_point_pieces()
@@ -787,7 +730,7 @@ struct buffered_piece_collection
 
     inline void start_new_ring()
     {
-        signed_size_type const n = static_cast<signed_size_type>(offsetted_rings.size());
+        int const n = offsetted_rings.size();
         current_segment_id.source_index = 0;
         current_segment_id.multi_index = n;
         current_segment_id.ring_index = -1;
@@ -796,35 +739,12 @@ struct buffered_piece_collection
         offsetted_rings.resize(n + 1);
         current_robust_ring.clear();
 
-        m_first_piece_index = static_cast<signed_size_type>(boost::size(m_pieces));
-    }
-
-    inline void abort_ring()
-    {
-        // Remove all created pieces for this ring, sections, last offsetted
-        while (! m_pieces.empty()
-               && m_pieces.back().first_seg_id.multi_index
-               == current_segment_id.multi_index)
-        {
-            m_pieces.erase(m_pieces.end() - 1);
-        }
-
-        while (! monotonic_sections.empty()
-               && monotonic_sections.back().ring_id.multi_index
-               == current_segment_id.multi_index)
-        {
-            monotonic_sections.erase(monotonic_sections.end() - 1);
-        }
-
-        offsetted_rings.erase(offsetted_rings.end() - 1);
-        current_robust_ring.clear();
-
-        m_first_piece_index = -1;
+        m_first_piece_index = boost::size(m_pieces);
     }
 
     inline void update_closing_point()
     {
-        BOOST_GEOMETRY_ASSERT(! offsetted_rings.empty());
+        BOOST_ASSERT(! offsetted_rings.empty());
         buffered_ring<Ring>& added = offsetted_rings.back();
         if (! boost::empty(added))
         {
@@ -844,7 +764,7 @@ struct buffered_piece_collection
         // For now, it is made equal because due to numerical instability,
         // it can be a tiny bit off, possibly causing a self-intersection
 
-        BOOST_GEOMETRY_ASSERT(boost::size(m_pieces) > 0);
+        BOOST_ASSERT(boost::size(m_pieces) > 0);
         if (! ring.empty()
             && current_segment_id.segment_index
                 == m_pieces.back().first_seg_id.segment_index)
@@ -853,33 +773,19 @@ struct buffered_piece_collection
         }
     }
 
-    inline void set_piece_center(point_type const& center)
+    inline void finish_ring(bool is_interior = false, bool has_interiors = false)
     {
-        BOOST_GEOMETRY_ASSERT(! m_pieces.empty());
-        geometry::recalculate(m_pieces.back().robust_center, center,
-                m_robust_policy);
-    }
-
-    inline void finish_ring(strategy::buffer::result_code code,
-                            bool is_interior = false, bool has_interiors = false)
-    {
-        if (code == strategy::buffer::result_error_numerical)
-        {
-            abort_ring();
-            return;
-        }
-
         if (m_first_piece_index == -1)
         {
             return;
         }
 
-        if (m_first_piece_index < static_cast<signed_size_type>(boost::size(m_pieces)))
+        if (m_first_piece_index < static_cast<int>(boost::size(m_pieces)))
         {
             // If piece was added
             // Reassign left-of-first and right-of-last
             geometry::range::at(m_pieces, m_first_piece_index).left_index
-                    = static_cast<signed_size_type>(boost::size(m_pieces)) - 1;
+                                                    = boost::size(m_pieces) - 1;
             geometry::range::back(m_pieces).right_index = m_first_piece_index;
         }
         m_first_piece_index = -1;
@@ -888,7 +794,7 @@ struct buffered_piece_collection
 
         if (! current_robust_ring.empty())
         {
-            BOOST_GEOMETRY_ASSERT
+            BOOST_ASSERT
             (
                 geometry::equals(current_robust_ring.front(),
                     current_robust_ring.back())
@@ -902,20 +808,20 @@ struct buffered_piece_collection
 
     inline void set_current_ring_concave()
     {
-        BOOST_GEOMETRY_ASSERT(boost::size(offsetted_rings) > 0);
+        BOOST_ASSERT(boost::size(offsetted_rings) > 0);
         offsetted_rings.back().has_concave = true;
     }
 
-    inline signed_size_type add_point(point_type const& p)
+    inline int add_point(point_type const& p)
     {
-        BOOST_GEOMETRY_ASSERT(boost::size(offsetted_rings) > 0);
+        BOOST_ASSERT(boost::size(offsetted_rings) > 0);
 
         buffered_ring<Ring>& current_ring = offsetted_rings.back();
         update_last_point(p, current_ring);
 
         current_segment_id.segment_index++;
         current_ring.push_back(p);
-        return static_cast<signed_size_type>(current_ring.size());
+        return current_ring.size();
     }
 
     //-------------------------------------------------------------------------
@@ -930,7 +836,7 @@ struct buffered_piece_collection
 
         piece pc;
         pc.type = type;
-        pc.index = static_cast<signed_size_type>(boost::size(m_pieces));
+        pc.index = boost::size(m_pieces);
         pc.first_seg_id = current_segment_id;
 
         // Assign left/right (for first/last piece per ring they will be re-assigned later)
@@ -956,11 +862,11 @@ struct buffered_piece_collection
             return;
         }
 
-        BOOST_GEOMETRY_ASSERT(pc.first_seg_id.multi_index >= 0);
-        BOOST_GEOMETRY_ASSERT(pc.last_segment_index >= 0);
+        BOOST_ASSERT(pc.first_seg_id.multi_index >= 0);
+        BOOST_ASSERT(pc.last_segment_index >= 0);
 
         pc.offsetted_count = pc.last_segment_index - pc.first_seg_id.segment_index;
-        BOOST_GEOMETRY_ASSERT(pc.offsetted_count >= 0);
+        BOOST_ASSERT(pc.offsetted_count >= 0);
 
         pc.robust_ring.reserve(pc.offsetted_count + helper_points_size);
 
@@ -1009,10 +915,11 @@ struct buffered_piece_collection
             return;
         }
 
-        geometry::envelope(pc.robust_ring, pc.robust_envelope);
+        geometry::detail::envelope::envelope_range::apply(pc.robust_ring,
+                pc.robust_envelope);
 
         geometry::assign_inverse(pc.robust_offsetted_envelope);
-        for (signed_size_type i = 0; i < pc.offsetted_count; i++)
+        for (int i = 0; i < pc.offsetted_count; i++)
         {
             geometry::expand(pc.robust_offsetted_envelope, pc.robust_ring[i]);
         }
@@ -1103,7 +1010,7 @@ struct buffered_piece_collection
     template <typename Range>
     inline void add_range_to_piece(piece& pc, Range const& range, bool add_front)
     {
-        BOOST_GEOMETRY_ASSERT(boost::size(range) != 0u);
+        BOOST_ASSERT(boost::size(range) != 0u);
 
         typename Range::const_iterator it = boost::begin(range);
 
@@ -1139,7 +1046,7 @@ struct buffered_piece_collection
     inline void add_side_piece(point_type const& p1, point_type const& p2,
             Range const& range, bool first)
     {
-        BOOST_GEOMETRY_ASSERT(boost::size(range) >= 2u);
+        BOOST_ASSERT(boost::size(range) >= 2u);
 
         piece& pc = create_piece(strategy::buffer::buffered_segment, ! first);
         add_range_to_piece(pc, range, first);
@@ -1195,7 +1102,7 @@ struct buffered_piece_collection
             typename cs_tag<Ring>::type
         >::type side_strategy_type;
 
-        enrich_intersection_points<false, false, overlay_union>(m_turns,
+        enrich_intersection_points<false, false>(m_turns,
                     detail::overlay::operation_union,
                     offsetted_rings, offsetted_rings,
                     m_robust_policy, side_strategy_type());
@@ -1226,7 +1133,7 @@ struct buffered_piece_collection
         robust_point_type any_point;
         geometry::recalculate(any_point, point, m_robust_policy);
 
-        signed_size_type count_in_original = 0;
+        int count_in_original = 0;
 
         // Check of the robust point of this outputted ring is in
         // any of the robust original rings
@@ -1372,7 +1279,7 @@ struct buffered_piece_collection
         // Inner rings, for deflate, which do not have intersections, and
         // which are outside originals, are skipped
         // (other ones should be traversed)
-        signed_size_type index = 0;
+        int index = 0;
         for(typename buffered_ring_collection<buffered_ring<Ring> >::const_iterator it = boost::begin(offsetted_rings);
             it != boost::end(offsetted_rings);
             ++it, ++index)
@@ -1380,12 +1287,8 @@ struct buffered_piece_collection
             if (! it->has_intersections()
                 && ! it->is_untouched_outside_original)
             {
-                properties p = properties(*it);
-                if (p.valid)
-                {
-                    ring_identifier id(0, index, -1);
-                    selected[id] = p;
-                }
+                ring_identifier id(0, index, -1);
+                selected[id] = properties(*it);
             }
         }
 
@@ -1396,12 +1299,8 @@ struct buffered_piece_collection
                 it != boost::end(traversed_rings);
                 ++it, ++index)
         {
-            properties p = properties(*it);
-            if (p.valid)
-            {
-                ring_identifier id(2, index, -1);
-                selected[id] = p;
-            }
+            ring_identifier id(2, index, -1);
+            selected[id] = properties(*it);
         }
 
         detail::overlay::assign_parents(offsetted_rings, traversed_rings, selected, true);

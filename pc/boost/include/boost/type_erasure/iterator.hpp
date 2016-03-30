@@ -14,7 +14,6 @@
 #include <iterator>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/type_traits/remove_const.hpp>
 #include <boost/type_traits/remove_reference.hpp>
@@ -25,11 +24,9 @@
 
 namespace boost {
 
-namespace type_erasure {
+struct use_default;
 
-/** INTERNAL ONLY */
-template<>
-struct is_placeholder< ::boost::use_default> : ::boost::mpl::false_ {};
+namespace type_erasure {
 
 namespace detail {
 

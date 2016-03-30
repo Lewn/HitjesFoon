@@ -23,6 +23,7 @@ namespace boost
 {
 namespace endian
 {
+#ifndef BOOST_ENDIAN_ORDER_ENUM_DEFINED
   BOOST_SCOPED_ENUM_START(order)
   {
     big, little,
@@ -32,6 +33,8 @@ namespace endian
       native = little
 # endif
   }; BOOST_SCOPED_ENUM_END
+# define BOOST_ENDIAN_ORDER_ENUM_DEFINED
+#endif
 
 //--------------------------------------------------------------------------------------//
 //                                                                                      //
@@ -49,11 +52,7 @@ namespace endian
 //                                                                                      //
 //--------------------------------------------------------------------------------------//
   
-  //  customization for exact-length arithmetic types. See doc/conversion.html/#FAQ.
-  //  Note: The omission of an overloads for the arithmetic type (typically long, or
-  //  long long) not assigned to one of the exact length typedefs is a deliberate
-  //  design decision. Such overloads would be non-portable and thus error prone.
-     
+  //  customization for exact-length arithmetic types. See doc/conversion.html/#FAQ
   inline int8_t   endian_reverse(int8_t x) BOOST_NOEXCEPT;
   inline int16_t  endian_reverse(int16_t x) BOOST_NOEXCEPT;
   inline int32_t  endian_reverse(int32_t x) BOOST_NOEXCEPT;

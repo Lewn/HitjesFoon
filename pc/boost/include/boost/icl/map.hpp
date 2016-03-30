@@ -22,6 +22,7 @@ Copyright (c) 2007-2011: Joachim Faulhaber
 #endif
 
 #include <string>
+#include <boost/type_traits/ice.hpp>
 #include <boost/call_traits.hpp> 
 #include <boost/icl/detail/notate.hpp>
 #include <boost/icl/detail/design_config.hpp>

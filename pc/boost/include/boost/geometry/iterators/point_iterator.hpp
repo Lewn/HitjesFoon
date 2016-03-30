@@ -10,6 +10,7 @@
 #ifndef BOOST_GEOMETRY_ITERATORS_POINT_ITERATOR_HPP
 #define BOOST_GEOMETRY_ITERATORS_POINT_ITERATOR_HPP
 
+#include <boost/assert.hpp>
 #include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/type_traits/is_convertible.hpp>

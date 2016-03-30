@@ -540,7 +540,7 @@ public:
     /// \copydoc boost::heap::priority_queue::end
     iterator end(void) const
     {
-        return iterator(super_t::value_comp());
+        return iterator();
     }
 
     /// \copydoc boost::heap::fibonacci_heap::ordered_begin

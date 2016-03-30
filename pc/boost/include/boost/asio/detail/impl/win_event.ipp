@@ -32,11 +32,7 @@ namespace detail {
 win_event::win_event()
   : state_(0)
 {
-#if defined(BOOST_ASIO_WINDOWS_APP)
-  events_[0] = ::CreateEventExW(0, 0, CREATE_EVENT_MANUAL_RESET, 0);
-#else // defined(BOOST_ASIO_WINDOWS_APP)
-  events_[0] = ::CreateEventW(0, true, false, 0);
-#endif // defined(BOOST_ASIO_WINDOWS_APP)
+  events_[0] = ::CreateEvent(0, true, false, 0);
   if (!events_[0])
   {
     DWORD last_error = ::GetLastError();
@@ -45,11 +41,7 @@ win_event::win_event()
     boost::asio::detail::throw_error(ec, "event");
   }
 
-#if defined(BOOST_ASIO_WINDOWS_APP)
-  events_[1] = ::CreateEventExW(0, 0, 0, 0);
-#else // defined(BOOST_ASIO_WINDOWS_APP)
-  events_[1] = ::CreateEventW(0, false, false, 0);
-#endif // defined(BOOST_ASIO_WINDOWS_APP)
+  events_[1] = ::CreateEvent(0, false, false, 0);
   if (!events_[1])
   {
     DWORD last_error = ::GetLastError();

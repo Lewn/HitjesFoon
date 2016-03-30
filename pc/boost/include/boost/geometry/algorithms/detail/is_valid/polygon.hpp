@@ -11,9 +11,6 @@
 #define BOOST_GEOMETRY_ALGORITHMS_DETAIL_IS_VALID_POLYGON_HPP
 
 #include <cstddef>
-#ifdef BOOST_GEOMETRY_TEST_DEBUG
-#include <iostream>
-#endif // BOOST_GEOMETRY_TEST_DEBUG
 
 #include <algorithm>
 #include <deque>
@@ -21,10 +18,9 @@
 #include <set>
 #include <vector>
 
-#include <boost/core/ignore_unused.hpp>
+#include <boost/assert.hpp>
 #include <boost/range.hpp>
 
-#include <boost/geometry/core/assert.hpp>
 #include <boost/geometry/core/exterior_ring.hpp>
 #include <boost/geometry/core/interior_rings.hpp>
 #include <boost/geometry/core/ring_type.hpp>
@@ -189,26 +185,24 @@ protected:
                                         TurnIterator turns_beyond,
                                         VisitPolicy& visitor)
     {
-        boost::ignore_unused(visitor);
-
         // collect the interior ring indices that have turns with the
         // exterior ring
-        std::set<signed_size_type> ring_indices;
+        std::set<signed_index_type> ring_indices;
         for (TurnIterator tit = turns_first; tit != turns_beyond; ++tit)
         {
             if (tit->operations[0].seg_id.ring_index == -1)
             {
-                BOOST_GEOMETRY_ASSERT(tit->operations[1].seg_id.ring_index != -1);
+                BOOST_ASSERT(tit->operations[1].seg_id.ring_index != -1);
                 ring_indices.insert(tit->operations[1].seg_id.ring_index);
             }
             else if (tit->operations[1].seg_id.ring_index == -1)
             {
-                BOOST_GEOMETRY_ASSERT(tit->operations[0].seg_id.ring_index != -1);
+                BOOST_ASSERT(tit->operations[0].seg_id.ring_index != -1);
                 ring_indices.insert(tit->operations[0].seg_id.ring_index);
             }
         }
 
-        signed_size_type ring_index = 0;
+        signed_index_type ring_index = 0;
         for (RingIterator it = rings_first; it != rings_beyond;
              ++it, ++ring_index)
         {
@@ -309,8 +303,6 @@ protected:
                                  TurnIterator beyond,
                                  VisitPolicy& visitor)
         {
-            boost::ignore_unused(visitor);
-
             typedef typename std::iterator_traits
                 <
                     TurnIterator
@@ -330,9 +322,7 @@ protected:
                 g.add_edge(v2, vip);
             }
 
-#ifdef BOOST_GEOMETRY_TEST_DEBUG
             debug_print_complement_graph(std::cout, g);
-#endif // BOOST_GEOMETRY_TEST_DEBUG
 
             if (g.has_cycles())
             {

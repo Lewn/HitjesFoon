@@ -18,8 +18,6 @@
 #include <boost/geometry/geometries/concepts/point_concept.hpp>
 #include <boost/geometry/util/select_coordinate_type.hpp>
 
-#include <boost/numeric/conversion/cast.hpp>
-
 namespace boost { namespace geometry
 {
 

@@ -15,7 +15,6 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/has_trivial_assign.hpp>
 #include <boost/type_traits/has_trivial_destructor.hpp>
-#include <boost/config.hpp> // for BOOST_LIKELY
 
 #include <boost/lockfree/detail/atomic.hpp>
 #include <boost/lockfree/detail/copy_payload.hpp>
@@ -287,6 +286,8 @@ private:
     template <bool Bounded>
     bool do_push(T const & t)
     {
+        using detail::likely;
+
         node * n = pool.template construct<true, Bounded>(t, pool.null_handle());
         handle_type node_handle = pool.get_handle(n);
 
@@ -300,7 +301,7 @@ private:
             node * next_ptr = pool.get_pointer(next);
 
             tagged_node_handle tail2 = tail_.load(memory_order_acquire);
-            if (BOOST_LIKELY(tail == tail2)) {
+            if (likely(tail == tail2)) {
                 if (next_ptr == 0) {
                     tagged_node_handle new_tail_next(node_handle, next.get_next_tag());
                     if ( tail_node->next.compare_exchange_weak(next, new_tail_next) ) {
@@ -374,6 +375,7 @@ public:
     template <typename U>
     bool pop (U & ret)
     {
+        using detail::likely;
         for (;;) {
             tagged_node_handle head = head_.load(memory_order_acquire);
             node * head_ptr = pool.get_pointer(head);
@@ -383,7 +385,7 @@ public:
             node * next_ptr = pool.get_pointer(next);
 
             tagged_node_handle head2 = head_.load(memory_order_acquire);
-            if (BOOST_LIKELY(head == head2)) {
+            if (likely(head == head2)) {
                 if (pool.get_handle(head) == pool.get_handle(tail)) {
                     if (next_ptr == 0)
                         return false;
