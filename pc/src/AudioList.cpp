@@ -76,6 +76,8 @@ bool AudioList::update(unsigned int downloadCount) {
     int hitIndex;
     ifstream listFileStream;
 
+    // TODO force normalise audio on every update?
+    // or even on every load of file, to ensure audio level is correct
     gui.printlevel(LBGINFO, "Updating hitjeslist\n");
 
     // Enable exceptions on fail to open or read

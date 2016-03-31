@@ -23,7 +23,6 @@ void AHitjesfoon::buildWidget() {
     navigation->setTitle("Hitjesfoon", WLink(WLink::InternalPath, "/"));
     navigation->setResponsive(true);
 
-    // TODO no stacked widget (only has maximum height?)
     WStackedWidget *contentsStack = new WStackedWidget();
 
     // Setup a Left-aligned menu.
@@ -44,6 +43,7 @@ void AHitjesfoon::buildWidget() {
     root()->addWidget(w404);
 
     // TODO add as default menu
+    // TODO when closed in small browser, also permanently gone in large browser
     menu->addStyleClass("navbar-nav");
     for (WMenuItem *item : menu->items()) {
         if (internalPath() == item->pathComponent()) {

@@ -40,6 +40,8 @@ protected:
     bool retrieveYoutube(Scraper *scraper, ScraperData data, Hitje &hitje);
     bool retrieveSoundcloud(Scraper *scraper, ScraperData data, Hitje &hitje);
 
+    void normaliseAudio(Hitje &hitje);
+
     void buildScraperChain();
     void buildDownloaderChain();
 private:

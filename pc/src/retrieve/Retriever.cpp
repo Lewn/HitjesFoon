@@ -44,6 +44,7 @@ bool Retriever::retrieve(Hitje &mainHitje) {
             }
             // Try next scraper instead
         }
+        normaliseAudio(hitje);
         // Generate media file, attach it to hitje
         downloaded &= createMediaFile(hitje);
         // Release retrieve session
@@ -94,8 +95,31 @@ bool Retriever::retrieveSoundcloud(Scraper *scraper, ScraperData data, Hitje &hi
     return false;
 }
 
+void Retriever::normaliseAudio(Hitje &hitje) {
+    char buf[1024];
+    string cmd = "mp3gain -e -t -r -k ";
+
+    gui.printlevel(LBGINFO, "Normalising audio\n");
+//    -e            no album analysis (because we don't use album)
+//    -r            Apply per track gain (to actually alter the audio)
+//    -o            Nice output?
+//    -t            Use temp file
+//    -k            Automatically lower gain to not clip
+    cmd += '"' + hitje.createFilename(true, true) + '"';
+    // TODO without command (source is included, thus can compile directly)
+    auto cmdptr = cmdasync(cmd.c_str());
+    while (!feof(cmdptr.get())) {
+        if (fgets(buf, sizeof(buf), cmdptr.get()) != NULL) {
+            gui.printlevel(LDEBUG, "%s", buf);
+        }
+    }
+    gui.printlevel(LBGINFO, "Done normalising audio\n");
+}
+
 
 void Retriever::buildScraperChain() {
+    // TODO add a scraper which corrects typo's and can retrieve additional information
+    // database: musicbrainz.org, for example using libmusicbrainz5
     // Only insert elements if not previously filled
     if (scraperChain.empty()) {
         scraperChain.push_back(make_shared<YoutubeAPIScraper>(gui));

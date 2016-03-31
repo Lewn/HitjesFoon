@@ -10,7 +10,6 @@ WHitjesList::~WHitjesList() {
 }
 
 void WHitjesList::buildWidget() {
-    // TODO button to download all hitjes
     hitjesContainer = new WContainerWidget();
     bindWidget("hitjeslist", hitjesContainer);
     for (unsigned int i = 1; i < 1000; i++) {

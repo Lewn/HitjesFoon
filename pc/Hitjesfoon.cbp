@@ -15,6 +15,7 @@
 				<Option parameters='--docroot=&quot;wt/docroot/;/resources&quot; --approot=&quot;wt/approot&quot; --http-address=localhost --http-port=9000' />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DBOOST_NO_AUTO_PTR" />
 					<Add directory="include" />
 					<Add directory="include/persistence" />
 					<Add directory="include/widgets" />
