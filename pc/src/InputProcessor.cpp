@@ -188,7 +188,7 @@ void InputProcessor::inputNum(int num) {
         processAudioMenu(num);
     } else {
         switch (num) {
-            case 999:
+            case 0:
                 // Play the config menu
                 SAFE_DELETE(curAudioMenu);
                 curAudioMenu = new ConfigAudioMenu(gui, configMenuPath);

@@ -40,8 +40,7 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui), retriever(gui) {
     SAFE_CLOSE(listFile);
 
     gui.printlevel(LINFO, "Creating the hitjeslist\n");
-    // TODO no hitje 0 needed
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 1; i < 1000; i++) {
         hitjes.push_back(Hitje(i, hitjesPath));
     }
     gui.events().hitjeChange(boost::bind(&AudioList::hitjeUpdate, this, _1));
@@ -51,18 +50,18 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui), retriever(gui) {
 AudioList::~AudioList() {
 }
 
-const Hitje &AudioList::getHitje(int hitjeIndex) {
-    if (hitjeIndex < 0 || hitjeIndex > 999) {
+const Hitje &AudioList::getHitje(int hitIndex) {
+    if (hitIndex <= 0 || hitIndex > 999) {
         throw "Hitindex out of range";
     }
-    return hitjes[hitjeIndex];
+    return hitjes[hitIndex - 1];
 }
 
 void AudioList::hitjeUpdate(const Hitje &hitje) {
     // Propagate external hitje changes back to list
-    if (hitjes[hitje.hitIndex] != hitje) {
-        Hitje oldHitje = Hitje(hitjes[hitje.hitIndex]);
-        hitjes[hitje.hitIndex] = hitje;
+    if (hitjes[hitje.hitIndex - 1] != hitje) {
+        Hitje oldHitje = Hitje(hitjes[hitje.hitIndex - 1]);
+        hitjes[hitje.hitIndex - 1] = hitje;
         // Write the changes to the file
         if (oldHitje.hitIndex != hitje.hitIndex || oldHitje.title != hitje.title || oldHitje.artist != hitje.artist) {
             // Only write when actually something interesting happened to the file
@@ -85,9 +84,7 @@ bool AudioList::update(unsigned int downloadCount) {
     listFileStream.open(listFilePath.c_str(), ifstream::binary | ifstream::in);
     hitIndex = skipInvalidLines(listFileStream);
     while (!listFileStream.eof()) {
-        if (hitIndex <= 0 || hitIndex >= 999) {
-            gui.printlevel(LDEBUG, "Wrong hitindex, skipping %d\n", hitIndex);
-        } else {
+        if (hitIndex > 0 && hitIndex <= 999) {
             // Got hitje successfully
             gui.printlevel(LDEBUG, "Found hitje %d\n", hitIndex);
         }
@@ -114,8 +111,8 @@ bool AudioList::update(unsigned int downloadCount) {
                 // Get first three digits and parse int.
                 strncpy(intbuf, ent->d_name, 3);
                 hitIndex = atoi(intbuf);
-                if (hitjes[hitIndex]) {
-                    string hitjeFilename = hitjes[hitIndex].createFilename();
+                if (hitjes[hitIndex - 1]) {
+                    string hitjeFilename = hitjes[hitIndex - 1].createFilename();
                     // Check for incorrect or duplicate filenames
                     if (hitjeFilename == entryName) {
                         // Don't delete correct files
@@ -234,9 +231,9 @@ int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
     if (fileOutput == NULL) {
         // Try to create the media file for this hitje
         gui.printlevel(LDEBUG, "Creating media file\n");
-        if (!retriever.createMediaFile(hitjes[hitIndex]) && downloadCount > 0) {
+        if (!retriever.createMediaFile(hitjes[hitIndex - 1]) && downloadCount > 0) {
             // Couldn't create, no worries, just download it
-            if (downloadVideoFile(hitjes[hitIndex])) {
+            if (downloadVideoFile(hitjes[hitIndex - 1])) {
                 // Successfully downloaded new file, decrease download counter
                 downloadCount--;
                 gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjes[hitIndex].toString().c_str());
@@ -245,8 +242,8 @@ int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
     } else {
         // Some valid data, copy all the data that was valid
         (*fileOutput) << to_string(hitIndex) << ';'
-                      << hitjes[hitIndex].title << ';'
-                      << hitjes[hitIndex].artist << '\n';
+                      << hitjes[hitIndex - 1].title << ';'
+                      << hitjes[hitIndex - 1].artist << '\n';
     }
     gui.printlevel(LDEBUG, "Done retrieving line\n");
     // If the file existed already, we have a valid index
@@ -260,7 +257,7 @@ int AudioList::parseHitIndex(string &line) {
 
     // read hit index
     lineStream >> hitIndex;
-    if (lineStream.fail() || hitIndex <= 0 || hitIndex >= 999) {
+    if (lineStream.fail() || hitIndex <= 0 || hitIndex > 999) {
         gui.printlevel(LDEBUG, "Incorrect hitindex, skipping\n");
         return 0;
     }
@@ -276,7 +273,7 @@ int AudioList::parseLine(string &line) {
 
     // read hit index
     lineStream >> hitIndex;
-    if (lineStream.fail() || hitIndex <= 0 || hitIndex >= 999) {
+    if (lineStream.fail() || hitIndex <= 0 || hitIndex > 999) {
         gui.printlevel(LDEBUG, "Incorrect hitindex, skipping\n");
         return 0;
     }
@@ -289,7 +286,7 @@ int AudioList::parseLine(string &line) {
         return 0;
     }
     // title is correct, store it
-    hitjes[hitIndex].title = title;
+    hitjes[hitIndex - 1].title = title;
     // read until ; as artist
     getline(lineStream, artist, ';');
     if (lineStream.fail()) {
@@ -297,9 +294,9 @@ int AudioList::parseLine(string &line) {
         return 0;
     }
     // artist is correct, store it
-    hitjes[hitIndex].artist = artist;
+    hitjes[hitIndex - 1].artist = artist;
 
-    if (hitjes[hitIndex].title.empty() || hitjes[hitIndex].artist.empty()) {
+    if (hitjes[hitIndex - 1].title.empty() || hitjes[hitIndex - 1].artist.empty()) {
         gui.printlevel(LDEBUG, "Either title or artist not set for hitje %d, skipping\n", hitIndex);
         return 0;
     }

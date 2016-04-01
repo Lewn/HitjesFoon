@@ -19,6 +19,7 @@
 					<Add directory="include" />
 					<Add directory="include/persistence" />
 					<Add directory="include/widgets" />
+					<Add directory="include/retrieve/scraper" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -31,6 +32,7 @@
 					<Add directory="include" />
 					<Add directory="include/persistence" />
 					<Add directory="include/widgets" />
+					<Add directory="include/retrieve/scraper" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
