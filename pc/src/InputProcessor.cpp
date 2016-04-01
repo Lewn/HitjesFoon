@@ -1,7 +1,7 @@
 #include "InputProcessor.h"
 
 
-InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(gui, config) {
+InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(gui, config), retriever(gui) {
     processType = PROCESS_LINEAR_SHUFFLE;
     phoneAudioPlayer = new AudioPlayer(gui, AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(gui, AudioPlayer::SPEAKER, hitjesList);
@@ -172,11 +172,7 @@ void InputProcessor::processAlt(int input) {
             resetInput();
             break;
         case INPUT_UPDATE:
-            if (!threadRunning()) {
-                threadUpdate();
-            } else {
-                gui.printlevel(LWARNING, "Update thread already running\n");
-            }
+            doUpdate();
             break;
         default:
             break;
@@ -387,26 +383,20 @@ void InputProcessor::toggleOutput() {
 }
 
 
-thread *updateThread = NULL;
 void InputProcessor::doUpdate() {
-    // TODO use retriever to get a single hitje, instead of updating the whole list
     try {
-        do {
-            gui.printlevel(LINFO, "\nDownloading one more hitje");
-            requestInput();
-        } while (hitjesList.update(1) && false);
+        for (int i = 1; i < 1000; i++) {
+            const Hitje &hitje = hitjesList.getHitje(i);
+            if (hitje.canDownload()) {
+                gui.printlevel(LINFO, "\nDownloading one more hitje");
+                if (retriever.retrieve(hitje)) {
+                    // Stop when a new hitje is downloaded
+                    break;
+                }
+            }
+        }
         requestInput();
     } catch (const char *ex) {
         gui.printlevel(LERROR, "%s\n", ex);
     }
-    updateThread = NULL;
-}
-
-bool InputProcessor::threadRunning() {
-    return updateThread != NULL;
-}
-
-void InputProcessor::threadUpdate() {
-    doUpdate();
-    //updateThread = new thread(doUpdate, this);
 }

@@ -44,7 +44,7 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui), retriever(gui) {
         hitjes.push_back(Hitje(i, hitjesPath));
     }
     gui.events().hitjeChange(boost::bind(&AudioList::hitjeUpdate, this, _1));
-    update(0);
+    update();
 }
 
 AudioList::~AudioList() {
@@ -60,7 +60,7 @@ const Hitje &AudioList::getHitje(int hitIndex) {
 void AudioList::hitjeUpdate(const Hitje &hitje) {
     // Propagate external hitje changes back to list
     if (hitjes[hitje.hitIndex - 1] != hitje) {
-        Hitje oldHitje = Hitje(hitjes[hitje.hitIndex - 1]);
+        Hitje oldHitje(hitjes[hitje.hitIndex - 1]);
         hitjes[hitje.hitIndex - 1] = hitje;
         // Write the changes to the file
         if (oldHitje.hitIndex != hitje.hitIndex || oldHitje.title != hitje.title || oldHitje.artist != hitje.artist) {
@@ -70,8 +70,7 @@ void AudioList::hitjeUpdate(const Hitje &hitje) {
     }
 }
 
-bool AudioList::update(unsigned int downloadCount) {
-    this->downloadCount = downloadCount;
+void AudioList::update() {
     int hitIndex;
     ifstream listFileStream;
 
@@ -136,9 +135,6 @@ bool AudioList::update(unsigned int downloadCount) {
     }
 
     gui.printlevel(LBGINFO, "Successfully updated hitjeslist\n");
-
-    // return whether there is more to download
-    return this->downloadCount == 0;
 }
 
 
@@ -231,14 +227,7 @@ int AudioList::readLine(ifstream &listFileStream, ofstream *fileOutput) {
     if (fileOutput == NULL) {
         // Try to create the media file for this hitje
         gui.printlevel(LDEBUG, "Creating media file\n");
-        if (!retriever.createMediaFile(hitjes[hitIndex - 1]) && downloadCount > 0) {
-            // Couldn't create, no worries, just download it
-            if (downloadVideoFile(hitjes[hitIndex - 1])) {
-                // Successfully downloaded new file, decrease download counter
-                downloadCount--;
-                gui.printlevel(LINFO, "\nDownloaded and added new hitje %s\n", hitjes[hitIndex].toString().c_str());
-            }
-        }
+        retriever.createMediaFile(hitjes[hitIndex - 1]);
     } else {
         // Some valid data, copy all the data that was valid
         (*fileOutput) << to_string(hitIndex) << ';'
@@ -303,20 +292,6 @@ int AudioList::parseLine(string &line) {
 
     gui.printlevel(LDEBUG, "Got %d: '%s' '%s'\n", hitIndex, title.c_str(), artist.c_str());
     return hitIndex;
-}
-
-bool AudioList::downloadVideoFile(Hitje &hitje) {
-    try {
-        if (retriever.retrieve(hitje)) {
-            return true;
-        } else {
-            gui.printlevel(LWARNING, "No suitable video file found\n");
-        }
-    } catch (const char *e) {
-        // on any error, still continue
-        gui.confirm(LERROR, "An error occured while parsing, press any key to continue\n%s\n", e);
-    }
-    return false;
 }
 
 

@@ -23,6 +23,7 @@ enum ProcessType {
 #include "AudioPlayer.h"
 #include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
+#include "retrieve/Retriever.h"
 
 using namespace std;
 
@@ -44,6 +45,7 @@ public:
 protected:
     GUI &gui;
     AudioList hitjesList;
+    Retriever retriever;
     ProcessType processType;
     int curNumber;
     int numberCount;
@@ -70,8 +72,6 @@ protected:
     void toggleOutput();
 
     void doUpdate();
-    bool threadRunning();
-    void threadUpdate();
 
 private:
     string configMenuPath;

@@ -30,7 +30,7 @@ public:
     Retriever(GUI &gui);
     virtual ~Retriever();
 
-    bool retrieve(Hitje &hitje);
+    bool retrieve(const Hitje &hitje);
     bool createMediaFile(Hitje &hitje);
 protected:
     GUI &gui;
@@ -47,7 +47,7 @@ protected:
 private:
     static atomic<int> retrieveCnt;
 
-    static bool blockRetrieve(Hitje &hitje);
+    static bool blockRetrieve(const Hitje &hitje);
     static void endRetrieve(Hitje &hitje);
 };
 

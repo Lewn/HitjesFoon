@@ -28,13 +28,12 @@ public:
     AudioList(GUI &gui, Config &config);
     virtual ~AudioList();
 
-    bool update(unsigned int downloadCount);
+    void update();
     void hitjeUpdate(const Hitje &hitje);
     const Hitje &getHitje(int hitjeIndex);
 
 protected:
     GUI &gui;
-    unsigned int downloadCount;
     Retriever retriever;
     vector<Hitje> hitjes;
     string hitjesPath;
@@ -45,7 +44,6 @@ protected:
     int readLine(ifstream &listFileStream, ofstream *fileOutput = NULL);
     int parseHitIndex(string &line);
     int parseLine(string &line);
-    bool downloadVideoFile(Hitje &hitje);
 private:
     AudioList(const AudioList & that) = delete;
 };

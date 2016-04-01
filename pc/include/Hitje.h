@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <mutex>
 
 #include "Structs.h"
 #include "Tools.h"
@@ -30,6 +31,8 @@ public:
     bool operator !=(const Hitje& other) const;
     Hitje &operator=(const Hitje &other);
 
+    bool canDownload() const;
+    void setDownloading(bool downloading);
     string createFilename(bool absolute = false, bool extension = true) const;
 
     // Increases/decreases refcount, take care for memory management!
@@ -39,6 +42,7 @@ protected:
     void init(libvlc_media_t *mediaData, string artist, string title);
 
 private:
+    static mutex hitjeMutex;
     libvlc_media_t *mediaData;
 };
 

@@ -70,6 +70,22 @@ Hitje &Hitje::operator=(const Hitje &other) {
 }
 
 
+bool Hitje::canDownload() const {
+    return !(*this) && !downloadState.downloading && !artist.empty() && !title.empty();
+}
+
+mutex Hitje::hitjeMutex;
+void Hitje::setDownloading(bool downloading) {
+    // Only one thread at a time can acquire a download
+    lock_guard<mutex> guard(Hitje::hitjeMutex);
+    if (downloading && !canDownload()) {
+        // Impossible to download this hitje (other thread activated?)
+        throw "Couldn't download hitje";
+    }
+    // Mark as downloading
+    downloadState.downloading = downloading;
+}
+
 string Hitje::createFilename(bool absolute, bool extension) const {
     // "ddd - artist - title.mp3"
     ostringstream filenameStream;

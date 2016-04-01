@@ -10,7 +10,7 @@ Retriever::~Retriever() {
 }
 
 
-bool Retriever::retrieve(Hitje &mainHitje) {
+bool Retriever::retrieve(const Hitje &mainHitje) {
     // Limit the amount of active retrieve sessions
     if (!Retriever::blockRetrieve(mainHitje)) {
         // Couldn't acquire download session, thus couldn't download
@@ -20,6 +20,8 @@ bool Retriever::retrieve(Hitje &mainHitje) {
     Hitje hitje(mainHitje);
 
     try {
+        // Mark as downloading active
+        hitje.setDownloading(true);
         // Signal start of download to gui
         gui.setHitje(hitje);
         gui.printlevel(LDEBUG, "Retrieving hitje %s\n", hitje.toString().c_str());
@@ -166,7 +168,7 @@ bool Retriever::createMediaFile(Hitje &hitje) {
 
 atomic<int> Retriever::retrieveCnt = ATOMIC_VAR_INIT(MAX_RETRIEVE_SESSIONS);
 
-bool Retriever::blockRetrieve(Hitje &hitje) {
+bool Retriever::blockRetrieve(const Hitje &hitje) {
     // Try to acquire a session
     while (atomic_fetch_sub(&retrieveCnt, 1) <= 0) {
         atomic_fetch_add(&retrieveCnt, 1);
@@ -174,18 +176,11 @@ bool Retriever::blockRetrieve(Hitje &hitje) {
         this_thread::sleep_for(chrono::seconds(1));
     }
 
-    if (hitje || hitje.downloadState.downloading) {
+    if (!hitje.canDownload()) {
+        // It is not actually possible to download hitje in this state, abort
         // Already downloaded or started downloading, cancel
         atomic_fetch_add(&retrieveCnt, 1);;
-        return false;
     }
-    if (hitje.artist.empty() || hitje.title.empty()) {
-        // It is not actually possible to download hitje in this state, abort
-        atomic_fetch_add(&retrieveCnt, 1);;
-        return false;
-    }
-    // Mark as downloading active
-    hitje.downloadState.downloading = true;
     return true;
 }
 
@@ -193,5 +188,5 @@ void Retriever::endRetrieve(Hitje &hitje) {
     // Simply reduce amount of active sessions
     atomic_fetch_add(&retrieveCnt, 1);;
     // Mark hitje as not downloading anymore
-    hitje.downloadState.downloading = false;
+    hitje.setDownloading(false);
 }

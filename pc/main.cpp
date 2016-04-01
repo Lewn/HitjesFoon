@@ -10,8 +10,6 @@
 #include "USBConnection.h"
 #include "Tools.h"
 #include "gui/GUI.h"
-#include "retrieve/Retriever.h"
-#include "retrieve/HTTPTransfer.h"
 
 #ifdef GUI_CURSES
 #include "gui/GUICurses.h"
