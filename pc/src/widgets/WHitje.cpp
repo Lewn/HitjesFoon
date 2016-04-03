@@ -97,15 +97,13 @@ bool WHitje::download() {
 
     // Perform threaded, as downloading may take a very long time
     // As not to block the UI
-    persistence.getHitjeData().manipulateVal(to_string(hitIndex), [&](Hitje & hitje) {
-        thread([&]() {
-            // Create a new retriever
-            Retriever retriever(gui);
-            // And download this hitje
-            // TODO dirty to keep this reference?
-            retriever.retrieve(hitje);
-        }).detach();
-    });
+    const Hitje &hitje = persistence.getHitjeData().getVal(to_string(hitIndex));
+    thread([&]() {
+        // Create a new retriever
+        Retriever retriever(gui);
+        // And download this hitje
+        retriever.retrieve(hitje);
+    }).detach();
     return true;
 }
 
