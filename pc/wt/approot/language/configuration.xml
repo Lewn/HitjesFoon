@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+	<message id="strings-configuration-menu">Configuration menu</message>
+	<message id="strings-configuration-refresh">Refresh hitjeslist</message>
+	<message id="strings-configuration-restart">Restart application</message>
+	<message id="strings-configuration-exit">Exit application</message>
+</messages>

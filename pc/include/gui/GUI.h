@@ -1,19 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-enum InputVal {
-    INPUT_EARTH_UP = 11,
-    INPUT_EARTH_DOWN,
-    INPUT_EARTH_SWAP,
-    INPUT_HORN_UP,
-    INPUT_HORN_DOWN,
-    INPUT_HORN_SWAP,
-    INPUT_END,
-    INPUT_UPDATE,
-    INPUT_TEST,
-    INPUT_NONE
-};
-
 #include <vector>
 #include <string>
 #include <memory>
@@ -44,7 +31,10 @@ public:
 
     virtual void printlevel(PRINT_LEVEL level, const char *format, ...) = 0;
     virtual void confirm(PRINT_LEVEL level, const char *format, ...) = 0;
+
+    virtual void addInput(int input) = 0;
     virtual int getInput() = 0;
+    virtual int getKeystroke() = 0;
     virtual int selection(vector<string> options) = 0;
 
     virtual void inputPhoneNum(int num);

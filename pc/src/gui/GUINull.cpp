@@ -42,7 +42,20 @@ void GUINull::confirm(PRINT_LEVEL level, const char *format, ...) {
     getchar();
 }
 
+void GUINull::addInput(int input) {
+    inputs.push_back(input);
+}
+
 int GUINull::getInput() {
+    int input = INPUT_NONE;
+    if (!inputs.empty()) {
+        input = inputs.back();
+        inputs.pop_back();
+    }
+    return input;
+}
+
+int GUINull::getKeystroke() {
     // Still require a reliable cross platform solution
     // TODO windows getch return 0 or 0xE0 for arrow or special keys
     // linux returns a string of multiple chars
@@ -50,7 +63,7 @@ int GUINull::getInput() {
         int input = getch();
         if (input == EOF) {
             // Shouldn't happen, but the only reason why getchar() returns an int
-            return 0;
+            input = 0;
         }
         return input;
     }

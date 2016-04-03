@@ -51,9 +51,11 @@ WApplication *GUIWt::createApplication(const WEnvironment& env) {
 
     app->messageResourceBundle().use(app->appRoot() + "language/home");
     app->messageResourceBundle().use(app->appRoot() + "language/hitjeslist");
+    app->messageResourceBundle().use(app->appRoot() + "language/configuration");
     app->messageResourceBundle().use(app->appRoot() + "language/404");
     app->messageResourceBundle().use(app->appRoot() + "templates/home");
     app->messageResourceBundle().use(app->appRoot() + "templates/hitjeslist");
+    app->messageResourceBundle().use(app->appRoot() + "templates/configuration");
     app->messageResourceBundle().use(app->appRoot() + "templates/404");
 
     return app;
@@ -157,14 +159,14 @@ void GUIWt::logHTML(vector<string> &logv, const string &el, bool nlfirst, bool n
     }
 }
 
-int GUIWt::getInput() {
+int GUIWt::getKeystroke() {
     WApplication *app = WApplication::instance();
     if (app == NULL) {
         // No user input, get from terminal
-        return GUINull::getInput();
+        return GUINull::getKeystroke();
     } else {
         // Get input from the users browser and process
-        printlevel(LWARNING, "function getInput not implemented yet\n");
+        printlevel(LWARNING, "function getKeystroke not implemented yet\n");
     }
     return 0;
 }

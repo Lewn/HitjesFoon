@@ -111,7 +111,7 @@ int GUICurses::getInput() {
             return INPUT_HORN_SWAP;
         } else if (c == 'q') {
             // q, return quit
-            return INPUT_END;
+            return INPUT_EXIT;
         } else if (c == 'u') {
             return INPUT_UPDATE;
         } else if (c == 't') {

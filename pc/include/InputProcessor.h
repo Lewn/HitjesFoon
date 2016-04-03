@@ -36,8 +36,9 @@ public:
     void registerInput(std::function<int ()> input);
     int convertInput(int c);
 
-    void terminate();
+    void terminate(int status = 0);
     bool hasTerminated();
+    int getExitStatus();
 
     AudioList *getHitjesList();
     void resetInput();
@@ -56,6 +57,7 @@ protected:
     Retriever retriever;
     ProcessType processType;
     bool terminated = false;
+    int exitStatus = 0;
     vector<thread> threads;
 
     int curNumber;

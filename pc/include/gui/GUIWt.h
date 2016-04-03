@@ -56,7 +56,7 @@ public:
     void logAppend(PRINT_LEVEL level, string text);
     void logHTML(vector<string> &logv, const string &el, bool nlfirst, bool nlsecond);
 
-    virtual int getInput() override;
+    virtual int getKeystroke() override;
 protected:
     Persistence *persistence;
 

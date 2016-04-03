@@ -79,9 +79,13 @@ int InputProcessor::convertInput(int c) {
         return INPUT_HORN_SWAP;
     } else if (c == 'q') {
         // q, return quit
-        return INPUT_END;
+        return INPUT_EXIT;
     } else if (c == 'u') {
+        // u, update hitjes list
         return INPUT_UPDATE;
+    } else if (c == 'r') {
+        // r, refresh hitjes list
+        return INPUT_REFRESH;
     } else if (c == 't') {
         // t, testing purposes
         return INPUT_TEST;
@@ -90,16 +94,21 @@ int InputProcessor::convertInput(int c) {
 }
 
 
-void InputProcessor::terminate() {
+void InputProcessor::terminate(int status) {
     if (!terminated) {
         // Terminate allows for a graceful shutdown from any source
         terminated = true;
+        exitStatus = status;
         resetInput();
     }
 }
 
 bool InputProcessor::hasTerminated() {
     return terminated;
+}
+
+int InputProcessor::getExitStatus() {
+    return exitStatus;
 }
 
 void InputProcessor::resetInput() {
@@ -200,11 +209,21 @@ void InputProcessor::processAlt(int input) {
         case INPUT_HORN_SWAP:
             setHornDown(phoneOutput);
             break;
-        case INPUT_END:
+        case INPUT_UPDATE:
+            // Download and update hitjes
+            doUpdate();
+            break;
+        case INPUT_REFRESH:
+            // Perform an update without downloading
+            hitjesList.update();
+            break;
+        case INPUT_EXIT:
+            // Exit the program with normal exit status
             terminate();
             break;
-        case INPUT_UPDATE:
-            doUpdate();
+        case INPUT_RESTART:
+            // Exit the program with exit status 1, forces restart
+            terminate(1);
             break;
         default:
             break;

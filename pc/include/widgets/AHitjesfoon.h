@@ -12,6 +12,7 @@
 #include "Tools.h"
 #include "widgets/WHome.h"
 #include "widgets/WHitjesList.h"
+#include "widgets/WConfiguration.h"
 #include "widgets/W404.h"
 
 using namespace std;
@@ -31,10 +32,12 @@ protected:
 
     WHome *home = NULL;
     WHitjesList *hitjesList = NULL;
+    WConfiguration *wConfiguration = NULL;
     W404 *w404 = NULL;
     WMenu *menu = NULL;
     WMenuItem *homeItem = NULL;
     WMenuItem *hitjesListItem = NULL;
+    WMenuItem *configurationItem = NULL;
 private:
 };
 

@@ -51,6 +51,8 @@ Wt::WApplication *createApplication(const Wt::WEnvironment &env, GUIWt &gui) {
 
 
 int main(int argc, char **argv) {
+    // If not overridden, terminate with -1
+    int exitStatus = -1;
     toolsInit();
     try {
 #ifdef GUI_CURSES
@@ -84,7 +86,8 @@ int main(int argc, char **argv) {
 
             // create an input processor for processing keyboard and usb input
             InputProcessor processor(gui, config);
-            processor.registerInputRaw(std::bind(&GUINull::getInput, &gui));
+            processor.registerInputRaw(std::bind(&GUINull::getKeystroke, &gui));
+            processor.registerInput(std::bind(&GUINull::getInput, &gui));
             processor.registerInput(std::bind(&USBConnection::read, &connection));
 #if defined(GUI_WT)
             // Run the application until a terminate is called
@@ -99,6 +102,8 @@ int main(int argc, char **argv) {
 #endif
                     this_thread::sleep_for(chrono::milliseconds(500));
                 }
+                // Read exit reason out of processor
+                exitStatus = processor.getExitStatus();
 #if defined(GUI_WT)
                 while (server.isRunning()) {
                     // Server still running, thus program requested stop
@@ -106,10 +111,12 @@ int main(int argc, char **argv) {
                 }
             } else {
                 gui.printlevel(LERROR, "Couldn't start server\n");
+                exitStatus = 2;
             }
         } catch (Wt::WException ex) {
             gui.printlevel(LERROR, "WException caught:\n");
             gui.confirm(LERROR, "%s\n", ex.what());
+            exitStatus = -1;
 #endif
         } catch (const std::ios_base::failure &e) {
             gui.printlevel(LERROR, "IOS base error caught: %s\n", e.what());
@@ -127,6 +134,6 @@ int main(int argc, char **argv) {
     }
     toolsDeinit();
     VLC::deleteInstance();
-    return 0;
+    return exitStatus;
 }
 

@@ -15,6 +15,8 @@ void AHitjesfoon::buildWidget() {
     hitjesList->buildWidget();
     w404 = new W404(gui, persistence);
     w404->buildWidget();
+    wConfiguration = new WConfiguration(gui, persistence);
+    wConfiguration->buildWidget();
 
 
     WNavigationBar *navigation = new WNavigationBar();
@@ -37,6 +39,10 @@ void AHitjesfoon::buildWidget() {
     hitjesListItem->setPathComponent("/hitjeslist");
     hitjesListItem->setLink(WLink(WLink::InternalPath, "/hitjeslist"));
     menu->addItem(hitjesListItem);
+    configurationItem = new WMenuItem("Configuration", wConfiguration);
+    configurationItem->setPathComponent("/configuration");
+    configurationItem->setLink(WLink(WLink::InternalPath, "/configuration"));
+    menu->addItem(configurationItem);
 
     root()->addWidget(navigation);
     root()->addWidget(contentsStack);
@@ -71,6 +77,9 @@ void AHitjesfoon::onPathChange() {
     } else if (internalPath() == "/hitjeslist") {
         // Swap page for hitjeslist page
         menu->select(hitjesListItem);
+    } else if (internalPath() == "/configuration") {
+        // Swap page for configuration page
+        menu->select(configurationItem);
     } else {
         // Show 404
         menu->select(0);

@@ -5,6 +5,24 @@
 
 using namespace std;
 
+
+enum InputVal {
+    INPUT_EARTH_UP = 11,
+    INPUT_EARTH_DOWN,
+    INPUT_EARTH_SWAP,
+    INPUT_HORN_UP,
+    INPUT_HORN_DOWN,
+    INPUT_HORN_SWAP,
+    INPUT_UPDATE,
+    INPUT_REFRESH,
+    INPUT_EXIT,
+    INPUT_RESTART,
+    INPUT_TEST,
+    INPUT_NONE
+};
+
+
+
 enum ScraperDataType {
     INVALID,
     YOUTUBE,

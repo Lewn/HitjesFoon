@@ -24,11 +24,12 @@ void WHitSearch::buildWidget() {
     bindWidget("searchok", searchOkBtn);
     bindWidget("searchhelp", searchHelpText);
 
-    searchInputText->keyPressed().connect(std::bind([ = ] (const WKeyEvent & e) {
+    searchInputText->keyPressed().connect([ & ] (const WKeyEvent & e) {
         if (e.key() == Key_Enter) {
             processSearchInput();
         }
-    }, std::placeholders::_1));
+    });
+    searchSP->activated().connect(this, &WHitSearch::processSearchInput);
     searchOkBtn->clicked().connect(this, &WHitSearch::processSearchInput);
 
     // Listen to all persistence changes

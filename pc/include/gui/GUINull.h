@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdarg>
+#include <vector>
 
 #include "gui/GUI.h"
 
@@ -15,9 +16,13 @@ public:
 
     virtual void printlevel(PRINT_LEVEL level, const char *format, ...) override;
     virtual void confirm(PRINT_LEVEL level, const char *format, ...) override;
+    virtual void addInput(int input) override;
     virtual int getInput() override;
+    virtual int getKeystroke() override;
     virtual int selection(vector<string> options) override;
 protected:
+    vector<int> inputs;
+
     virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args);
 private:
 };
