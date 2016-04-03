@@ -2,10 +2,11 @@
 #define INPUTPROCESSOR_H
 
 enum ProcessType {
-    PROCESS_LINEAR,
-    PROCESS_DIRECT,
-    PROCESS_SWAP,
-    PROCESS_LINEAR_SHUFFLE
+    PROCESS_LINEAR,             // Keep a queue of hitjes, add new hitjes to the back, play new hitjes from the front
+    PROCESS_DIRECT,             // When a new hitje is added, directly play it at speaker
+    PROCESS_SWAP,               // When a new hitje is added, swap between phone and speaker (useless?)
+    PROCESS_LINEAR_RANDOM,      // Keep a queue of hitjes in a linear way, when empty, add a random hitje
+    PROCESS_SHUFFLE_RANDOM,     // Keep a queue of hitjes, insert new hitjes at a random spot, when queue empty add a random hitje
 };
 
 

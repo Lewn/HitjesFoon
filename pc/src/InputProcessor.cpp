@@ -2,7 +2,7 @@
 
 
 InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(gui, config), retriever(gui) {
-    processType = PROCESS_LINEAR_SHUFFLE;
+    processType = PROCESS_LINEAR_RANDOM;
     phoneAudioPlayer = new AudioPlayer(gui, AudioPlayer::PHONE, hitjesList);
     speakerAudioPlayer = new AudioPlayer(gui, AudioPlayer::SPEAKER, hitjesList);
     phoneOutput = false;
@@ -254,7 +254,7 @@ void InputProcessor::playAudio(int curNumber) {
         return;
     }
     switch (processType) {
-        case PROCESS_LINEAR_SHUFFLE:
+        case PROCESS_LINEAR_RANDOM:
         case PROCESS_LINEAR:
             gui.printlevel(LINFO, "\nProcessing linear");
             if (phoneOutput) {
@@ -318,6 +318,10 @@ void InputProcessor::playbackChangeEvent(const PlaybackState state) {
 
 void InputProcessor::playQueued() {
     // TODO make smarter (correctly implement playback modes)
+    if (hitjesQueue.empty() && (processType == PROCESS_LINEAR_RANDOM || processType == PROCESS_SHUFFLE_RANDOM)) {
+        // Add in a new random hitje
+        hitjesQueue.push_back(hitjesList.getRandom().hitIndex);
+    }
     // TODO implement playback modes in different class
     // TODO thread safety of playback
     gui.printlevel(LINFO, "Got playback end event, playing queued\n");
@@ -343,6 +347,8 @@ void InputProcessor::sendHitjesQueue(int current) {
         current = speakerAudioPlayer->getAudioIndex();
     }
     if (current != 0) {
+        // TODO shouldn't need current index?
+        gui.printlevel(LINFO, "Using current\n");
         queueCpy.push_back(current);
     }
     copy(hitjesQueue.begin(), hitjesQueue.end(), back_inserter(queueCpy));
@@ -391,7 +397,7 @@ void InputProcessor::setOutput(bool phone) {
             } else {
                 if (phoneOutput) {
                     switch (processType) {
-                        case PROCESS_LINEAR_SHUFFLE:
+                        case PROCESS_LINEAR_RANDOM:
                         case PROCESS_LINEAR:
                             // get song playing at phoneAudioPlayer and list it for speakerAudioPlayer
                             audioIndex = phoneAudioPlayer->getAudioIndex();

@@ -141,4 +141,4 @@ void toolsDeinit() {
 #ifndef __WIN32__
     reset_terminal_mode();
 #endif // __WIN32__
-    }
+}

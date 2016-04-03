@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <thread>
 #include <chrono>
+#include <random>
 
 #include "Structs.h"
 #include "Tools.h"
@@ -31,13 +32,16 @@ public:
     void update();
     void hitjeUpdate(const Hitje &hitje);
     const Hitje &getHitje(int hitjeIndex);
+    const Hitje &getRandom();
 
 protected:
     GUI &gui;
     Retriever retriever;
     vector<Hitje> hitjes;
+    vector<int> validHitjes;
     string hitjesPath;
     string listFilePath;
+    default_random_engine generator;
 
     void writeUpdate();
     int skipInvalidLines(ifstream &listFileStream);

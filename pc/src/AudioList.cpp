@@ -57,6 +57,14 @@ const Hitje &AudioList::getHitje(int hitIndex) {
     return hitjes[hitIndex - 1];
 }
 
+const Hitje &AudioList::getRandom() {
+    gui.printlevel(LINFO, "Randomising one of %d hitjes\n", validHitjes.size());
+    uniform_int_distribution<int> distribution(0, validHitjes.size() - 1);
+    int randIndex = distribution(generator);
+    gui.printlevel(LINFO, "Randomised %d\n", randIndex);
+    return getHitje(validHitjes[randIndex]);
+}
+
 void AudioList::hitjeUpdate(const Hitje &hitje) {
     // Propagate external hitje changes back to list
     if (hitjes[hitje.hitIndex - 1] != hitje) {
@@ -66,6 +74,15 @@ void AudioList::hitjeUpdate(const Hitje &hitje) {
         if (oldHitje.hitIndex != hitje.hitIndex || oldHitje.title != hitje.title || oldHitje.artist != hitje.artist) {
             // Only write when actually something interesting happened to the file
             writeUpdate();
+            // Add hitje to valid hitjes
+            auto itr = find(validHitjes.begin(), validHitjes.end(), hitje.hitIndex);
+            if (hitje && itr == validHitjes.end()) {
+                // Valid, however not yet in the list, add it
+                validHitjes.push_back(hitje.hitIndex);
+            } else if (!hitje && itr != validHitjes.end()) {
+                // Invalid, however is in the list, remove it
+                validHitjes.erase(itr);
+            }
         }
     }
 }
@@ -73,6 +90,8 @@ void AudioList::hitjeUpdate(const Hitje &hitje) {
 void AudioList::update() {
     int hitIndex;
     ifstream listFileStream;
+    // Construct a new list of valid hitjes
+    validHitjes.clear();
 
     // TODO force normalise audio on every update?
     // or even on every load of file, to ensure audio level is correct
@@ -128,10 +147,14 @@ void AudioList::update() {
         gui.printlevel(LERROR, "Could not clean hitjes, directory not accessible\n");
     }
 
-    // And copy all hitjes to the gui, to apply the changes
-    // Only changed hitjes are actually forwarded
     for (const Hitje &hitje : hitjes) {
+        // And copy all hitjes to the gui, to apply the changes
+        // Only changed hitjes are actually forwarded
         gui.setHitje(hitje);
+        // Keep the list of valid hitjes
+        if (hitje) {
+            validHitjes.push_back(hitje.hitIndex);
+        }
     }
 
     gui.printlevel(LBGINFO, "Successfully updated hitjeslist\n");
