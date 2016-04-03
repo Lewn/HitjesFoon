@@ -1,15 +1,37 @@
 #include "AudioPlayer.h"
 
 
+void callbackStatic(const libvlc_event_t *event, void *userData) {
+    // Pass event to member function
+    AudioPlayer *thisPlayer = (AudioPlayer*)userData;
+    int eventType = event->type;
+    thread([ = ]() {
+        // Call threaded as to not block VLC
+        thisPlayer->callback(eventType);
+    }).detach();
+}
+
+
 AudioPlayer::AudioPlayer(GUI &gui, AudioDevice device, AudioList &audioList) : gui(gui), audioList(audioList), audioIndex(0) {
     VLC *VLCInstance = VLC::getInstance();
     //Load the VLC engine
     audioPlayer = VLCInstance->newMediaPlayer();
 
     setAudioDevice(device);
+    // Attach to VLC events
+    libvlc_event_manager_t *eventManager = libvlc_media_player_event_manager(audioPlayer);
+    for (int type : {VLC_EVENTS_MEDIAPLAYER}) {
+        if (libvlc_event_attach(eventManager, type, &callbackStatic, this)) {
+            gui.printlevel(LERROR, "Couldn't attach listener\n");
+        }
+    }
 }
 
 AudioPlayer::~AudioPlayer() {
+    libvlc_event_manager_t *eventManager = libvlc_media_player_event_manager(audioPlayer);
+    for (int type : {libvlc_MediaPlayerPlaying}) {
+        libvlc_event_detach(eventManager, type, &callbackStatic, this);
+    }
     VLC::release(audioPlayer);
 }
 
@@ -92,17 +114,15 @@ bool AudioPlayer::playAudio(libvlc_media_t *media, float position) {
     }
     libvlc_media_player_set_media(audioPlayer, media);
     libvlc_media_player_play(audioPlayer);
-    if (position) {
+    if (position != 0) {
         libvlc_media_player_set_position(audioPlayer, position);
     }
-    gui.setPlaying();
     return true;
 }
 
 void AudioPlayer::pause() {
     if (isPlaying() && libvlc_media_player_can_pause(audioPlayer)) {
         libvlc_media_player_set_pause(audioPlayer, true);
-        gui.setPaused();
     }
 }
 
@@ -110,14 +130,13 @@ void AudioPlayer::resume() {
     // Check audio index if there is even a hitje to resume
     if (!isPlaying() && isBusy()) {
         libvlc_media_player_set_pause(audioPlayer, false);
-        gui.setPlaying();
     }
 }
 
 void AudioPlayer::stop() {
-    libvlc_media_player_stop(audioPlayer);
-    audioIndex = 0;
-    gui.setStopped();
+    if (isBusy()) {
+        libvlc_media_player_stop(audioPlayer);
+    }
 }
 
 
@@ -170,29 +189,56 @@ float AudioPlayer::getAudioPosition() {
 }
 
 
-void AudioPlayer::attachEventListener(AudioPlayerEventListener *listener) {
-    if (listeners.empty()) {
-        libvlc_event_manager_t *eventManager = libvlc_media_player_event_manager(audioPlayer);
-        libvlc_event_attach(eventManager, libvlc_MediaPlayerEndReached, callback, this);
-    }
-    gui.printlevel(LDEBUG, "Attached a listener\n");
-    listeners.push_back(listener);
+void AudioPlayer::onEnd(std::function<void ()> callback) {
+    endSig.connect(callback);
 }
 
-void AudioPlayer::callback(const libvlc_event_t *evt, void *userData) {
-    AudioPlayer *player = ((AudioPlayer*)userData);
-    switch (evt->type) {
-        case libvlc_MediaPlayerEndReached:
-            player->gui.printlevel(LDEBUG, "\n\nSong ended");
-            player->notificate(AudioPlayerEventListener::DONE);
+
+void AudioPlayer::callback(int eventType) {
+    switch (eventType) {
+        case libvlc_MediaPlayerMediaChanged:
+            // Directly when libvlc_media_player_set_media is called
             break;
+        case libvlc_MediaPlayerOpening:
+            // When a new hitje is started
+            break;
+        case libvlc_MediaPlayerBuffering:
+            // Once on load, then starting, then continuously until whole hitje is loaded
+            // May be dependent on the resource location (online will take longer)
+            break;
+        case libvlc_MediaPlayerSeekableChanged:
+            // Once on load
+            break;
+        case libvlc_MediaPlayerLengthChanged:
+            // Once on load
+            break;
+        case libvlc_MediaPlayerTimeChanged:
+        case libvlc_MediaPlayerPositionChanged:
+            // Triggered continuously during playback, ignore
+            // Notably only trigger after whole buffering is done
+            break;
+        case libvlc_MediaPlayerPaused:
+            // Manually paused playback
+            // TODO gui events only from speaker audio player?
+            gui.setPaused();
+            break;
+        case libvlc_MediaPlayerPlaying:
+            // When started playing, or when resumed from pause
+            gui.setPlaying();
+            break;
+        case libvlc_MediaPlayerStopped:
+        // Manually stopped playback
+        case libvlc_MediaPlayerEndReached:
+            // Reached end of song
+            audioIndex = 0;
+            gui.setStopped();
+            endSig();
+            break;
+        case libvlc_MediaPlayerEncounteredError:
+            // Some error?
+            gui.printlevel(LERROR, "Media player encountered some error?\n%s\n\n", libvlc_errmsg());
+            libvlc_clearerr();
         default:
-            player->gui.printlevel(LDEBUG, "\n\nUnknown event triggered\n");
-    }
-}
-void AudioPlayer::notificate(AudioPlayerEventListener::Event eventType) {
-    gui.printlevel(LDEBUG, "\nNotificating %d\n", (int)listeners.size());
-    for (AudioPlayerEventListener  *listener : listeners) {
-        listener->audioPlayerEvent(eventType, this);
+            gui.printlevel(LINFO, "Got event of type %s\n", libvlc_event_type_name(eventType));
     }
 }

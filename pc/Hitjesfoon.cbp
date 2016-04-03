@@ -86,7 +86,6 @@
 		<Unit filename="include/AudioMenu.h" />
 		<Unit filename="include/AudioMenuItem.h" />
 		<Unit filename="include/AudioPlayer.h" />
-		<Unit filename="include/AudioPlayerEventListener.h" />
 		<Unit filename="include/Config.h" />
 		<Unit filename="include/ConfigAudioMenu.h" />
 		<Unit filename="include/Hitje.h" />

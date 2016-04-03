@@ -41,26 +41,26 @@ public:
     void onPersistenceChange(const string &key);
     WApplication *createApplication(const WEnvironment& env);
 
-    virtual void setPlaying();
-    virtual void setPaused();
-    virtual void setStopped();
+    virtual void setPlaying() override;
+    virtual void setPaused() override;
+    virtual void setStopped() override;
 
-    virtual void setPhoneNum(int num);
-    virtual void setPlaylist(const vector<int> &playlist);
+    virtual void setPhoneNum(int num) override;
+    virtual void setPlaylist(const vector<int> &playlist) override;
 
-    virtual void setSpeakerVolume(int volume);
-    virtual void setPhoneVolume(int volume);
+    virtual void setSpeakerVolume(int volume) override;
+    virtual void setPhoneVolume(int volume) override;
 
-    virtual void setHitje(Hitje hitje);
+    virtual void setHitje(Hitje hitje) override;
 
     void logAppend(PRINT_LEVEL level, string text);
     void logHTML(vector<string> &logv, const string &el, bool nlfirst, bool nlsecond);
 
-    virtual int getInput();
+    virtual int getInput() override;
 protected:
     Persistence *persistence;
 
-    virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args);
+    virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args) override;
 private:
     int input = EOF;
     void inputLoop();

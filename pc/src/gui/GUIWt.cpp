@@ -92,8 +92,6 @@ void GUIWt::setPhoneNum(int num) {
 }
 
 void GUIWt::setPlaylist(const vector<int> &playlist) {
-    // TODO more efficient way of updating phone-playlist, as it now is triggered too many times
-    // once when a hitje is stopped, then when the playlist is moved forward etc. etc.
     persistence->getIntVectorData().setVal("phone-playlist", playlist);
 }
 
@@ -161,35 +159,13 @@ void GUIWt::logHTML(vector<string> &logv, const string &el, bool nlfirst, bool n
 
 int GUIWt::getInput() {
     WApplication *app = WApplication::instance();
-    int c = 0;
     if (app == NULL) {
         // No user input, get from terminal
-        // Still require a reliable cross platform solution
-        if (kbhit()) {
-            c = getch();
-        }
+        return GUINull::getInput();
     } else {
         // Get input from the users browser and process
         printlevel(LWARNING, "function getInput not implemented yet\n");
     }
-    if (c >= '0' && c <= '9') {
-        // got a number, return it
-        return c - '0';
-    } else if (c == 8 || c == 'd') {
-        // backspace, simulate earth button (reset number)
-        return INPUT_EARTH_DOWN;
-    } else if (c == 's') {
-        // s, simulate horn (swap output)
-        return INPUT_HORN_SWAP;
-    } else if (c == 'q') {
-        // q, return quit
-        return INPUT_END;
-    } else if (c == 'u') {
-        return INPUT_UPDATE;
-    } else if (c == 't') {
-        // t, testing purposes
-        return INPUT_TEST;
-    }
-    return INPUT_NONE;
+    return 0;
 }
 

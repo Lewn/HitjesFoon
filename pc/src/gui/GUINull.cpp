@@ -14,7 +14,7 @@ void GUINull::printlevel(PRINT_LEVEL level, const char *format, va_list args) {
         cerr << "ERR : " << buf;
     } else if (level == LWARNING) {
         cerr << "WARN: " << buf;
-    }else {
+    } else {
         cout << buf;
     }
 }
@@ -43,7 +43,17 @@ void GUINull::confirm(PRINT_LEVEL level, const char *format, ...) {
 }
 
 int GUINull::getInput() {
-    printlevel(LWARNING, "function getInput not implemented yet\n");
+    // Still require a reliable cross platform solution
+    // TODO windows getch return 0 or 0xE0 for arrow or special keys
+    // linux returns a string of multiple chars
+    if (kbhit()) {
+        int input = getch();
+        if (input == EOF) {
+            // Shouldn't happen, but the only reason why getchar() returns an int
+            return 0;
+        }
+        return input;
+    }
     return 0;
 }
 

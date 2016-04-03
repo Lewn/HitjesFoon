@@ -13,10 +13,10 @@ public:
     GUINull(PRINT_LEVEL msglevel);
     virtual ~GUINull();
 
-    virtual void printlevel(PRINT_LEVEL level, const char *format, ...);
-    virtual void confirm(PRINT_LEVEL level, const char *format, ...);
-    virtual int getInput();
-    virtual int selection(vector<string> options);
+    virtual void printlevel(PRINT_LEVEL level, const char *format, ...) override;
+    virtual void confirm(PRINT_LEVEL level, const char *format, ...) override;
+    virtual int getInput() override;
+    virtual int selection(vector<string> options) override;
 protected:
     virtual void printlevel(PRINT_LEVEL level, const char *format, va_list args);
 private:

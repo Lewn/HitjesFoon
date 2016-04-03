@@ -13,6 +13,7 @@ enum ProcessType {
 #include <chrono>
 #include <list>
 #include <algorithm>
+#include <functional>
 
 #include "Tools.h"
 #include "Hitje.h"
@@ -21,16 +22,22 @@ enum ProcessType {
 #include "gui/GUIEvent.h"
 #include "AudioList.h"
 #include "AudioPlayer.h"
-#include "AudioPlayerEventListener.h"
 #include "ConfigAudioMenu.h"
 #include "retrieve/Retriever.h"
 
 using namespace std;
 
-class InputProcessor : public AudioPlayerEventListener {
+class InputProcessor {
 public:
     InputProcessor(GUI &gui, Config &config);
     virtual ~InputProcessor();
+
+    void registerInputRaw(std::function<int ()> input);
+    void registerInput(std::function<int ()> input);
+    int convertInput(int c);
+
+    void terminate();
+    bool hasTerminated();
 
     AudioList *getHitjesList();
     void resetInput();
@@ -39,7 +46,8 @@ public:
     void process(int input);
     void inputNum(int input);
 
-    void audioPlayerEvent(Event evt, AudioPlayer *audioPlayer);
+    void playQueued();
+
     void playbackChangeEvent(const PlaybackState state);
 
 protected:
@@ -47,6 +55,9 @@ protected:
     AudioList hitjesList;
     Retriever retriever;
     ProcessType processType;
+    bool terminated = false;
+    vector<thread> threads;
+
     int curNumber;
     int numberCount;
     bool phoneOutput;
@@ -63,7 +74,6 @@ protected:
     void processAlt(int input);
 
     void playAudio(int curNumber);
-    void playQueued();
     void sendHitjesQueue(int current);
 
     void setEarthDown(bool down);

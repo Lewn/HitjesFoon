@@ -7,22 +7,6 @@ USBConnection::USBConnection(GUI &gui) : gui(gui) {
     if (!usbDevice) {
         gui.confirm(LWARNING, "Unable to open device, usb input will be disabled");
     } else {
-        hid_set_nonblocking(usbDevice, 1);
-
-        /* Commented out because not needed and always gave an error
-        unsigned char* buf = new unsigned char[2];
-        // Request state (cmd 0x81). The first byte is the report number (0x1).
-        buf[0] = 0x0;
-        buf[1] = 0x81;
-        int res = hid_write(usbDevice, buf, 1);
-        if (res < 0) {
-            gui.printlevel(LERROR, "Unable to write() (2)\n");
-            //usbDevice = NULL;
-        }
-
-        SAFE_DELETE_ARRAY(buf);
-        */
-
         reset();
     }
 }
@@ -43,7 +27,7 @@ int USBConnection::read() {
     if (usbDevice) {
         unsigned char buf[2];
         memset(buf, 0, sizeof(buf));
-        int res = hid_read(usbDevice, buf, sizeof(buf));
+        int res = hid_read_timeout(usbDevice, buf, sizeof(buf), 1000);
         if (res < 0) {
             gui.confirm(LERROR, "USB read exception '%s'\n", hid_error(usbDevice));
             throw "Read usb exception";
@@ -95,19 +79,22 @@ int USBConnection::isEarthDown() {
 
 void USBConnection::printUSB() {
     // TODO memory leak here?
-    struct hid_device_info *devs, *cur_dev;
+    if (gui.getMsglevel() >= LDEBUG) {
+        // Only bother if we are actually printing
+        struct hid_device_info *devs, *cur_dev;
 
-    devs = hid_enumerate(0x0, 0x0);
-    cur_dev = devs;
-    while (cur_dev) {
-        gui.printlevel(LDEBUG, "Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
-        gui.printlevel(LDEBUG, "\n");
-        gui.printlevel(LDEBUG, "  Manufacturer: %ls\n", cur_dev->manufacturer_string);
-        gui.printlevel(LDEBUG, "  Product:      %ls\n", cur_dev->product_string);
-        gui.printlevel(LDEBUG, "  Release:      %hx\n", cur_dev->release_number);
-        gui.printlevel(LDEBUG, "  Interface:    %d\n",  cur_dev->interface_number);
-        gui.printlevel(LDEBUG, "\n");
-        cur_dev = cur_dev->next;
+        devs = hid_enumerate(0x0, 0x0);
+        cur_dev = devs;
+        while (cur_dev) {
+            gui.printlevel(LDEBUG, "Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
+            gui.printlevel(LDEBUG, "\n");
+            gui.printlevel(LDEBUG, "  Manufacturer: %ls\n", cur_dev->manufacturer_string);
+            gui.printlevel(LDEBUG, "  Product:      %ls\n", cur_dev->product_string);
+            gui.printlevel(LDEBUG, "  Release:      %hx\n", cur_dev->release_number);
+            gui.printlevel(LDEBUG, "  Interface:    %d\n",  cur_dev->interface_number);
+            gui.printlevel(LDEBUG, "\n");
+            cur_dev = cur_dev->next;
+        }
+        hid_free_enumeration(devs);
     }
-    hid_free_enumeration(devs);
 }

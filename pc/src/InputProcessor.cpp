@@ -11,29 +11,95 @@ InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(
 
     configMenuPath = config.getConfigMenuPath();
 
-    // listen to end event on phoneAudioPlayer, for queued processing
-    //speakerAudioPlayer->attachEventListener(this);
-
-
     // Send initial values
     gui.setSpeakerVolume(speakerAudioPlayer->getVolume());
     sendHitjesQueue(0);
 
-    // listen to gui events such that it can change audio values
+    // Listen to gui events such that it can change audio values
     gui.events().phoneNum(boost::bind(&InputProcessor::inputNum, this, _1));
     gui.events().phoneAlt(boost::bind(&InputProcessor::processAlt, this, _1));
     gui.events().speakerVolume(boost::bind(&AudioPlayer::setVolume, speakerAudioPlayer, _1));
     gui.events().phoneVolume(boost::bind(&AudioPlayer::setVolume, phoneAudioPlayer, _1));
     gui.events().playback(boost::bind(&InputProcessor::playbackChangeEvent, this, _1));
 
+    // Listen to audio player events
+    speakerAudioPlayer->onEnd(std::bind(&InputProcessor::playQueued, this));
+
     resetInput();
     requestInput();
 }
 
 InputProcessor::~InputProcessor() {
+    terminate();
+    // Join threads to make sure they terminate
+    gui.printlevel(LINFO, "Joining %d threads\n", threads.size());
+    for (thread &t : threads) {
+        if (t.joinable()) {
+            t.join();
+        }
+    }
+    gui.printlevel(LINFO, "Child threads finished\n");
+
     SAFE_DELETE(phoneAudioPlayer);
     SAFE_DELETE(speakerAudioPlayer);
     SAFE_DELETE(curAudioMenu);
+}
+
+
+void InputProcessor::registerInputRaw(std::function<int ()> input) {
+// Raw input, convert before processing
+    registerInput([ &, input ]() -> int {
+        return convertInput(input());
+    });
+}
+
+void InputProcessor::registerInput(std::function<int ()> input) {
+    // Thread is automatically terminated when vector goes out of scope
+    // ie when InputProcessor is destroyed, so are all child threads
+    threads.emplace_back([ &, input ] {
+        // Continuously loop for getting input
+        while (!terminated) {
+            int c = input();
+            process(c);
+            // If we are polling, add a delay to not hog the processor
+            this_thread::sleep_for(chrono::milliseconds(200));
+        }
+    });
+}
+
+int InputProcessor::convertInput(int c) {
+    if (c >= '0' && c <= '9') {
+        // got a number, return it
+        return c - '0';
+    } else if (c == 8 || c == 'd') {
+        // backspace, simulate earth button (reset number)
+        return INPUT_EARTH_DOWN;
+    } else if (c == 's') {
+        // s, simulate horn (swap output)
+        return INPUT_HORN_SWAP;
+    } else if (c == 'q') {
+        // q, return quit
+        return INPUT_END;
+    } else if (c == 'u') {
+        return INPUT_UPDATE;
+    } else if (c == 't') {
+        // t, testing purposes
+        return INPUT_TEST;
+    }
+    return INPUT_NONE;
+}
+
+
+void InputProcessor::terminate() {
+    if (!terminated) {
+        // Terminate allows for a graceful shutdown from any source
+        terminated = true;
+        resetInput();
+    }
+}
+
+bool InputProcessor::hasTerminated() {
+    return terminated;
 }
 
 void InputProcessor::resetInput() {
@@ -53,35 +119,16 @@ void InputProcessor::requestInput() {
 }
 
 void InputProcessor::process(string input) {
-    int c;
     if (input.length() == 1) {
-        c = input[0];
-        if (c >= '0' && c <= '9') {
-            // got a number, return it
-            c = c - '0';
+        int c = convertInput(input[0]);
+        if (c >= 0 && c <= 9) {
+            // got a number, input it
             inputNum(c);
-            return;
-        } else if (c == 8 || c == 'd') {
-            // backspace, simulate earth button (reset number)
-            c = INPUT_EARTH_DOWN;
-        } else if (c == 's') {
-            // s, simulate horn (swap output)
-            c = INPUT_HORN_SWAP;
-        } else if (c == 'q') {
-            // q, return quit
-            c = INPUT_END;
-        } else if (c == 'u') {
-            c = INPUT_UPDATE;
-        } else if (c == 't') {
-            // t, testing purposes
-            c = INPUT_TEST;
-        } else {
-            // Invalid input
             return;
         }
         processAlt(c);
     } else {
-        c = stoi(input);
+        int c = stoi(input);
         inputNum(c);
     }
 }
@@ -92,20 +139,6 @@ void InputProcessor::process(int input) {
     } else {
         processAlt(input);
     }
-    // TODO: in een event knallen zodat deze niet permanent aangeroepen wordt?
-    if (!speakerAudioPlayer->isBusy()) {
-        // always check on update wether we want to do a queued action
-        if (!hitjesQueue.empty()) {
-            // done playing, play next in queue
-            playQueued();
-            requestInput();
-        } else if (processType == PROCESS_LINEAR_SHUFFLE) {
-            // shuffle a random number in the player
-
-        }
-    }
-    // Sleep to not continuously hog processor
-    this_thread::sleep_for(chrono::microseconds(200));
 }
 
 void InputProcessor::processAudioMenu(int input) {
@@ -123,7 +156,6 @@ void InputProcessor::processAudioMenu(int input) {
         }
         if (curAudioMenu->isEnded()) {
             SAFE_DELETE(curAudioMenu);
-            curAudioMenu = NULL;
             resetInput();
         }
         requestInput();
@@ -169,7 +201,7 @@ void InputProcessor::processAlt(int input) {
             setHornDown(phoneOutput);
             break;
         case INPUT_END:
-            resetInput();
+            terminate();
             break;
         case INPUT_UPDATE:
             doUpdate();
@@ -246,33 +278,19 @@ void InputProcessor::playAudio(int curNumber) {
     }
 }
 
-void InputProcessor::audioPlayerEvent(Event evt, AudioPlayer  *audioPlayer) {
-    gui.printlevel(LDEBUG, "Event %d == %d", evt, DONE);
-    switch (evt) {
-        case DONE:
-            // listen to done event on speakerAudioPlayer
-            if (!hitjesQueue.empty()) {
-                playQueued();
-            }
-            break;
-    }
-    requestInput();
-}
-
 void InputProcessor::playbackChangeEvent(const PlaybackState state) {
     switch (state) {
         case PLAY:
+            gui.printlevel(LBGINFO, "Set playback to resume\n");
             speakerAudioPlayer->resume();
-            gui.printlevel(LINFO, "Set playback to resume\n");
             break;
         case PAUSE:
+            gui.printlevel(LBGINFO, "Set playback to pause\n");
             speakerAudioPlayer->pause();
-            gui.printlevel(LINFO, "Set playback to pause\n");
             break;
         case STOP:
+            gui.printlevel(LBGINFO, "Set playback to stop\n");
             speakerAudioPlayer->stop();
-            sendHitjesQueue(0);
-            gui.printlevel(LINFO, "Set playback to stop\n");
             break;
         case REVERSE:
             break;
@@ -280,14 +298,24 @@ void InputProcessor::playbackChangeEvent(const PlaybackState state) {
 }
 
 void InputProcessor::playQueued() {
-    int audioIndex = hitjesQueue.front();
-    hitjesQueue.pop_front();
-    if (speakerAudioPlayer->playAudio(audioIndex)) {
-        gui.printlevel(LINFO, "\nPlaying queued hitje %d", audioIndex);
-        // wait for the player to actually start
-        while (!speakerAudioPlayer->isPlaying());
-        sendHitjesQueue(audioIndex);
+    // TODO make smarter (correctly implement playback modes)
+    // TODO implement playback modes in different class
+    // TODO thread safety of playback
+    gui.printlevel(LINFO, "Got playback end event, playing queued\n");
+    if (!hitjesQueue.empty()) {
+        int audioIndex = hitjesQueue.front();
+        hitjesQueue.pop_front();
+        gui.printlevel(LINFO, "Going to play %d\n", audioIndex);
+        if (speakerAudioPlayer->playAudio(audioIndex)) {
+            gui.printlevel(LINFO, "Playing queued hitje %d\n", audioIndex);
+            // wait for the player to actually start
+            while (!speakerAudioPlayer->isBusy());
+            sendHitjesQueue(audioIndex);
+            return;
+        }
     }
+    gui.printlevel(LINFO, "None to play\n");
+    sendHitjesQueue(0);
 }
 
 void InputProcessor::sendHitjesQueue(int current) {
@@ -315,7 +343,6 @@ void InputProcessor::setEarthDown(bool down) {
                 phoneAudioPlayer->stop();
             } else {
                 speakerAudioPlayer->stop();
-                sendHitjesQueue(0);
             }
         }
     }
@@ -353,7 +380,6 @@ void InputProcessor::setOutput(bool phone) {
                                 gui.printlevel(LINFO, "\nQueued hitje %d for speaker that was playing on phone", audioIndex);
                                 hitjesQueue.push_back(audioIndex);
                                 phoneAudioPlayer->stop();
-                                sendHitjesQueue(0);
                             }
                             break;
                         case PROCESS_DIRECT:

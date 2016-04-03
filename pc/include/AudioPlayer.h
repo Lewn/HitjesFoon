@@ -1,16 +1,16 @@
 #ifndef AUDIOPLAYER_H
 #define AUDIOPLAYER_H
 
-class AudioPlayer;
 
 #include "vlc/vlc.h"
 #include <string.h>
 #include <list>
 #include <vector>
+#include <functional>
+#include <thread>
 
 #include "VLC.h"
 #include "AudioList.h"
-#include "AudioPlayerEventListener.h"
 #include "Tools.h"
 
 using namespace std;
@@ -21,6 +21,7 @@ public:
         PHONE,
         SPEAKER
     };
+    typedef boost::signals2::signal<void ()> endSignal;
 
     AudioPlayer(GUI &gui, AudioDevice device, AudioList &audioList);
     virtual ~AudioPlayer();
@@ -40,24 +41,22 @@ public:
     void setVolume(const int volume);
     int getVolume();
 
-    void attachEventListener(AudioPlayerEventListener *listener);
-
     bool isPlaying();
     bool isBusy();
     int getAudioIndex();
     float getAudioPosition();
+
+    void onEnd(std::function<void ()> callback);
+    void callback(int eventType);
 protected:
     GUI &gui;
     string curOutput;
-    list<AudioPlayerEventListener*> listeners;
+    endSignal endSig;
 
     static string audioOutputString(AudioDevice device);
-    string audioDeviceString(AudioDevice device);
+    static string audioDeviceString(AudioDevice device);
 
     AudioList &audioList;
-
-    static void callback (const libvlc_event_t *evt, void *userData);
-    void notificate(AudioPlayerEventListener::Event eventType);
 private:
     libvlc_media_player_t *audioPlayer;
     int audioIndex;

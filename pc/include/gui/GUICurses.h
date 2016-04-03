@@ -15,10 +15,10 @@ public:
     GUICurses(PRINT_LEVEL msglevel);
     virtual ~GUICurses();
 
-    void printlevel(PRINT_LEVEL level, const char *format, ...);
-    void confirm(PRINT_LEVEL level, const char *format, ...);
-    int getInput();
-    int selection(vector<string> options);
+    virtual void printlevel(PRINT_LEVEL level, const char *format, ...) override;
+    virtual void confirm(PRINT_LEVEL level, const char *format, ...) override;
+    virtual int getInput() override;
+    virtual int selection(vector<string> options) override;
 
     int getchsilent();
     int getchar();

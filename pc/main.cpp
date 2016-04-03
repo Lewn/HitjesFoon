@@ -2,7 +2,6 @@
 //#define GUI_CURSES
 #define GUI_WT
 
-
 #if defined(GUI_CURSES) && defined(GUI_WT)
 #error "Can define only a single gui"
 #endif // defined
@@ -85,33 +84,32 @@ int main(int argc, char **argv) {
 
             // create an input processor for processing keyboard and usb input
             InputProcessor processor(gui, config);
-
+            processor.registerInputRaw(std::bind(&GUINull::getInput, &gui));
+            processor.registerInput(std::bind(&USBConnection::read, &connection));
 #if defined(GUI_WT)
+            // Run the application until a terminate is called
             if (server.start()) {
 #endif
-                while (true) {
-                    // read user input for selecting hitje, also read from usb
-                    int c = gui.getInput();
-                    if (c == INPUT_NONE) {
-                        c = connection.read();
+                while (!processor.hasTerminated()) {
+#if defined(GUI_WT)
+                    if (!server.isRunning()) {
+                        // Server stopped, terminate program
+                        processor.terminate();
                     }
-
-                    if (c == INPUT_TEST) {
-                        // test with t
-                    } else if (c == INPUT_END) {
-                        // end at q
-                        break;
-                    }
-                    processor.process(c);
+#endif
+                    this_thread::sleep_for(chrono::milliseconds(500));
                 }
 #if defined(GUI_WT)
-                server.stop();
+                while (server.isRunning()) {
+                    // Server still running, thus program requested stop
+                    server.stop();
+                }
             } else {
                 gui.printlevel(LERROR, "Couldn't start server\n");
             }
         } catch (Wt::WException ex) {
             gui.printlevel(LERROR, "WException caught:\n");
-            gui.confirm(LERROR, "%s", ex.what());
+            gui.confirm(LERROR, "%s\n", ex.what());
 #endif
         } catch (const std::ios_base::failure &e) {
             gui.printlevel(LERROR, "IOS base error caught: %s\n", e.what());
