@@ -1,7 +1,9 @@
 /*****************************************************************************
- * vlc_art_finder.h
+ * vlc_memory.h: Memory functions
  *****************************************************************************
- * Copyright (C) 2009 Rémi Denis-Courmont
+ * Copyright (C) 2009 VLC authors and VideoLAN
+ *
+ * Authors: JP Dinger <jpd at videolan dot org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -18,13 +20,38 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef VLC_ART_FINDER_H
-#define VLC_ART_FINDER_H 1
+#ifndef VLC_MEMORY_H
+#define VLC_MEMORY_H 1
 
-typedef struct art_finder_t
+#include <stdlib.h>
+
+/**
+ * \file
+ * This file deals with memory fixups
+ */
+
+/**
+ * \defgroup memory Memory
+ * @{
+ */
+
+/**
+ * This wrapper around realloc() will free the input pointer when
+ * realloc() returns NULL. The use case ptr = realloc(ptr, newsize) will
+ * cause a memory leak when ptr pointed to a heap allocation before,
+ * leaving the buffer allocated but unreferenced. vlc_realloc() is a
+ * drop-in replacement for that use case (and only that use case).
+ */
+static inline void *realloc_or_free( void *p, size_t sz )
 {
-    VLC_COMMON_MEMBERS
-    input_item_t *p_item;
-} art_finder_t;
+    void *n = realloc(p,sz);
+    if( !n )
+        free(p);
+    return n;
+}
+
+/**
+ * @}
+ */
 
 #endif
