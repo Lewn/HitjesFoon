@@ -46,7 +46,6 @@ bool Retriever::retrieve(const Hitje &mainHitje) {
             }
             // Try next scraper instead
         }
-        normaliseAudio(hitje);
         // Generate media file, attach it to hitje
         downloaded &= createMediaFile(hitje);
         // Release retrieve session
@@ -148,6 +147,8 @@ bool Retriever::createMediaFile(Hitje &hitje) {
         return false;
     }
     hitjeFileStream.close();
+    // Make sure audio is normalised
+    normaliseAudio(hitje);
     // Try to parse the file as media data
     gui.printlevel(LDEBUG, "Parsing media file '%s'\n", hitjePath.c_str());
     libvlc_media_t *mediaData = VLC::getInstance()->newMediaFromPath(hitjePath.c_str());
