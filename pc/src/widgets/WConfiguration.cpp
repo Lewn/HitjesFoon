@@ -1,4 +1,4 @@
-#include "WConfiguration.h"
+#include "widgets/WConfiguration.h"
 
 WConfiguration::WConfiguration(GUI &gui, Persistence &persistence, WContainerWidget *parent) : WConfiguration(gui, persistence, WString::tr("template-hitjesfoon-configuration"), parent) {}
 
