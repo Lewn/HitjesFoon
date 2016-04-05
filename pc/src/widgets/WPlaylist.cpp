@@ -42,6 +42,7 @@ void WPlaylist::updatePlaylist() {
 
     for (unsigned int i = 1; i < playlist.size(); i++) {
         Hitje hitje = persistence.getHitjeData().getVal(to_string(playlist[i]));
+        // TODO add button to remove hitje
         buf += "<div>" + hitje.toString() + "</div>";
     }
     playlistText->setText(WString(buf));

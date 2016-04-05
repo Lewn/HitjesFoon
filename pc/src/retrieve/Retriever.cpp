@@ -98,9 +98,9 @@ bool Retriever::retrieveSoundcloud(Scraper *scraper, ScraperData data, Hitje &hi
 
 void Retriever::normaliseAudio(Hitje &hitje) {
     char buf[1024];
-    string cmd = "mp3gain -e -t -r -k ";
+    string cmd = "mp3gain -e -t -r -k -s i";
 
-    gui.printlevel(LBGINFO, "Normalising audio\n");
+    gui.printlevel(LBGINFO, "Normalising hitje %d\n", hitje.hitIndex);
 //    -e            no album analysis (because we don't use album)
 //    -r            Apply per track gain (to actually alter the audio)
 //    -o            Nice output?
