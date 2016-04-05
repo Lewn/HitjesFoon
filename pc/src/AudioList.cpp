@@ -39,6 +39,9 @@ AudioList::AudioList(GUI &gui, Config &config) : gui(gui), retriever(gui) {
     } while (listFile == NULL);
     SAFE_CLOSE(listFile);
 
+    // Seed our RNG with the current time
+    generator.seed(chrono::high_resolution_clock::now().time_since_epoch().count());
+
     gui.printlevel(LINFO, "Creating the hitjeslist\n");
     for (int i = 1; i < 1000; i++) {
         hitjes.push_back(Hitje(i, hitjesPath));
