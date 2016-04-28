@@ -61,10 +61,10 @@ const Hitje &AudioList::getHitje(int hitIndex) {
 }
 
 const Hitje &AudioList::getRandom() {
-    gui.printlevel(LINFO, "Randomising one of %d hitjes\n", validHitjes.size());
+    gui.printlevel(LDEBUG, "Randomising one of %d hitjes\n", validHitjes.size());
     uniform_int_distribution<int> distribution(0, validHitjes.size() - 1);
     int randIndex = distribution(generator);
-    gui.printlevel(LINFO, "Randomised %d\n", randIndex);
+    gui.printlevel(LDEBUG, "Randomised %d\n", randIndex);
     return getHitje(validHitjes[randIndex]);
 }
 

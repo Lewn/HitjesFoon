@@ -111,6 +111,7 @@
 		<Unit filename="include/retrieve/scraper/YoutubeAPIScraper.h" />
 		<Unit filename="include/widgets/AHitjesfoon.h" />
 		<Unit filename="include/widgets/W404.h" />
+		<Unit filename="include/widgets/WConfiguration.h" />
 		<Unit filename="include/widgets/WFilledTemplate.h" />
 		<Unit filename="include/widgets/WHitSearch.h" />
 		<Unit filename="include/widgets/WHitje.h" />
@@ -148,6 +149,7 @@
 		<Unit filename="src/retrieve/scraper/YoutubeAPIScraper.cpp" />
 		<Unit filename="src/widgets/AHitjesfoon.cpp" />
 		<Unit filename="src/widgets/W404.cpp" />
+		<Unit filename="src/widgets/WConfiguration.cpp" />
 		<Unit filename="src/widgets/WFilledTemplate.cpp" />
 		<Unit filename="src/widgets/WHitSearch.cpp" />
 		<Unit filename="src/widgets/WHitje.cpp" />

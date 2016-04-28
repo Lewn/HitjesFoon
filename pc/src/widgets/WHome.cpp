@@ -59,6 +59,13 @@ void WHome::updateLog() {
         textEl->addStyleClass(WString("list-group-item"));
         logContainer->insertWidget(0, textEl);
     }
+    // Don't keep more than 200 logs on active display
+    // This greatly reduces the lag
+    while (logContainer->count() > 200) {
+        // TODO better method to remove multiple children?
+        // current induces multiple array searches...
+        logContainer->removeWidget(logContainer->widget(logContainer->count() - 1));
+    }
 }
 
 

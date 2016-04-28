@@ -32,13 +32,13 @@ InputProcessor::InputProcessor(GUI &gui, Config &config) : gui(gui), hitjesList(
 InputProcessor::~InputProcessor() {
     terminate();
     // Join threads to make sure they terminate
-    gui.printlevel(LINFO, "Joining %d threads\n", threads.size());
+    gui.printlevel(LDEBUG, "Joining %d threads\n", threads.size());
     for (thread &t : threads) {
         if (t.joinable()) {
             t.join();
         }
     }
-    gui.printlevel(LINFO, "Child threads finished\n");
+    gui.printlevel(LDEBUG, "Child threads finished\n");
 
     SAFE_DELETE(phoneAudioPlayer);
     SAFE_DELETE(speakerAudioPlayer);
@@ -118,12 +118,12 @@ void InputProcessor::resetInput() {
 
 void InputProcessor::requestInput() {
     if (!curAudioMenu) {
-        gui.printlevel(LINFO, "\nWelk hitje moet gedraaid worden? ");
+        gui.printlevel(LBGINFO, "\nWelk hitje moet gedraaid worden? ");
         if (numberCount) {
-            gui.printlevel(LINFO, "%0*d", numberCount, curNumber);
+            gui.printlevel(LBGINFO, "%0*d", numberCount, curNumber);
         }
     } else {
-        gui.printlevel(LINFO, "\nWelk menuitem wil je kiezen? ");
+        gui.printlevel(LBGINFO, "\nWelk menuitem wil je kiezen? ");
     }
 }
 
@@ -173,7 +173,7 @@ void InputProcessor::processAudioMenu(int input) {
 
 void InputProcessor::processNum(int input) {
     // got a number input, save it
-    gui.printlevel(LINFO, "%c", input + '0');
+    gui.printlevel(LBGINFO, "%c", input + '0');
     curNumber = curNumber  * 10 + input;
     if (++numberCount == 3) {
         // play audio per three digit number
@@ -249,14 +249,14 @@ void InputProcessor::inputNum(int num) {
 void InputProcessor::playAudio(int curNumber) {
     if (!hitjesList.getHitje(curNumber)) {
         // don't process non-existing hitjes
-        gui.printlevel(LINFO, "\n");
+        gui.printlevel(LBGINFO, "\n");
         gui.printlevel(LWARNING, "Hitje %d does not exist\n", curNumber);
         return;
     }
     switch (processType) {
         case PROCESS_LINEAR_RANDOM:
         case PROCESS_LINEAR:
-            gui.printlevel(LINFO, "\nProcessing linear");
+            gui.printlevel(LBGINFO, "\nProcessing linear");
             if (phoneOutput) {
                 // play song at phoneAudioPlayer
                 gui.printlevel(LINFO, "\nPlaying hitje %d at phone", curNumber);
@@ -324,11 +324,11 @@ void InputProcessor::playQueued() {
     }
     // TODO implement playback modes in different class
     // TODO thread safety of playback
-    gui.printlevel(LINFO, "Got playback end event, playing queued\n");
+    gui.printlevel(LDEBUG, "Got playback end event, playing queued\n");
     if (!hitjesQueue.empty()) {
         int audioIndex = hitjesQueue.front();
         hitjesQueue.pop_front();
-        gui.printlevel(LINFO, "Going to play %d\n", audioIndex);
+        gui.printlevel(LDEBUG, "Going to play %d\n", audioIndex);
         if (speakerAudioPlayer->playAudio(audioIndex)) {
             gui.printlevel(LINFO, "Playing queued hitje %d\n", audioIndex);
             // wait for the player to actually start
@@ -337,7 +337,7 @@ void InputProcessor::playQueued() {
             return;
         }
     }
-    gui.printlevel(LINFO, "None to play\n");
+    gui.printlevel(LDEBUG, "None to play\n");
     sendHitjesQueue(0);
 }
 
@@ -348,7 +348,7 @@ void InputProcessor::sendHitjesQueue(int current) {
     }
     if (current != 0) {
         // TODO shouldn't need current index?
-        gui.printlevel(LINFO, "Using current\n");
+        gui.printlevel(LDEBUG, "Using current\n");
         queueCpy.push_back(current);
     }
     copy(hitjesQueue.begin(), hitjesQueue.end(), back_inserter(queueCpy));
@@ -360,7 +360,7 @@ void InputProcessor::setEarthDown(bool down) {
     if (earthDown) {
         if (numberCount) {
             for (int i = 0; i < numberCount; i++) {
-                gui.printlevel(LINFO, "%c %c", 8, 8);    // clear output
+                gui.printlevel(LBGINFO, "%c %c", 8, 8);    // clear output
             }
             resetInput();
         } else {
@@ -387,7 +387,7 @@ void InputProcessor::setOutput(bool phone) {
             int audioIndex;
         case PROCESS_SWAP:
             // swap the output directly between the two at press
-            gui.printlevel(LINFO, "\nSwapped phone and speaker output");
+            gui.printlevel(LBGINFO, "\nSwapped phone and speaker output");
             audioIndex = phoneAudioPlayer->getAudioIndex();
             phoneAudioPlayer->swapWith(speakerAudioPlayer);
             sendHitjesQueue(audioIndex);
@@ -402,7 +402,7 @@ void InputProcessor::setOutput(bool phone) {
                             // get song playing at phoneAudioPlayer and list it for speakerAudioPlayer
                             audioIndex = phoneAudioPlayer->getAudioIndex();
                             if (audioIndex) {
-                                gui.printlevel(LINFO, "\nQueued hitje %d for speaker that was playing on phone", audioIndex);
+                                gui.printlevel(LBGINFO, "\nQueued hitje %d for speaker that was playing on phone", audioIndex);
                                 hitjesQueue.push_back(audioIndex);
                                 phoneAudioPlayer->stop();
                             }
@@ -411,7 +411,7 @@ void InputProcessor::setOutput(bool phone) {
                             // get song playing at phoneAudioPlayer and play it directly at speakerAudioPlayer
                             audioIndex = phoneAudioPlayer->getAudioIndex();
                             if (audioIndex) {
-                                gui.printlevel(LINFO, "\nPlaying hitje %d at speaker that was playing on phone", audioIndex);
+                                gui.printlevel(LBGINFO, "\nPlaying hitje %d at speaker that was playing on phone", audioIndex);
                                 speakerAudioPlayer->playAudio(audioIndex);
                                 phoneAudioPlayer->stop();
                                 sendHitjesQueue(audioIndex);
@@ -439,7 +439,7 @@ void InputProcessor::doUpdate() {
         for (int i = 1; i < 1000; i++) {
             const Hitje &hitje = hitjesList.getHitje(i);
             if (hitje.canDownload()) {
-                gui.printlevel(LINFO, "\nDownloading one more hitje");
+                gui.printlevel(LBGINFO, "\nDownloading one more hitje");
                 if (retriever.retrieve(hitje)) {
                     // Stop when a new hitje is downloaded
                     break;

@@ -238,6 +238,7 @@ void AudioPlayer::callback(int eventType) {
             // Some error?
             gui.printlevel(LERROR, "Media player encountered some error?\n%s\n\n", libvlc_errmsg());
             libvlc_clearerr();
+            break;
         default:
             gui.printlevel(LINFO, "Got event of type %s\n", libvlc_event_type_name(eventType));
     }
