@@ -10,6 +10,8 @@
 #include <Wt/WText>
 #include <Wt/WPushButton>
 #include <Wt/WProgressBar>
+#include <Wt/WIntValidator>
+#include <Wt/WValidator>
 
 #include "Structs.h"
 #include "Hitje.h"
@@ -37,7 +39,6 @@ protected:
     Persistence &persistence;
     WDialog *editDialog = NULL;
     mutex dlmutex;
-    bool editingArtist;
 
     int hitIndex;
     WText *artistText;
@@ -45,6 +46,8 @@ protected:
     WText *infoText;
     WPushButton *downloadBtn;
     WProgressBar *pgBar;
+
+    WLineEdit *editIndex, *editArtist, *editTitle;
 
     void updateHitje();
 private:

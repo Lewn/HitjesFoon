@@ -28,6 +28,7 @@ void WHome::buildWidget() {
     logUpdate = new WSound("resources/sounds/logUpdate.mp3", this);
 
     // Listen to all persistence changes
+    // TODO listen to part of the changes, all becomes too complex
     persistence.onChangeCallback(boost::bind(&WHome::onPersistenceChange, this, _1));
 }
 

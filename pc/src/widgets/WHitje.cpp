@@ -48,7 +48,14 @@ void WHitje::onPersistenceChange(const string &key) {
 void WHitje::showDialog(bool artist) {
     if (editDialog == NULL) {
         editDialog = new WDialog();
-        WLineEdit *edit = new WLineEdit(editDialog->contents());
+        editIndex = new WLineEdit(editDialog->contents());
+        editIndex->setText(to_string(hitIndex));
+        editArtist = new WLineEdit(editDialog->contents());
+        editTitle = new WLineEdit(editDialog->contents());
+
+        WIntValidator *validator = new WIntValidator(1, 999);
+        validator->setMandatory(true);
+        editIndex->setValidator(validator);
 
         WPushButton *ok = new WPushButton("OK", editDialog->footer());
         ok->setDefault(true);
@@ -61,29 +68,46 @@ void WHitje::showDialog(bool artist) {
 
         editDialog->finished().connect(std::bind([ = ] () {
             if (editDialog->result() == WDialog::Accepted) {
+                int swapIndex = hitIndex;
+                if (editIndex->validate() == WValidator::Valid) {
+                    swapIndex = stoi(editIndex->text().toUTF8());
+                    // Change of hit index, swap them
+                }
                 persistence.getHitjeData().manipulateVal(to_string(hitIndex), [&] (Hitje & hitje) {
-                    if (editingArtist) {
-                        hitje.artist = edit->text().narrow();
-                    } else {
-                        hitje.title = edit->text().narrow();
-                    }
                     hitje.setMediaData(NULL);
+
+                    if (swapIndex != hitIndex) {
+                        const Hitje &swap = persistence.getHitjeData().getVal(to_string(swapIndex));
+                        // Copy in the swapped data
+                        hitje.title = swap.title;
+                        hitje.artist = swap.artist;
+                    } else {
+                        // Just copy in the data
+                        hitje.artist = editArtist->text().narrow();
+                        hitje.title = editTitle->text().narrow();
+                    }
                 });
+                if (swapIndex != hitIndex) {
+                    persistence.getHitjeData().manipulateVal(to_string(swapIndex), [&] (Hitje & swap) {
+                        // And copy the new data to the swapped hitje
+                        swap.artist = editArtist->text().narrow();
+                        swap.title = editTitle->text().narrow();
+                        swap.setMediaData(NULL);     // Always force reupdate
+                    });
+                }
             }
         }));
     }
     const Hitje &hitje = persistence.getHitjeData().getVal(to_string(hitIndex));
-    WLineEdit *edit = (WLineEdit *)editDialog->contents()->widget(0);
+    editArtist->setText(hitje.artist);
+    editTitle->setText(hitje.title);
     if (artist) {
         editDialog->setWindowTitle("Editing artist");
-        edit->setText(hitje.artist);
+        editArtist->setFocus();
     } else {
         editDialog->setWindowTitle("Editing title");
-        edit->setText(hitje.title);
+        editTitle->setFocus();
     }
-    // Directly request focus to this field
-    edit->setFocus();
-    editingArtist = artist;
     editDialog->show();
 }
 
