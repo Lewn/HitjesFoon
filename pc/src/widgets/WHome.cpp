@@ -11,6 +11,7 @@ WHome::~WHome() {
 
 void WHome::buildWidget() {
     logContainer = new WContainerWidget();
+    logl = 0;
     updateLog();
 
     bindWidget("log", logContainer);
@@ -47,22 +48,25 @@ void WHome::onPersistenceChange(const string &key) {
 
 void WHome::updateLog() {
     const vector<string> logv = persistence.getStringVectorData().getVal("logv");
-    unsigned int logcount = logContainer->count();
-    if (logcount != 0) {
+    const int logc = persistence.getIntData().getVal("logc");
+    if (logContainer->count() != 0) {
         // Two widgets might have changed, force update on both
         WWidget *headWidget = logContainer->widget(0);
         logContainer->removeWidget(headWidget);
         SAFE_DELETE(headWidget);
-        logcount--;
+        logl--;
     }
-    for (unsigned int i = logcount; i < logv.size(); i++) {
+    // the amount of indices that needs updating, but update a max of 40 elements
+    unsigned int logdiff = min(logc - logl, 40);
+    for (unsigned int i = logv.size() - logdiff; i < logv.size(); i++) {
         WText *textEl = new WText(WString(logv[i]));
         textEl->addStyleClass(WString("list-group-item"));
         logContainer->insertWidget(0, textEl);
+        logl++;
     }
-    // Don't keep more than 200 logs on active display
+    // Don't keep more than 40 logs on active display
     // This greatly reduces the lag
-    while (logContainer->count() > 200) {
+    while (logContainer->count() > 40) {
         // TODO better method to remove multiple children?
         // current induces multiple array searches...
         logContainer->removeWidget(logContainer->widget(logContainer->count() - 1));

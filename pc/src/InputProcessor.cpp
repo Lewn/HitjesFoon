@@ -259,19 +259,19 @@ void InputProcessor::playAudio(int curNumber) {
             gui.printlevel(LBGINFO, "\nProcessing linear");
             if (phoneOutput) {
                 // play song at phoneAudioPlayer
-                gui.printlevel(LINFO, "\nPlaying hitje %d at phone", curNumber);
+                gui.printlevel(LBGINFO, "\nPlaying hitje %d at phone", curNumber);
                 phoneAudioPlayer->playAudio(curNumber);
             } else {
                 // list song for playing at speakerAudioPlayer
                 // Audio index is also set when paused (isPlaying() returns false in that case)
                 if (!speakerAudioPlayer->isBusy()) {
-                    gui.printlevel(LINFO, "\nPlaying hitje %d at speakers", curNumber);
+                    gui.printlevel(LBGINFO, "\nPlaying hitje %d at speakers", curNumber);
                     if (!speakerAudioPlayer->playAudio(curNumber)) {
                         throw "Could not play audio";
                     }
                     sendHitjesQueue(curNumber);
                 } else {
-                    gui.printlevel(LINFO, "\nQueued hitje %d", curNumber);
+                    gui.printlevel(LBGINFO, "\nQueued hitje %d", curNumber);
                     hitjesQueue.push_back(curNumber);
                     sendHitjesQueue(0);
                 }
@@ -280,18 +280,18 @@ void InputProcessor::playAudio(int curNumber) {
         case PROCESS_DIRECT:
             if (phoneOutput) {
                 // play song at phoneAudioPlayer for listening first
-                gui.printlevel(LINFO, "\nPlaying hitje at phone %d", curNumber);
+                gui.printlevel(LBGINFO, "\nPlaying hitje at phone %d", curNumber);
                 phoneAudioPlayer->playAudio(curNumber);
             } else {
                 // play song directly at speakerAudioPlayer
-                gui.printlevel(LINFO, "\nPlaying hitje at speaker %d", curNumber);
+                gui.printlevel(LBGINFO, "\nPlaying hitje at speaker %d", curNumber);
                 speakerAudioPlayer->playAudio(curNumber);
                 sendHitjesQueue(curNumber);
             }
             break;
         case PROCESS_SWAP:
             // always play at phone output first
-            gui.printlevel(LINFO, "\nPlaying hitje at phone %d", curNumber);
+            gui.printlevel(LBGINFO, "\nPlaying hitje at phone %d", curNumber);
             phoneAudioPlayer->playAudio(curNumber);
             break;
     }
@@ -330,7 +330,7 @@ void InputProcessor::playQueued() {
         hitjesQueue.pop_front();
         gui.printlevel(LDEBUG, "Going to play %d\n", audioIndex);
         if (speakerAudioPlayer->playAudio(audioIndex)) {
-            gui.printlevel(LINFO, "Playing queued hitje %d\n", audioIndex);
+            gui.printlevel(LBGINFO, "Playing queued hitje %d\n", audioIndex);
             // wait for the player to actually start
             while (!speakerAudioPlayer->isBusy());
             sendHitjesQueue(audioIndex);

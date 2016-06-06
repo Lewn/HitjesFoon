@@ -36,7 +36,7 @@ void WPlaylist::onPersistenceChange(const string &key) {
 }
 
 void WPlaylist::updatePlaylist() {
-    gui.printlevel(LINFO, "Updating playlist\n");
+    gui.printlevel(LDEBUG, "Updating playlist\n");
     string buf;
     const vector<int> playlist = persistence.getIntVectorData().getVal("phone-playlist");
 
@@ -49,12 +49,12 @@ void WPlaylist::updatePlaylist() {
 
     if (playlist.size() != 0) {
         Hitje hitje = persistence.getHitjeData().getVal(to_string(playlist[0]));
-        gui.printlevel(LINFO, "Set currently playing to %s\n", hitje.toString().c_str());
+        gui.printlevel(LDEBUG, "Set currently playing to %s\n", hitje.toString().c_str());
         currentlyPlayingText->setText(WString(hitje.toString()));
     } else {
-        gui.printlevel(LINFO, "Emptied currently playing\n");
+        gui.printlevel(LDEBUG, "Emptied currently playing\n");
         currentlyPlayingText->setText(WString());
     }
-    gui.printlevel(LINFO, "Updated playlist text\n");
+    gui.printlevel(LDEBUG, "Updated playlist text\n");
 }
 

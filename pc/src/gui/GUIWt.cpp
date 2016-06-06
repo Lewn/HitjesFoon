@@ -10,10 +10,11 @@ GUIWt::~GUIWt() {
 
 void GUIWt::setServer(WServer &server) {
     persistence = new Persistence(server);
-    persistence->getStringData().initVal("log", string(""));
+//    persistence->getStringData().initVal("log", string(""));
     vector<string> logv;
     logv.push_back("");
     persistence->getStringVectorData().initVal("logv", logv);
+    persistence->getIntData().initVal("logc", 0);
     persistence->getIntData().initVal("playback-state", STOP);
     // Listen to all persistence changes
     persistence->onChangeCallback(boost::bind(&GUIWt::onPersistenceChange, this, _1));
@@ -118,7 +119,7 @@ void GUIWt::logAppend(PRINT_LEVEL level, string text) {
     bool nlsecond = (*(text.cend() - 1) == '\n');
 
     // append log text
-    persistence->getStringData().addVal("log", text);
+//    persistence->getStringData().addVal("log", text);
     // Don't print stringent log data to web interface
     // (both slow and crashes!)
     if (level > LINFO) {
@@ -148,14 +149,25 @@ void GUIWt::logAppend(PRINT_LEVEL level, string text) {
 }
 
 void GUIWt::logHTML(vector<string> &logv, const string &el, bool nlfirst, bool nlsecond) {
+    int c = 0;
     string &last = *(logv.end() - 1);
     if (nlfirst && !last.empty()) {
         logv.push_back(el);
+        c++;
     } else {
         last += el;
     }
     if (nlsecond) {
         logv.push_back("");
+        c++;
+    }
+    // Don't store more than 500 elements to prevent memory leaking
+    // TODO erasing at start is inefficient, use list instead?
+    if (logv.size() > 500) {
+        logv.erase(logv.begin(), logv.end() - 500);
+    }
+    if (c) {
+        persistence->getIntData().addVal("logc", c);
     }
 }
 

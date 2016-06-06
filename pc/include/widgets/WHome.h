@@ -41,6 +41,9 @@ protected:
     WContainerWidget *logContainer;
     WSound *logUpdate;
 
+    // Local version of the log count (# of already logged items)
+    int logl;
+
     void updateLog();
 private:
 };
