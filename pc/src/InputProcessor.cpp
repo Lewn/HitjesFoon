@@ -217,6 +217,10 @@ void InputProcessor::processAlt(int input) {
             // Perform an update without downloading
             hitjesList.update();
             break;
+        case INPUT_RESET_LIST:
+            // Reset all hitjes in list
+            hitjesList.reset();
+            break;
         case INPUT_EXIT:
             // Exit the program with normal exit status
             terminate();

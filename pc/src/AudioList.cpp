@@ -319,4 +319,50 @@ int AudioList::parseLine(string &line) {
 }
 
 
+// Reset all hitjes in list, effectively deletes everything and download all
+void AudioList::reset() {
+    gui.printlevel(LINFO, "Deleting all hitjesfiles...\n");
+    // TODO general function for deleting unused or deleting all
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(hitjesPath.c_str())) != NULL) {
+        // Loop over all files in hitjes directory
+        while ((ent = readdir(dir)) != NULL) {
+            string entryName(ent->d_name);
+            // TODO also use boost filesystem for reading directories
+            // Don't try and alter level up entries....
+            if (entryName != "." && entryName != "..") {
+                string absPath = hitjesPath + entryName;
+                gui.printlevel(LWARNING, "Deleting file '%s'\n", entryName.c_str());
+                remove(absPath.c_str());
+            }
+        }
+        closedir(dir);
+    } else {
+        gui.printlevel(LERROR, "Could not reset hitjes, directory not accessible\n");
+    }
+
+    gui.printlevel(LBGINFO, "Starting download thread\n");
+
+    // And redownload
+    // Perform threaded, as downloading may take a very long time
+    // As not to block the UI
+    thread([&]() {
+        // Create a new retriever
+        Retriever retriever(gui);
+        for (int hitIndex = 1; hitIndex < 1000; hitIndex++) {
+            const Hitje &hitje = getHitje(hitIndex);
+            thread([&]() {
+                // And download this hitje
+                retriever.retrieve(hitje);
+            }).detach();
+            // Prevent server from killing itself
+            // TODO is there a better solution?
+            this_thread::sleep_for(chrono::milliseconds(50));
+        }
+    }).detach();
+    gui.printlevel(LINFO, "Queued all downloads\n");
+}
+
+
 

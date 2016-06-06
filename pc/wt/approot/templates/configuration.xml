@@ -4,9 +4,14 @@
 	<legend>${strings-configuration-menu}</legend>
 	<div class="form-horizontal">
 		<div class="form-group">
-			<div class="col-sm-2">${refresh}</div>
 			<div class="col-sm-2">${application-restart}</div>
 			<div class="col-sm-2">${application-exit}</div>
+		</div>
+	</div>
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-sm-2">${refresh}</div>
+			<div class="col-sm-2">${reset-list}</div>
 		</div>
 	</div>
 </message>

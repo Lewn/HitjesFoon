@@ -34,6 +34,8 @@ public:
     const Hitje &getHitje(int hitjeIndex);
     const Hitje &getRandom();
 
+    void reset();
+
 protected:
     GUI &gui;
     Retriever retriever;

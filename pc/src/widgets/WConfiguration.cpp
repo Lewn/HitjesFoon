@@ -10,21 +10,27 @@ WConfiguration::~WConfiguration() {
 
 
 void WConfiguration::buildWidget() {
-
-    WPushButton *refreshBtn = new WPushButton(WString::tr("strings-configuration-refresh"));
-    bindWidget("refresh", refreshBtn);
     WPushButton *applicationRestartBtn = new WPushButton(WString::tr("strings-configuration-restart"));
     bindWidget("application-restart", applicationRestartBtn);
     WPushButton *applicationExitBtn = new WPushButton(WString::tr("strings-configuration-exit"));
     bindWidget("application-exit", applicationExitBtn);
 
-    refreshBtn->clicked().connect(std::bind([ & ] () {
-        gui.addInput(INPUT_REFRESH);
-    }));
+    WPushButton *refreshBtn = new WPushButton(WString::tr("strings-configuration-refresh"));
+    bindWidget("refresh", refreshBtn);
+    WPushButton *resetListBtn = new WPushButton(WString::tr("strings-configuration-reset-list"));
+    bindWidget("reset-list", resetListBtn);
+
     applicationRestartBtn->clicked().connect(std::bind([ & ] () {
         gui.addInput(INPUT_RESTART);
     }));
     applicationExitBtn->clicked().connect(std::bind([ & ] () {
         gui.addInput(INPUT_EXIT);
+    }));
+
+    resetListBtn->clicked().connect(std::bind([ & ] () {
+        gui.addInput(INPUT_RESET_LIST);
+    }));
+    refreshBtn->clicked().connect(std::bind([ & ] () {
+        gui.addInput(INPUT_REFRESH);
     }));
 }

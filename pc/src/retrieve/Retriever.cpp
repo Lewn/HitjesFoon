@@ -11,6 +11,12 @@ Retriever::~Retriever() {
 
 
 bool Retriever::retrieve(const Hitje &mainHitje) {
+
+    if (mainHitje || mainHitje.downloadState.downloading || mainHitje.artist.empty() || mainHitje.title.empty()) {
+        // Don't need download for whatever reason
+        return false;
+    }
+
     // Limit the amount of active retrieve sessions
     if (!Retriever::blockRetrieve(mainHitje)) {
         // Couldn't acquire download session, thus couldn't download
